@@ -1,25 +1,7 @@
-from enum import Enum
+from point import *
 
-main_grille = [[0,0,0,0,0,0,0,0,0,0]]*10
 rayon_comunication = 2
 rayon_detection = 1
-
-main_grille = [[0 for j in range(10)] for i in range(10)]
-
-class Type(Enum):
-	Puits = 1
-	Cible = 2
-	Capteur = 3
-
-class Point:
-	def __init__(self,x,y,typ,aux):
-		self.x = x
-		self.y = y
-		self.typ = typ
-		self.aux = aux
-
-	def __repr__(self):
-		return "x = {},y = {}, type = {}, aux = {}".format(self.x,self.y,self.typ,self.aux)
 
 def voisin_point_append(voisin_pos_x, voisin_pos_y, grille, liste_voisin_courant, desc):
 	if (0<=voisin_pos_x<=10 and 0<=voisin_pos_y<=10):
@@ -109,11 +91,3 @@ class Grille:
 			liste_voisin_courant = voisin_point_append(voisin_pos_x,voisin_pos_y,self.grille,liste_voisin_courant,"haut droit")
 		return liste_voisin_courant
 
-
-# print(liste_voisin_detecte_grille(main_grille,0,0,rayon_detection))
-# print(liste_voisin_communiquant_grille(main_grille,0,0,rayon_comunication))
-
-
-grille = Grille()
-point_random = grille.grille[2][2]
-grille.voisin_point(point_random,0)
