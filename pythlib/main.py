@@ -7,7 +7,7 @@ from scipy import spatial
 # Variables globales :
 rayon_communication = 1
 rayon_detection = 4
-taille_grille = 5
+taille_grille = 15
 nombre_points = taille_grille*taille_grille
 
 #print_grille(taille_grille)

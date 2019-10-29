@@ -24,11 +24,11 @@ def print_grid(grille):
 			for voisin_comm in aux:
 				# print(i, j)
 				# print(voisin_comm)
-				plt.plot([pts_x,voisin_comm['x']],[pts_y,voisin_comm['y']], color='red',linewidth=2)
+				plt.plot([pts_x,voisin_comm['x']],[pts_y,voisin_comm['y']], color='red',linewidth=5)
 		elif (typ == Type.Cible):
 			plt.scatter(pts_x, pts_y,marker='o',color='grey')
 			color = "%06x" % np.random.randint(0, 0xFFFFFF)
 			for voisin_detect in aux:
 				# print(voisin_detect)
-				plt.plot([pts_x,voisin_detect['x']],[pts_y,voisin_detect['y']],linewidth=1,color="#"+color)
+				plt.plot([pts_x,voisin_detect['x']],[pts_y,voisin_detect['y']],linewidth=0.5,color="#"+color)
 	plt.show()
