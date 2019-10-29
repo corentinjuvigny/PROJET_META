@@ -1,64 +1,72 @@
 from point import *
+from scipy import spatial
+import numpy as np
 
-def voisin_point_append(voisin_pos_x, voisin_pos_y, grille_obj, liste_voisin_courant):
+def create_grille(taille):
+	pts_list = []
+	pts_list_for_kd_tree = []
+	k=0
+	for i in range(0,taille):
+		for j in range(0,taille):
+			pts_list.append(Point(k,float(i),float(j),Type.Cible,[]))
+			pts_list_for_kd_tree.append([float(i),float(j)])
+			k+=1
+	pts_list[0].typ = Type.Puits
 
-	taille_grille = grille_obj.taille
-	grille = grille_obj.grille
+	kd_tree = spatial.KDTree(pts_list_for_kd_tree)
 
-	if (0<=voisin_pos_x<=taille_grille-1 and 0<=voisin_pos_y<=taille_grille-1):
-		point = grille[voisin_pos_x][voisin_pos_y]
-		if (point.typ == Type.Cible):
-			liste_voisin_courant.append(point)
-			# print(point)
-			# print(desc)
-
-	return liste_voisin_courant
+	return pts_list,kd_tree
 
 class Grille:
-	def __init__(self,taille):
-		n = taille
-		self.grille = [[Point(str(x)+","+str(y),x,y,Type.Cible,[]) for y in range(n)] for x in range(n)]
-		self.grille[0][0] = Point('0,0',0,0,Type.Puits,[])
-		self.couverture = 1
-		self.taille = n
+	def __init__(self,taille,content):
+		if content == []:
+			nouvelle_grille = create_grille(taille)
+			self.pts_list = nouvelle_grille[0]
+			self.kd_tree = nouvelle_grille[1]
+		else:
+			self.pts_list = content[0]
+			self.kd_tree = content[1]
+
+		self.couverture = len(self.pts_list) - 1
+		self.taille = taille
 
 	def __repr__(self):
 		l = []
-		for ligne in self.grille:
-			v = []
-			for e in ligne:
-				v.append([str(e)])
-			l.append(str(v))
-		return str('Couverture :'+str(self.couverture)+'\n'.join(l))
+		for pts in self.pts_list:
+			l.append(str(pts))
+		return str('Couverture :'+str(self.couverture))+'\n'.join(l)
 
-	def set_capteur(self,x,y):
-		self.grille[x][y].typ = Type.Capteur
-		self.grille[x][y].aux = []
+	def set_capteur(self,pts):
+		self.pts_list[pts.name].typ = Type.Capteur
+		self.pts_list[pts.name].aux = []
 
 	def set_couverture(self,c):
-		self.couverture += c
+		self.couverture -= c
 
-	def set_capteur_communication(self,x,y,voisin):
-		self.grille[x][y].aux.append({'x':voisin.x,'y':voisin.y})
+	def set_capteur_communication(self,voisin,capteur):
+		self.pts_list[voisin.name].aux.append({'x':capteur.x,'y':capteur.y})
 
-	def set_cible_voisin(self,x,y,voisin):
-		self.grille[x][y].aux.append({'x':voisin.x,'y':voisin.y})
+	def set_cible_voisin(self,cible,voisin):
+		self.pts_list[cible.name].aux.append({'x':voisin.x,'y':voisin.y})
 
 	def voisin_point(self,point,rayon):
-		rayon = rayon
-		taille_grille = self.taille
+		kd_tree = self.kd_tree
+		pts_list = self.pts_list
+
 		liste_voisin_courant = []
+
 		pos_x = point.x
 		pos_y = point.y
-		dist_pts = 0
-		rayon_carre = pow(rayon,2)
-		for x in range(0,taille_grille):
-			for y in range(0,taille_grille):
-				if (x != pos_x or y != pos_y):
-					dist_pts = pow(x-pos_x,2) + pow(y-pos_y,2)
-					# print(rayon_carre,'et',dist_pts)
-					if (dist_pts <= rayon_carre):
-						liste_voisin_courant = voisin_point_append(x,y,self,liste_voisin_courant)
+
+		indice_voisins = kd_tree.query_ball_point([pos_x, pos_y], rayon)
+
+		for i in indice_voisins:
+			voisin = pts_list[i]
+			x = voisin.x
+			y = voisin.y
+			typ = voisin.typ
+			if ((x != pos_x or y != pos_y) and typ == Type.Cible):
+					liste_voisin_courant.append(voisin)
 
 		return liste_voisin_courant
 
