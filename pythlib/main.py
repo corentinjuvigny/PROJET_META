@@ -1,14 +1,24 @@
 from grille import *
+from draw import *
+from glouton import *
 
-main_grille = [[0,0,0,0,0,0,0,0,0,0]]*10
+# Variables globales :
+rayon_communication = 2
+rayon_detection = 1
+taille_grille = 10
+nombre_points = taille_grille*taille_grille
+main_grille = [[0 for j in range(taille_grille)] for i in range(taille_grille)]
 
-main_grille = [[0 for j in range(10)] for i in range(10)]
-
+#print_grille(taille_grille)
 
 # print(liste_voisin_detecte_grille(main_grille,0,0,rayon_detection))
-# print(liste_voisin_communiquant_grille(main_grille,0,0,rayon_comunication))
+# print(liste_voisin_communiquant_grille(main_grille,0,0,rayon_communication))
 
 
-grille = Grille()
-point_random = grille.grille[2][2]
-grille.voisin_point(point_random,0)
+grille = Grille(taille_grille)
+
+# print_grid(taille_grille,grille)
+
+construction_gloutonne_solution(grille,rayon_communication,rayon_detection,nombre_points)
+
+
