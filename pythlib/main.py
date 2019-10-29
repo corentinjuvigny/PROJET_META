@@ -3,9 +3,9 @@ from draw import *
 from glouton import *
 
 # Variables globales :
-rayon_communication = 2
-rayon_detection = 1
-taille_grille = 10
+rayon_communication = 3
+rayon_detection = 4
+taille_grille = 5
 nombre_points = taille_grille*taille_grille
 main_grille = [[0 for j in range(taille_grille)] for i in range(taille_grille)]
 

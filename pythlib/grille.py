@@ -1,6 +1,6 @@
 from point import *
 
-def voisin_point_append(voisin_pos_x, voisin_pos_y, grille_obj, liste_voisin_courant, desc):
+def voisin_point_append(voisin_pos_x, voisin_pos_y, grille_obj, liste_voisin_courant):
 
 	taille_grille = grille_obj.taille
 	grille = grille_obj.grille
@@ -46,55 +46,19 @@ class Grille:
 
 	def voisin_point(self,point,rayon):
 		rayon = rayon
-
+		taille_grille = self.taille
 		liste_voisin_courant = []
 		pos_x = point.x
 		pos_y = point.y
+		dist_pts = 0
+		rayon_carre = pow(rayon,2)
+		for x in range(0,taille_grille):
+			for y in range(0,taille_grille):
+				if (x != pos_x or y != pos_y):
+					dist_pts = pow(x-pos_x,2) + pow(y-pos_y,2)
+					# print(rayon_carre,'et',dist_pts)
+					if (dist_pts <= rayon_carre):
+						liste_voisin_courant = voisin_point_append(x,y,self,liste_voisin_courant)
 
-		#gauche
-		for i in range(1,rayon+1):
-			voisin_pos_x = pos_x
-			voisin_pos_y = pos_y-i
-			liste_voisin_courant = voisin_point_append(voisin_pos_x,voisin_pos_y,self,liste_voisin_courant,"haut")
-
-		#droite
-		for i in range(1,rayon+1):
-			voisin_pos_x = pos_x
-			voisin_pos_y = pos_y+i
-			liste_voisin_courant = voisin_point_append(voisin_pos_x,voisin_pos_y,self,liste_voisin_courant,"bas")
-		#haut
-		for i in range(1,rayon+1):
-			voisin_pos_x = pos_x+i
-			voisin_pos_y = pos_y
-			liste_voisin_courant = voisin_point_append(voisin_pos_x,voisin_pos_y,self,liste_voisin_courant,"droit")
-		#bas
-		for i in range(1,rayon+1):
-			voisin_pos_x = pos_x-i
-			voisin_pos_y = pos_y
-			liste_voisin_courant = voisin_point_append(voisin_pos_x,voisin_pos_y,self,liste_voisin_courant,"gauche")
-
-		#diag haut gauche
-		for i in range(1,rayon):
-			voisin_pos_x = pos_x-i
-			voisin_pos_y = pos_y+i
-			liste_voisin_courant = voisin_point_append(voisin_pos_x,voisin_pos_y,self,liste_voisin_courant,"haut gauche")
-
-		#diag haut droit
-		for i in range(1,rayon):
-			voisin_pos_x = pos_x+i
-			voisin_pos_y = pos_y+i
-			liste_voisin_courant = voisin_point_append(voisin_pos_x,voisin_pos_y,self,liste_voisin_courant,"haut droit")
-
-		#diag bas gauche
-		for i in range(1,rayon):
-			voisin_pos_x = pos_x-i
-			voisin_pos_y = pos_y-i
-			liste_voisin_courant = voisin_point_append(voisin_pos_x,voisin_pos_y,self,liste_voisin_courant,"bas gauche")
-
-		#diag bas droit
-		for i in range(1,rayon):
-			voisin_pos_x = pos_x+i
-			voisin_pos_y = pos_y-i
-			liste_voisin_courant = voisin_point_append(voisin_pos_x,voisin_pos_y,self,liste_voisin_courant,"bas droit")
 		return liste_voisin_courant
 

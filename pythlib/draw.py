@@ -23,8 +23,9 @@ def print_grid(grille):
 			elif (typ == Type.Capteur):
 				plt.scatter(i, j,marker='o',color='black')
 				for voisin_comm in aux:
-					# print(voisin_comm)
-					plt.plot([pts_x,voisin_comm['x']],[pts_y,voisin_comm['y']], color='black',linewidth=2)
+					print(i, j)
+					print(voisin_comm)
+					plt.plot([pts_x,voisin_comm['x']],[pts_y,voisin_comm['y']], color='red',linewidth=2)
 			elif (typ == Type.Cible):
 				plt.scatter(i, j,marker='o',color='grey')
 				color = "%06x" % np.random.randint(0, 0xFFFFFF)
