@@ -40,16 +40,29 @@ class Grille:
 		self.pts_list[pts.name].typ = Type.Capteur
 		self.pts_list[pts.name].aux = []
 
+	def set_cible(self,pts,capteur_list):
+		self.pts_list[pts.name].typ = Type.Cible
+		self.pts_list[pts.name].aux = capteur_list
+
 	def set_couverture(self,c):
 		self.couverture -= c
 
-	def set_capteur_communication(self,voisin,capteur):
-		self.pts_list[voisin.name].aux.append({'x':capteur.x,'y':capteur.y})
+	def set_capteur_communication_list(self,voisin,capteur_list):
+		self.pts_list[voisin.name].aux = capteur_list
+
+	def set_capteur_communication(self,capteur,voisin):
+		self.pts_list[capteur].aux.append(voisin.name)
+
+	def set_capteur_communication_remove(self,capteur,voisin):
+		self.pts_list[capteur].aux.remove(voisin.name)
 
 	def set_cible_voisin(self,cible,voisin):
-		self.pts_list[cible.name].aux.append({'x':voisin.x,'y':voisin.y})
+		self.pts_list[cible.name].aux.append(voisin.name)
 
-	def voisin_point(self,point,rayon):
+	def set_cible_voisin_remove(self,cible,voisin):
+		self.pts_list[cible.name].aux.remove(voisin.name)
+
+	def recherche_voisin(self,point,rayon,voisin_type):
 		kd_tree = self.kd_tree
 		pts_list = self.pts_list
 
@@ -65,8 +78,28 @@ class Grille:
 			x = voisin.x
 			y = voisin.y
 			typ = voisin.typ
-			if ((x != pos_x or y != pos_y) and typ == Type.Cible):
+			if ((x != pos_x or y != pos_y) and typ == voisin_type):
 					liste_voisin_courant.append(voisin)
 
 		return liste_voisin_courant
 
+	def recherche_voisin_2(self,point,rayon,voisin_type):
+		kd_tree = self.kd_tree
+		pts_list = self.pts_list
+
+		liste_voisin_courant = []
+
+		pos_x = point.x
+		pos_y = point.y
+
+		indice_voisins = kd_tree.query_ball_point([pos_x, pos_y], rayon)
+
+		for i in indice_voisins:
+			voisin = pts_list[i]
+			x = voisin.x
+			y = voisin.y
+			typ = voisin.typ
+			if ((x != pos_x or y != pos_y) and typ == voisin_type):
+					liste_voisin_courant.append(voisin.name)
+
+		return liste_voisin_courant
