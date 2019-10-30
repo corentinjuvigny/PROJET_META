@@ -3,9 +3,12 @@ import matplotlib.pyplot as plt
 import random
 from point import *
 
+plt.ion()
+
 def print_grid(grille):
 	pts_list = grille.pts_list
 	taille_grille = grille.taille
+	plt.clf()
 	plt.axis([0, taille_grille, 0, taille_grille])
 	plt.xticks(np.arange(-1, taille_grille+1, 1))
 	plt.yticks(np.arange(-1, taille_grille+1, 1))
@@ -34,4 +37,5 @@ def print_grid(grille):
 			for voisin_detect in aux:
 				voisin_detect_data = pts_list[voisin_detect]
 				plt.plot([pts_x,voisin_detect_data.x],[pts_y,voisin_detect_data.y],linewidth=0.5,color="#"+color)
-	plt.show()
+	plt.pause(0.005)
+	# plt.show()
