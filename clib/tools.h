@@ -1,7 +1,7 @@
 #ifndef __TOOLS__
 #define __TOOLS__
 
-#include <stdlib.h>
+#include "include.h"
 
 /*======================================================================*/
 /*= memory allocation and freeing                                      =*/
@@ -18,7 +18,6 @@
  * by the p pointer if the p pointer is not NULL. Otherwise
  * it does nothing.
 **/
-
 
 extern void* xmalloc(size_t n);
 extern void* xcalloc(size_t nmemb,size_t size);
