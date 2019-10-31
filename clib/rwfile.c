@@ -14,7 +14,7 @@ static TPoint* point_of_line(char* buf,unsigned long n)
 {
   double x, y;
   char* name = xcalloc(100,sizeof(char));
-  char cpy[1000];
+  char cpy[1000] = {[0 ... 999] = 0};
 
   strncpy(cpy,buf,n);
   sscanf(cpy," %s %lf %lf\n",name,&x,&y);
