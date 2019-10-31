@@ -7,6 +7,8 @@ int main(int argc, char* argv[])
   int i;
   char* c = "test";
   char* filename = argc < 2 ? "../Instances/captANOR225_9_20.dat" : argv[1];
+
+  nameProcessus = argv[0]; 
   TPoint* pnt = pnt_new(c,0.2598,0.1478,K_Target,NULL);
   printf("%s %lf %lf %d %p\n",pnt->name,pnt->x,pnt->y,pnt->kind,pnt->aux);
   TPoint* pntbis = pnt_new_clone(pnt);
