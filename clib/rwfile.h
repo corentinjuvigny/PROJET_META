@@ -5,6 +5,7 @@
 #include "point.h"
 
 typedef struct _PointFile TPointFile;
+typedef const TPointFile CPointFile;
 struct _PointFile {
   TPoint**       points;
   struct kdtree* kdTree;

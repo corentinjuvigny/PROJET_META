@@ -1,16 +1,12 @@
 #include "rwfile.h"
 
 static int* pos_bn(int* pos,const char* file,unsigned long size) {
-    unsigned long i, j = 0;
+    unsigned long i;
     int* pos_bn_tab = xmalloc(size*sizeof(int));
     for (i = 0; i < size; i++) pos_bn_tab[i] = 0;
-    for (i = 0; i < size; i++) {
-        if (file[i] == '\n') {
-            pos_bn_tab[j] = i;
-            j++;
-        }
-    }
-    *pos = j;
+    for (i = 0, *pos = 0; i < size; i++)
+        if (file[i] == '\n')
+            pos_bn_tab[(*pos)++] = i;
     return pos_bn_tab;
 } 
 
@@ -36,7 +32,7 @@ TPointFile* read_point_file(char* filename)
   FILE* fd = fopen(filename,"r");
 
   if (fd == NULL) {
-    fprintf(stderr,"%s: error while opening %s in r mode : %s\n",nameProcessus,filename,strerror(errno)); 
+    fprintf(stderr,"%s: error while opening %s in r mode : %s\n",nameProcessus,filename,strerror(errno));
     return NULL;
   }
   if (fstat(fileno(fd),&info) == -1) {
@@ -56,16 +52,16 @@ TPointFile* read_point_file(char* filename)
 
   pf->nbpoints = pos;
   pf->kdTree = kd_create(2);
-  pf->points = xmalloc((pos+1) * sizeof(TPoint));
+  pf->points = xmalloc(pos * sizeof(TPoint));
   pf->points[0] = point_of_line(buf,bnp[0]);
   key[0] = pf_x(0);
   key[1] = pf_y(0);
-  kd_insert(pf->kdTree,key,pf->points[0]); 
+  kd_insert(pf->kdTree,key,pf->points[0]);
   for (i = 0; i < pos-1; i++) {
     pf->points[i+1] = point_of_line(buf+bnp[i]+1,bnp[i+1]-bnp[i]);
     key[0] = pf_x(i+1);
     key[1] = pf_y(i+1);
-    kd_insert(pf->kdTree,key,pf->points[i+1]); 
+    kd_insert(pf->kdTree,key,pf->points[i+1]);
   }
   
   xfree(bnp);

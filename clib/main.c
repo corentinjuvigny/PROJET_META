@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
   pnt_delete(pnt);
 
   TPointFile* pf = read_point_file(filename);
+  if (pf == NULL) return 1;
 
   for (i = 0; i < pf->nbpoints; i++)
     printf("%s %lf %lf\n",pf_name(i),pf_x(i),pf_y(i));
