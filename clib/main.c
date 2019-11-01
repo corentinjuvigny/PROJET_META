@@ -8,8 +8,8 @@
 
 int main(int argc, char* argv[])
 {
-  double communication_radius = 8.001;
-  double capture_radius = 2.001;
+  double communication_radius = 8;
+  double capture_radius = 2;
   int size = 5;
 
   int i;

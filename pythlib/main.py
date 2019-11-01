@@ -46,6 +46,7 @@ def main(grille):
 	# 		add_node(grille,grille.pts_list[i])
 
 	print("Solution actuelle :",len(grille.get_solution_courante()))
+	print(grille.pts_list)
 	print_grid(grille)
 	plt.pause(100)
 	# solution_min = recuit_simule(grille)

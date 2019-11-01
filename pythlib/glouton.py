@@ -86,6 +86,7 @@ def construction_gloutonne_solution(grille):
 	print("TEST : nb_nouvelles_cibles_couv\n",nb_nouvelles_cibles_couv)
 	print("On choisit : ")
 	print(nouveau_capteur_pts)
+	grille.add_node_solution_courante(puits_name)
 	grille.add_node_solution_courante(nouveau_capteur_pts.get_name())
 
 	## print('&&&&&&&&&&&&&&&&&&&&&&&&&&& On vient de : (',puits.x,',',puits.y,')')
