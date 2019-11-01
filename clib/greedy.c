@@ -9,11 +9,25 @@ void set_new_sensor(TPoint* selected_target,Queue* sensor_queue){
 
 	if (sensor_queue != NULL){
 		QueueEntry *queue_iterator = sensor_queue->head;
-		AVLTree *avl_tree = avl_tree_new((AVLTreeCompareFunc) point_compare);
-		while (queue_iterator != NULL) {
-			TPoint* sensor = (TPoint*)(queue_iterator->data);
 
-			avl_tree_insert(avl_tree,&(sensor->name), sensor);
+		double point_x = selected_target->x;
+		double point_y = selected_target->y;
+
+		double sensor_x;
+		double sensor_y;
+		PKind sensor_kind;
+		AVLTree *avl_tree = avl_tree_new((AVLTreeCompareFunc) point_compare);
+
+		while (queue_iterator != NULL) {
+
+			TPoint* sensor = (TPoint*)(queue_iterator->data);
+			sensor_x = sensor->x;
+		    sensor_y = sensor->y;
+		    sensor_kind = sensor->kind;
+
+		    if( (point_x != sensor_x || point_y != sensor_y) && (sensor_kind == K_Sensor || sensor_kind == K_Well)){
+				avl_tree_insert(avl_tree,&(sensor->name), sensor);
+			}
 			queue_iterator = queue_iterator->next;
 		}
 		selected_target->kind = K_Sensor;
@@ -25,64 +39,63 @@ void set_cover(TPointFile* pf, int new_covered_target_max){
 	pf->cover -= new_covered_target_max;
 }
 
+
 void set_sensor_new_communication(TPoint* selected_target, Queue* sensor_queue)
 {
 	if (sensor_queue != NULL){
 		QueueEntry *queue_iterator = sensor_queue->head;
 
+		double point_x = selected_target->x;
+		double point_y = selected_target->y;
+
+		double sensor_x;
+		double sensor_y;
+		PKind sensor_kind;
+		AVLTree *avl_tree_sensor;
+
 		while (queue_iterator != NULL) {
+
 			TPoint* sensor = (TPoint*)(queue_iterator->data);
-			AVLTree *avl_tree_sensor = sensor->aux;
-			avl_tree_insert(avl_tree_sensor,&(selected_target->name), selected_target);
+			sensor_x = sensor->x;
+		    sensor_y = sensor->y;
+		    sensor_kind = sensor->kind;
+
+		    if( (point_x != sensor_x || point_y != sensor_y) && (sensor_kind == K_Sensor || sensor_kind == K_Well)){
+		    	avl_tree_insert(sensor->aux,&(selected_target->name), selected_target);
+			}
 			queue_iterator = queue_iterator->next;
 		}
 	}
 }
 
 void set_target_new_capture_sensor(TPoint* selected_target, Queue* visited_target_queue){
-	QueueEntry *queue_iterator = visited_target_queue->head;
 
-	double point_x = selected_target->x;
-	double point_y = selected_target->y;
+	if (visited_target_queue != NULL){
+		QueueEntry *queue_iterator = visited_target_queue->head;
 
-	double target_x;
-	double target_y;
-	PKind target_kind;
+		double point_x = selected_target->x;
+		double point_y = selected_target->y;
 
-	while (queue_iterator != NULL) {
+		double target_x;
+		double target_y;
+		PKind target_kind;
 
-		TPoint* target = (TPoint*)(queue_iterator->data);
-		target_x = target->x;
-	    target_y = target->y;
-	    target_kind = target->kind;
+		while (queue_iterator != NULL) {
 
-	    if( (point_x != target_x || point_y != target_y) && (target_kind == K_Target)){
-			avl_tree_insert(target->aux,&(selected_target->name), selected_target);
-	    }
-	    queue_iterator = queue_iterator->next;
-	}
-}
+			TPoint* target = (TPoint*)(queue_iterator->data);
+			target_x = target->x;
+		    target_y = target->y;
+		    target_kind = target->kind;
 
-void dist_to_well(TPointFile* pf,TPoint* selected_target, Queue* sensor_queue){
-
-	double communication_radius = pf->communication_radius;
-
-	TPoint* well_point = pf->points[0];
-	double pos_well[2], pos_target[2];
-	pos_well[0] = well_point->x;
-	pos_well[1] = well_point->y;
-	pos_target[0] = selected_target->x;
-	pos_target[1] = selected_target->y;
-	double dist_well_target = sqrt(dist_sq(pos_well,pos_target,2));
-
-	if (dist_well_target < communication_radius){
-		queue_push_head(sensor_queue, well_point);
+		    if( (point_x != target_x || point_y != target_y) && (target_kind == K_Target)){
+				avl_tree_insert(target->aux,&(selected_target->name), selected_target);
+		    }
+		    queue_iterator = queue_iterator->next;
+		}
 	}
 }
 
 void maj_pf(TPointFile* pf,TPoint* selected_target, Queue* sensor_queue, Queue* visited_target_queue, int new_covered_target_max){
-
-	// dist_to_well(pf,selected_target,sensor_queue);
 
 	set_new_sensor(selected_target,sensor_queue);
 	set_cover(pf,new_covered_target_max);
@@ -151,8 +164,8 @@ void find_best_target(TPoint* point, TPoint** selected_target, Queue** visited_t
 				else{
 					if (debug){
 						printf("On poursuit PAS...\n");
-						queue_push_head(point_queue, point);
 					}
+					queue_push_head(point_queue, point);
 					visit_node = 1;
 					if (debug){
 						printf("QUEUE\n");
@@ -290,24 +303,5 @@ void greedy_construction(TPointFile* pf){
 
 		Queue *sensor_queue = avl_tree_lookup(visited_target_avl,&(selected_target->name));
 		maj_pf(pf,selected_target,sensor_queue,visited_target_queue,new_covered_target_max);
-	}
-
-	if (debug){
-		printf("AUX\n");
-		int e;
-		for (e = 0; e < pf->nbpoints; ++e)
-		{
-			printf("########## NODE ########\n");
-			print_node(pf->points[e]);
-			printf("### AUX ###\n");
-			print_avl_tree(pf->points[e]->aux,print_node);
-			printf("####################\n");
-		}
-		printf("AUX\n");
-	}
-
-	if (debug || 1){
-		printf("RESULT : %d\n",avl_tree_num_entries(pf->solution));
-		printf("###### FIN GREED ########\n");
 	}
 }

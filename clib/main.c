@@ -11,19 +11,40 @@ int main(int argc, char* argv[])
 {
   double communication_radius = 2.00001;
   double capture_radius = 2.00001;
-  int size = 10;
+  int size = 5;
+  int debug = 1;
 
   int i;
   char* filename = argc < 2 ? "../Instances/captANOR225_9_20.dat" : argv[1];
 
-  TPointFile* pf = read_point_file(filename,communication_radius,capture_radius);
-  // TPointFile* pf = create_point_file(size,communication_radius,capture_radius);
+  // TPointFile* pf = read_point_file(filename,communication_radius,capture_radius);
+  TPointFile* pf = create_point_file(size,communication_radius,capture_radius);
 
   if (pf == NULL) return 1;
 
   greedy_construction(pf);
+  simulated_annealing(pf);
 
-  draw_data(pf,30,size);
+  if (debug){
+    printf("AUX\n");
+    int e;
+    for (e = 0; e < pf->nbpoints; ++e)
+    {
+      printf("########## NODE ########\n");
+      print_node(pf->points[e]);
+      printf("### AUX ###\n");
+      print_avl_tree(pf->points[e]->aux,print_node);
+      printf("####################\n");
+    }
+    printf("AUX\n");
+  }
+
+  if (debug){
+    printf("RESULT : %d\n",avl_tree_num_entries(pf->solution));
+    printf("###### FIN GREED ########\n");
+  }
+
+  draw_data(pf,300,size);
 
 
   for (i = 0; i < pf->nbpoints; i++) {

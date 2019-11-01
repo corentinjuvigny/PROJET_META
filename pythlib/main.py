@@ -9,7 +9,7 @@ from scipy import spatial
 # Variables globales :
 rayon_communication = 2
 rayon_detection = 2
-taille_grille = 10
+taille_grille = 5
 
 #print_grille(taille_grille)
 
@@ -26,10 +26,10 @@ kd_tree = spatial.KDTree(point_list_for_kd_tree)
 ###### IMPORTANT :
 
 ## AVEC FICHIER DE POINTS, CETTE LIGNE
-grille = Grille(taille_grille,[points_list,kd_tree],rayon_detection,rayon_communication)
+# grille = Grille(taille_grille,[points_list,kd_tree],rayon_detection,rayon_communication)
 
 ## SANS FICHIER DE POINTS, CETTE LIGNE
-# grille = Grille(taille_grille,[],rayon_detection,rayon_communication)
+grille = Grille(taille_grille,[],rayon_detection,rayon_communication)
 
 # print_grid(grille)
 

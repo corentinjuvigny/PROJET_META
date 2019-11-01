@@ -144,10 +144,8 @@ TPointFile* create_point_file(int size, double communication_radius, double capt
   pf->communication_radius = communication_radius;
   pf->capture_radius = capture_radius;
 
-  for (i = 0; i < size; ++i)
-  {
-    for (j = 0; j < size; ++j)
-    {
+  for (i = 0; i < size; ++i){
+    for (j = 0; j < size; ++j){
       pf->points[k] = point_of_line_2(i,j,k,K_Target);
       key[0] = pf_x(k);
       key[1] = pf_y(k);
