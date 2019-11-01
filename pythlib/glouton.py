@@ -83,7 +83,9 @@ def construction_gloutonne_solution(grille):
 	nouveau_capteur_pts = meilleur_cible[0]
 	cibles_couvertes = meilleur_cible[1]
 	nb_nouvelles_cibles_couv = meilleur_cible[2]
-
+	print("TEST : nb_nouvelles_cibles_couv\n",nb_nouvelles_cibles_couv)
+	print("On choisit : ")
+	print(nouveau_capteur_pts)
 	grille.add_node_solution_courante(nouveau_capteur_pts.get_name())
 
 	## print('&&&&&&&&&&&&&&&&&&&&&&&&&&& On vient de : (',puits.x,',',puits.y,')')
@@ -94,7 +96,7 @@ def construction_gloutonne_solution(grille):
 	# print_grid(taille_grille, grille)
 
 	while(grille.couverture > 0):
-		## print(grille.couverture)
+		print(grille.couverture)
 		meilleur_voisin_choisi_pts = None
 		cibles_couvertes_par_voisin_choisi = []
 		nb_nouvelles_cibles_couv_max = 0

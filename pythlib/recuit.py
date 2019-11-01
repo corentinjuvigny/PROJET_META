@@ -32,6 +32,13 @@ def solution_voisinage_aleatoire(grille_copy):
 	if(choix_voisinage==1):
 		# print("On ajoute ",node_name)
 		add_node(grille_copy,node_pts)
+		choix_voisinage = random.randint(0,1)
+		if(choix_voisinage and False):
+			voisinage_2_add = add_node_list(grille_copy)
+			node_name_2 = random.choice(voisinage_2_add)
+			node_pts_2 = grille_copy.get_pts(node_name_2)
+			add_node(grille_copy,node_pts_2)
+
 	elif(choix_voisinage==0):
 		# print("On retire ",node_name)
 		remove_node(grille_copy,node_pts)
@@ -41,10 +48,11 @@ def energie_proba_distrib(delta_E,T):
 
 def recuit_simule(grille):
 
-	phi = 0.9 #Coefficient de diminution de T
-	r = 50
-	T_initial = 500
-	critere_arret = 1000
+	phi = 0.995 #Coefficient de diminution de T
+	r = 2
+	T_initial = 30
+	critere_arret = 1000000
+	print(phi,r,T_initial,critere_arret)
 	random_float = 0
 	energie_proba = 0
 	voisinage_add = []
@@ -55,32 +63,33 @@ def recuit_simule(grille):
 	solution_courante = solution_initiale
 	T = T_initial
 
-	while (critere_arret>0):
-		k = 0
+	while (T>0.001):
+		print("T : ",T,'/ best : ',len(solution_min.get_solution_courante()),'/ current',len(solution_courante.get_solution_courante()))
+
 		for nb_iter in range(0,r):
 			# print(solution_courante)
-			# print_grid(solution_courante)
-			k = k+1
+			print_grid(solution_courante)
+
 			solution_voisin = deepcopy(solution_courante)
 			solution_voisinage_aleatoire(solution_voisin)
 			f_x = len(solution_courante.get_solution_courante())
 			f_x_p = len(solution_voisin.get_solution_courante())
-			delta_E = f_x_p - f_x
-
+			delta_E = 10*(f_x_p - f_x)
+			print(delta_E)
 			if (delta_E <= 0):
 				solution_courante = solution_voisin
 				f_x = f_x_p
 				f_x_min = len(solution_min.solution_courante)
 				if (f_x < f_x_min):
-					print("Nouvelle solution opti : ",len(solution_courante.get_solution_courante()))
+					# print("Nouvelle solution opti : ",len(solution_courante.get_solution_courante()))
 					solution_min = solution_courante
 			else:
 				random_float = random.uniform(0,1)
 				energie_proba = energie_proba_distrib(delta_E,T)
-				# print(energie_proba)
+				print(energie_proba)
 				if (random_float <= energie_proba):
-					# print("On degrade !")
 					solution_courante = solution_voisin
+					# print("On degrade ! : ",len(solution_courante.get_solution_courante()))
 		T = T * phi
 		critere_arret -= 1
 

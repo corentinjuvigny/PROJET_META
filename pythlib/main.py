@@ -7,9 +7,9 @@ from recuit import *
 from scipy import spatial
 
 # Variables globales :
-rayon_communication = 2
-rayon_detection = 1
-taille_grille = 10
+rayon_communication = 8
+rayon_detection = 2
+taille_grille = 5
 
 #print_grille(taille_grille)
 
@@ -26,21 +26,29 @@ kd_tree = spatial.KDTree(point_list_for_kd_tree)
 ###### IMPORTANT :
 
 ## AVEC FICHIER DE POINTS, CETTE LIGNE
-grille = Grille(taille_grille,[points_list,kd_tree],rayon_detection,rayon_communication)
+# grille = Grille(taille_grille,[points_list,kd_tree],rayon_detection,rayon_communication)
 
 ## SANS FICHIER DE POINTS, CETTE LIGNE
-# grille = Grille(taille_grille,[],rayon_detection,rayon_communication)
+grille = Grille(taille_grille,[],rayon_detection,rayon_communication)
 
-# sprint_grid(grille)
+# print_grid(grille)
+
+indice_voisins = kd_tree.query_ball_point([0, 0], 2)
+
 
 def main(grille):
 	res = construction_gloutonne_solution(grille)
 	grille = res
+	# print(grille.pts_list)
+	# for i in range(200,400):
+	# 	if i not in grille.get_solution_courante():
+	# 	# print_grid(grille)
+	# 		add_node(grille,grille.pts_list[i])
 
-	add_node(grille,grille.pts_list[11])
-	# print_grid(grille)
 	print("Solution actuelle :",len(grille.get_solution_courante()))
-	solution_min = recuit_simule(grille)
+	print_grid(grille)
+	plt.pause(100)
+	# solution_min = recuit_simule(grille)
 	print("Solution après recuit :",len(solution_min.get_solution_courante()))
 	# print("Add node list")
 	# print(add_node_list(grille,liste_capteur_courant))
