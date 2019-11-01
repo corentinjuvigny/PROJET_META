@@ -5,6 +5,7 @@
 #include "greedy.h"
 #include "avl.h"
 #include "queue.h"
+#include "draw.h"
 
 int main(int argc, char* argv[])
 {

@@ -3,7 +3,7 @@
 #include "dist.h"
 #include "avl.h"
 #include "queue.h"
-
+#include "draw.h"
 
 void set_new_sensor(TPoint* selected_target,Queue* sensor_queue){
 
@@ -277,6 +277,7 @@ void greedy_construction(TPointFile* pf){
 	QueueEntry *queue_iterator = qued->head;
 
 	while(pf->cover > 0){
+		// draw_data(pf);
 		visited_target_avl = avl_tree_new((AVLTreeCompareFunc) point_compare);
 		new_covered_target_max = 0;
 		printf("cover : %d\n",pf->cover);
@@ -286,7 +287,6 @@ void greedy_construction(TPointFile* pf){
 
 		for(i = 0; i < current_solution_list_length; i++){
 			TPoint* current_sensor = (TPoint*)(current_solution_list[i]);
-
 			find_best_target(pf,current_sensor,&selected_target,&visited_target_queue,&new_covered_target_max,&visited_target_avl,debug);
 		}
 		avl_tree_insert(pf->solution,&(selected_target->name),selected_target);
