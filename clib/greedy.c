@@ -47,15 +47,15 @@ void set_target_new_capture_sensor(TPoint* selected_target, Queue* visited_targe
 
 	double target_x;
 	double target_y;
-	char * target_name;
 	PKind target_kind;
 
 	while (queue_iterator != NULL) {
+
 		TPoint* target = (TPoint*)(queue_iterator->data);
 		target_x = target->x;
 	    target_y = target->y;
-	    target_name = target->name;
 	    target_kind = target->kind;
+
 	    if( (point_x != target_x || point_y != target_y) && (target_kind == K_Target)){
 			avl_tree_insert(target->aux,&(selected_target->name), selected_target);
 	    }
@@ -91,7 +91,7 @@ void maj_pf(TPointFile* pf,TPoint* selected_target, Queue* sensor_queue, Queue* 
 }
 
 
-void find_best_target(TPointFile* pf, TPoint* point, TPoint** selected_target, Queue** visited_target_queue, int* new_covered_target_max, AVLTree** visited_target_avl, int debug){
+void find_best_target(TPoint* point, TPoint** selected_target, Queue** visited_target_queue, int* new_covered_target_max, AVLTree** visited_target_avl, int debug){
 
 	if (debug){
 		printf("### ON TRAITE ###\n");
@@ -101,15 +101,10 @@ void find_best_target(TPointFile* pf, TPoint* point, TPoint** selected_target, Q
 		printf("########################\n");
 	}
 
-	double communication_radius = pf->communication_radius;
-	double capture_radius = pf->capture_radius;
 	double point_x = point->x;
 	double point_y = point->y;
 	Queue *target_in_radius_queue = point->communication_queue;
 	QueueEntry *queue_iterator = target_in_radius_queue->head;
-
-	Queue *covered_target_in_radius_queue;
-	QueueEntry *queue_iterator_2;
 
 	int visit_node = 0;
 	int new_covered_target;
@@ -117,18 +112,18 @@ void find_best_target(TPointFile* pf, TPoint* point, TPoint** selected_target, Q
 	TPoint* covered_target_in_radius;
 	double covered_target_in_radius_x;
 	double covered_target_in_radius_y;
-	char * covered_target_in_radius_name;
 	PKind covered_target_in_radius_kind;
 	AVLTree* covered_target_in_radius_aux;
 
 	/* We iterate on all targets */
 	while (queue_iterator != NULL) {
+
 	    TPoint* target_in_radius = (TPoint*)(queue_iterator->data);
 	    double target_in_radius_x = target_in_radius->x;
 	    double target_in_radius_y = target_in_radius->y;
 	    AVLTree* target_in_radius_aux = target_in_radius->aux;
-	    char * target_in_radius_name = target_in_radius->name;
 	    PKind target_in_radius_kind = target_in_radius->kind;
+
 	    if( (point_x != target_in_radius_x || point_y != target_in_radius_y) && (target_in_radius_kind == K_Target)){
 
 	    	if (debug){
@@ -181,7 +176,6 @@ void find_best_target(TPointFile* pf, TPoint* point, TPoint** selected_target, Q
 
 	    			covered_target_in_radius_x = covered_target_in_radius->x;
 					covered_target_in_radius_y = covered_target_in_radius->y;
-					covered_target_in_radius_name = covered_target_in_radius->name;
 					covered_target_in_radius_kind = covered_target_in_radius->kind;
 					covered_target_in_radius_aux = covered_target_in_radius->aux;
 					if( (target_in_radius_x != covered_target_in_radius_x || target_in_radius_y != covered_target_in_radius_y) && (covered_target_in_radius_kind == K_Target)){
@@ -247,14 +241,10 @@ void greedy_construction(TPointFile* pf){
 	Queue* visited_target_queue;
 	int new_covered_target_max = 0;
 
-	TPoint* global_selected_target;
-	Queue* global_visited_target_queue;
-	int global_new_covered_target_max = 0;
-
 	int i;
 	AVLTree* visited_target_avl;
 
-	find_best_target(pf, well_point, &selected_target, &visited_target_queue,&new_covered_target_max, NULL, debug);
+	find_best_target(well_point, &selected_target, &visited_target_queue,&new_covered_target_max, NULL, debug);
 
 	avl_tree_insert(pf->solution,&(well_point->name),well_point);
 	avl_tree_insert(pf->solution,&(selected_target->name),selected_target);
@@ -273,11 +263,10 @@ void greedy_construction(TPointFile* pf){
 		printf("########################\n\n");
 	}
 
-	Queue * qued = selected_target->capture_queue;
-	QueueEntry *queue_iterator = qued->head;
-
 	while(pf->cover > 0){
-		// draw_data(pf);
+
+		// draw_data(pf,0.05);
+
 		visited_target_avl = avl_tree_new((AVLTreeCompareFunc) point_compare);
 		new_covered_target_max = 0;
 		printf("cover : %d\n",pf->cover);
@@ -287,7 +276,7 @@ void greedy_construction(TPointFile* pf){
 
 		for(i = 0; i < current_solution_list_length; i++){
 			TPoint* current_sensor = (TPoint*)(current_solution_list[i]);
-			find_best_target(pf,current_sensor,&selected_target,&visited_target_queue,&new_covered_target_max,&visited_target_avl,debug);
+			find_best_target(current_sensor,&selected_target,&visited_target_queue,&new_covered_target_max,&visited_target_avl,debug);
 		}
 		avl_tree_insert(pf->solution,&(selected_target->name),selected_target);
 
@@ -321,5 +310,4 @@ void greedy_construction(TPointFile* pf){
 		printf("RESULT : %d\n",avl_tree_num_entries(pf->solution));
 		printf("###### FIN GREED ########\n");
 	}
-
 }

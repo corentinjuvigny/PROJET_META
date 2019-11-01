@@ -2,11 +2,11 @@
 #include "rwfile.h"
 #include "point.h"
 
-void draw_data(TPointFile* pf)
+void draw_data(TPointFile* pf, float pause, int size)
 {
 	int i,j,k;
 	int nbpoints = pf->nbpoints;
-	int taille_grille = (int)sqrt(nbpoints);
+	int taille_grille = size;
 	TPoint** points = pf->points;
 
 	Py_Initialize();
@@ -15,6 +15,9 @@ void draw_data(TPointFile* pf)
 	PyRun_SimpleString("import random");
 
 	PyRun_SimpleString("plt.clf()");
+
+	char *pause_string = (char*)malloc(100 * sizeof(char));
+	sprintf(pause_string, "plt.pause(%f)",pause);
 
 	char *plt_axis = (char*)malloc(100 * sizeof(char));
 	sprintf(plt_axis, "plt.axis([0, %d, 0, %d])",taille_grille,taille_grille);
@@ -97,5 +100,5 @@ void draw_data(TPointFile* pf)
 			}
 		}
 	}
-	PyRun_SimpleString("plt.pause(0.05)");
+	PyRun_SimpleString(pause_string);
 }
