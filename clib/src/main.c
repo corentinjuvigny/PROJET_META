@@ -34,7 +34,6 @@ int main(int argc, char* argv[])
   double capture_radius = 1.00001;
   int i;
 
-
   char* filename = argc < 2 ? "../Instances/captANOR1500_21_500.dat" : argv[1];
   
   nameProcessus = argv[0];

@@ -72,7 +72,6 @@ void set_sensor_new_communication(TPoint* selected_target, Queue* sensor_queue)
 		double sensor_x;
 		double sensor_y;
 		PKind sensor_kind;
-		AVLTree *avl_tree_sensor;
 
 		while (queue_iterator != NULL) {
 
