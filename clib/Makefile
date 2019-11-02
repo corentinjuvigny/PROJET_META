@@ -1,4 +1,4 @@
-CC=gcc -Wall -Wextra -ansi -std=c99 -O2 -pthread -lm -I/usr/include/python3.6m -lpython3.6m
+CC=gcc -Wall -Wextra -ansi -std=c99 -O2 -pthread -lm -I/usr/include/python3.7m -lpython3.7m
 
 all : main
 
@@ -11,7 +11,7 @@ test : main_test.o test_unit.o point.o tools.o rwfile.o dist.o greedy.o avl.o qu
 	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/python3.6m -lpython3.6m -lcunit
 
 main : main.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o
-	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/python3.6m -lpython3.6m
+	cd obj/ && $(CC) $^ -o ../bin/$@
 
 main.o : src/main.c
 	$(CC) -c $< -o obj/$@
