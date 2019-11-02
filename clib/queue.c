@@ -39,6 +39,21 @@ Queue *queue_new(void)
 	return queue;
 }
 
+void queue_free_bis(void *queue)
+{
+
+	Queue* queue_to_free = (Queue*)queue;
+	/* Empty the queue */
+
+	while (!queue_is_empty(queue_to_free)) {
+		queue_pop_head(queue_to_free);
+	}
+
+	/* Free back the queue */
+
+	free(queue_to_free);
+}
+
 void queue_free(Queue *queue)
 {
 	/* Empty the queue */

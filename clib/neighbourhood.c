@@ -43,6 +43,7 @@ AVLTree* add_node_list(TPointFile* pf){
 			queue_iterator = queue_iterator->next;
 		}
 	}
+	free(current_solution_list);
 	return target_avl;
 }
 
@@ -100,6 +101,7 @@ AVLTree* remove_node_list(TPointFile* pf){
 			}
 		}
 	}
+	free(current_solution_list);
 	return target_avl;
 }
 
@@ -114,6 +116,7 @@ void remove_node_communication_to_sensor(TPoint* old_sensor)
 		TPoint* current_sensor = (TPoint*)(sensor_aux_list[i]);
 		avl_tree_remove(current_sensor->aux,&(old_sensor->name));
 	}
+	free(sensor_aux_list);
 }
 
 void remove_node_capture_to_sensor(TPoint* old_sensor)
@@ -167,6 +170,7 @@ void set_new_capture_list(TPoint* old_sensor)
 		queue_iterator = queue_iterator->next;
 	}
 	old_sensor->kind = K_Target;
+	avl_tree_free(old_sensor->aux);
 	old_sensor->aux = avl_tree;
 }
 

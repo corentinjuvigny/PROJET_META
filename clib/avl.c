@@ -66,11 +66,39 @@ static void avl_tree_free_subtree(AVLTree *tree, AVLTreeNode *node)
 	free(node);
 }
 
+static void avl_tree_free_subtree_and_node(AVLTree *tree, AVLTreeNode *node, void (*f)(void *))
+{
+	if (node == NULL) {
+		return;
+	}
+
+	avl_tree_free_subtree_and_node(tree, node->children[AVL_TREE_NODE_LEFT],f);
+	avl_tree_free_subtree_and_node(tree, node->children[AVL_TREE_NODE_RIGHT],f);
+
+	if (node->value != NULL){
+		f(node->value);
+	}
+
+	free(node);
+}
+
 void avl_tree_free(AVLTree *tree)
 {
 	/* Destroy all nodes */
 
 	avl_tree_free_subtree(tree, tree->root_node);
+
+	/* Free back the main tree data structure */
+	if (tree != NULL) {
+		free(tree);
+	}
+}
+
+void avl_tree_free_and_node(AVLTree *tree, void (*f)(void *))
+{
+	/* Destroy all nodes */
+
+	avl_tree_free_subtree_and_node(tree, tree->root_node, f);
 
 	/* Free back the main tree data structure */
 

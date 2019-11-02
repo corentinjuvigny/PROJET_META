@@ -94,6 +94,8 @@ Queue *queue_new(void);
 
 void queue_free(Queue *queue);
 
+void queue_free_bis(void *queue);
+
 /**
  * Add a value to the head of a queue.
  *

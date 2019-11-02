@@ -136,6 +136,9 @@ AVLTree *avl_tree_new(AVLTreeCompareFunc compare_func);
 
 void avl_tree_free(AVLTree *tree);
 
+
+void avl_tree_free_and_node(AVLTree *tree, void (*f)(void *));
+
 /**
  * Insert a new key-value pair into an AVL tree.
  *

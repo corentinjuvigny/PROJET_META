@@ -6,16 +6,17 @@
 #include "avl.h"
 #include "queue.h"
 #include "draw.h"
+#include "annealing.h"
 
 int main(int argc, char* argv[])
 {
-  double communication_radius = 2.00001;
+  double communication_radius = 1.00001;
   double capture_radius = 2.00001;
-  int size = 5;
-  int debug = 1;
+  int size = 10;
+  int debug = 0;
 
   int i;
-  char* filename = argc < 2 ? "../Instances/captANOR225_9_20.dat" : argv[1];
+  char* filename = argc < 2 ? "../Instances/captANOR1500_21_500.dat" : argv[1];
 
   // TPointFile* pf = read_point_file(filename,communication_radius,capture_radius);
   TPointFile* pf = create_point_file(size,communication_radius,capture_radius);
@@ -24,7 +25,7 @@ int main(int argc, char* argv[])
 
   greedy_construction(pf);
   simulated_annealing(pf);
-
+  printf("FIN\n");
   if (debug){
     printf("AUX\n");
     int e;
@@ -44,15 +45,14 @@ int main(int argc, char* argv[])
     printf("###### FIN GREED ########\n");
   }
 
-  draw_data(pf,300,size);
-
-
   for (i = 0; i < pf->nbpoints; i++) {
     xfree(pf_name(i));
+    free_node(pf->points[i]);
     pnt_delete(pf->points[i]);
   }
   xfree(pf->points);
   kd_free(pf->kdTree);
+  avl_tree_free(pf->solution);
   xfree(pf);
 
   return 0;

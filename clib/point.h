@@ -32,6 +32,7 @@ extern void print_node(void* node);
 extern TPoint* pnt_new(char* name,double x,double y,PKind kd,Queue* capture_queue,Queue* communication_queue,AVLTree* aux);
 extern int point_compare(void *point1, void *point2);
 
+extern void free_node(void* node);
 
 Inline TPoint* pnt_new_clone(CPoint* src)
 { return pnt_new(src->name,src->x,src->y,src->kind,NULL,NULL,NULL); }

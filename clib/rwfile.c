@@ -53,6 +53,7 @@ static Queue* set_capture_and_communication_queue(TPointFile* pf, TPoint* point,
     queue_push_head(queue, node_in_radius);
     kd_res_next(covered_node_in_radius_list);
   }
+  kd_res_free(covered_node_in_radius_list);
 
   return queue;
 }
@@ -145,7 +146,8 @@ TPointFile* create_point_file(int size, double communication_radius, double capt
   pf->capture_radius = capture_radius;
 
   for (i = 0; i < size; ++i){
-    for (j = 0; j < size; ++j){
+    for (j = 0; j < size; ++j)
+    {
       pf->points[k] = point_of_line_2(i,j,k,K_Target);
       key[0] = pf_x(k);
       key[1] = pf_y(k);

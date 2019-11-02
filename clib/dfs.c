@@ -21,6 +21,7 @@ void dfs(TPointFile* pf, AVLTree* visited_avl, TPoint* node){
 			TPoint* neighbour = (TPoint*)(node_aux_list[i]);
 			dfs(pf,visited_avl,neighbour);
 		}
+		free(node_aux_list);
 	}
 }
 
@@ -34,8 +35,9 @@ int run_dfs(TPointFile* pf, TPoint* removed_target){
 	TPoint* first_node = pf->points[0];
 
 	dfs(pf,visited_avl,first_node);
-
-	return avl_tree_num_entries(visited_avl)-1;
+	int visited_avl_size = avl_tree_num_entries(visited_avl)-1;
+	avl_tree_free(visited_avl);
+	return visited_avl_size;
 }
 
 

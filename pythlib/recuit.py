@@ -32,12 +32,12 @@ def solution_voisinage_aleatoire(grille_copy):
 	if(choix_voisinage==1):
 		# print("On ajoute ",node_name)
 		add_node(grille_copy,node_pts)
-		choix_voisinage = random.randint(0,1)
-		if(choix_voisinage and False):
-			voisinage_2_add = add_node_list(grille_copy)
-			node_name_2 = random.choice(voisinage_2_add)
-			node_pts_2 = grille_copy.get_pts(node_name_2)
-			add_node(grille_copy,node_pts_2)
+		# choix_voisinage = random.randint(0,1)
+		# if(choix_voisinage and False):
+		# 	voisinage_2_add = add_node_list(grille_copy)
+		# 	node_name_2 = random.choice(voisinage_2_add)
+		# 	node_pts_2 = grille_copy.get_pts(node_name_2)
+		# 	add_node(grille_copy,node_pts_2)
 
 	elif(choix_voisinage==0):
 		# print("On retire ",node_name)

@@ -31,6 +31,7 @@ void set_new_sensor(TPoint* selected_target,Queue* sensor_queue){
 			queue_iterator = queue_iterator->next;
 		}
 		selected_target->kind = K_Sensor;
+		avl_tree_free(selected_target->aux);
 		selected_target->aux = avl_tree;
 	}
 }
@@ -267,6 +268,7 @@ void greedy_construction(TPointFile* pf){
 	queue_push_head(empty_queue,well_point);
 
 	maj_pf(pf,selected_target,empty_queue,visited_target_queue,new_covered_target_max);
+	queue_free(empty_queue);
 
 	if (debug){
 		printf("######################## ON CHOISIT ########################\n");
@@ -291,6 +293,7 @@ void greedy_construction(TPointFile* pf){
 			TPoint* current_sensor = (TPoint*)(current_solution_list[i]);
 			find_best_target(current_sensor,&selected_target,&visited_target_queue,&new_covered_target_max,&visited_target_avl,debug);
 		}
+		free(current_solution_list);
 		avl_tree_insert(pf->solution,&(selected_target->name),selected_target);
 
 		if (debug){
@@ -303,5 +306,6 @@ void greedy_construction(TPointFile* pf){
 
 		Queue *sensor_queue = avl_tree_lookup(visited_target_avl,&(selected_target->name));
 		maj_pf(pf,selected_target,sensor_queue,visited_target_queue,new_covered_target_max);
+		avl_tree_free_and_node(visited_target_avl,queue_free_bis);
 	}
 }

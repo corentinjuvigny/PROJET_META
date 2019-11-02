@@ -1,4 +1,6 @@
 #include "point.h"
+#include "avl.h"
+#include "queue.h"
 
 extern TPoint* pnt_new(char* name,double x,double y,PKind kd,Queue* capture_queue,Queue* communication_queue,AVLTree* aux)
 {
@@ -11,6 +13,14 @@ extern TPoint* pnt_new(char* name,double x,double y,PKind kd,Queue* capture_queu
   pnt->communication_queue = communication_queue;
   pnt->aux = aux;
   return pnt;
+}
+
+
+extern void free_node(void* node){
+	TPoint* point = (TPoint*)node;
+	queue_free(point->capture_queue);
+  	queue_free(point->communication_queue);
+  	avl_tree_free(point->aux);
 }
 
 extern void print_node(void* node){
