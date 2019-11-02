@@ -18,7 +18,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
  */
 
-/** @file avl-tree.h
+/** @file avl.h
  *
  * @brief Balanced binary tree
  *

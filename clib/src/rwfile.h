@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2008, Adrien BLASSIAU and Corentin JUVIGNY
+Copyright (c) 2019-2020, Adrien BLASSIAU and Corentin JUVIGNY
 
 Permission to use, copy, modify, and/or distribute this software
 for any purpose with or without fee is hereby granted, provided
@@ -18,6 +18,13 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
+/** @file rwfile.h
+ *
+ * @brief functions to read and create PointFile, the structure that
+ * contains all the data we need.
+ *
+ */
+
 #ifndef __RWFILE__
 #define __RWFILE__
 
@@ -29,7 +36,7 @@ typedef const TPointFile CPointFile;
 
 /**
  * \struct _PointFile
- * \brief List of all the points of the problem
+ * \brief List of all the points of the problem.
  *
  * Use to store all the data of the problem
  * - points is a list of all the points
@@ -58,8 +65,27 @@ struct _PointFile {
 #define pf_communication_radius() pf->communication_radius
 #define pf_capture_radius() pf->capture_radius
 
+/**
+ * This function is used to read a file containing the data for our problem.
+ *
+ * @param filename           				The filename.
+ * @param communication_radius          	A communication radius.
+ * @param capture_radius 					A capture radius.
+ * @return									A structure containing all the data
+ *                   						of our problem.
+ */
 TPointFile* read_point_file(char* filename, double communication_radius, double capture_radius);
 
+/**
+ * This function is used to create a structure containing the data for our
+ * problem.
+ *
+ * @param size								The height of the grid.
+ * @param communication_radius          	A communication radius.
+ * @param capture_radius 					A capture radius.
+ * @return									A structure containing all the data
+ *                   						of our problem.
+ */
 TPointFile* create_point_file(int size, double communication_radius, double capture_radius);
 
 #endif

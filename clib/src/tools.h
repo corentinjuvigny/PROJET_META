@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2008, Adrien BLASSIAU and Corentin JUVIGNY
+Copyright (c) 2019-2020, Yvan AUGÉ, Adrien BLASSIAU and Corentin JUVIGNY
 
 Permission to use, copy, modify, and/or distribute this software
 for any purpose with or without fee is hereby granted, provided
@@ -18,16 +18,11 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
-
-#ifndef __TOOLS__
-#define __TOOLS__
-
-#include "include.h"
-
-/*======================================================================*/
-/*= memory allocation and freeing                                      =*/
-/*=                                                                    =*/
 /**
+ * @file tools.h
+ *
+ * @brief Functions to allocate memory.
+ *
  * The xmalloc function is similar to malloc but prints a fatal
  * message using the tool_spf_printf function when the memory
  * allocation failed.
@@ -38,10 +33,32 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * The xfree macro frees the memory location pointed to
  * by the p pointer if the p pointer is not NULL. Otherwise
  * it does nothing.
-**/
+ */
 
+#ifndef __TOOLS__
+#define __TOOLS__
+
+#include "include.h"
+
+/**
+ * Allocate memory according to the size of an object.
+ *
+ * @param n 	The size to allocate.
+ *
+ * @return 		A void pointer.
+ */
 extern void* xmalloc(size_t n);
+
+/**
+ * Allocate memory according to the size and numeber of objects.
+ *
+ * @param nmemb 	The number of objects to allocate.
+ * @param n 		The size to allocate.
+ *
+ * @return 			A void pointer.
+ */
 extern void* xcalloc(size_t nmemb,size_t size);
+
 #define xfree(p) do { if ( (p)!= 0 ) free(p); } while(0)
 
 #endif

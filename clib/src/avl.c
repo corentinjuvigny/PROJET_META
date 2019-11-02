@@ -675,4 +675,5 @@ void print_avl_tree(AVLTree *tree, void (*f)(AVLTreeValue))
 	{
 		f(array[i]);
 	}
+	free(array);
 }

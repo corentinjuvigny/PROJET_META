@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2008, Adrien BLASSIAU and Corentin JUVIGNY
+Copyright (c) 2019-2020, Adrien BLASSIAU and Corentin JUVIGNY
 
 Permission to use, copy, modify, and/or distribute this software
 for any purpose with or without fee is hereby granted, provided
@@ -18,8 +18,27 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
+/**
+ * @file draw.h
+ *
+ * @brief Graphical drawing module to plot the data of our problem.
+ *
+ * The problem we want to solve is a 2-D graph problem so we can easily draw
+ * it. For this, we use python because it's easier to use than GTK. Warnings,
+ * it produces some memory leaks !
+ *
+ */
+
 #ifndef __DRAW__
 #define __DRAW__
+
+/**
+ * Draw all the data of our problem is a 2D canvas.
+ *
+ * @param pf 		All the data of our problem.
+ * @param pause 	The time we want to wait before closing the window.
+ * @param size 		The height of the plot.
+ */
 
 void draw_data(TPointFile* pf, float pause, int size);
 

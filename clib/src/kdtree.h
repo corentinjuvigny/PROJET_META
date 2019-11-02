@@ -24,6 +24,13 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 OF SUCH DAMAGE.
 */
+
+/** @file kdtree.h
+ *
+ * @brief kdtree library for faster nearest neighboor research.
+ *
+ */
+
 #ifndef _KDTREE_H_
 #define _KDTREE_H_
 

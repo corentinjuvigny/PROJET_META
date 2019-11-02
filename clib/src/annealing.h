@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2008, Adrien BLASSIAU and Corentin JUVIGNY
+Copyright (c) 2019-2020, Adrien BLASSIAU and Corentin JUVIGNY
 
 Permission to use, copy, modify, and/or distribute this software
 for any purpose with or without fee is hereby granted, provided
@@ -18,10 +18,21 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
+/** @file annealing.h
+ *
+ * @brief Simulated annealing algorithm to construct a better solution.
+ *
+ */
+
 #ifndef __ANNEALING__
 #define __ANNEALING__
 
-
+/**
+ * This function applies a simulated annealing algorithm on the solution given
+ * by the greedy algorithm.
+ *
+ * @param pf The modify solution.
+ */
 void simulated_annealing(TPointFile* pf);
 
 

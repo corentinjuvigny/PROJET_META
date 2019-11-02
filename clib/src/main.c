@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2008, Adrien BLASSIAU and Corentin JUVIGNY
+Copyright (c) 2019-2020, Adrien BLASSIAU and Corentin JUVIGNY
 
 Permission to use, copy, modify, and/or distribute this software
 for any purpose with or without fee is hereby granted, provided
@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
   if (pf == NULL) return 1;
 
   greedy_construction(pf);
-  // simulated_annealing(pf);
+  simulated_annealing(pf);
   printf("FIN\n");
   if (debug){
     printf("AUX\n");

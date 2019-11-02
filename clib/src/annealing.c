@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2008, Adrien BLASSIAU and Corentin JUVIGNY
+Copyright (c) 2019-2020, Adrien BLASSIAU and Corentin JUVIGNY
 
 Permission to use, copy, modify, and/or distribute this software
 for any purpose with or without fee is hereby granted, provided
@@ -127,7 +127,7 @@ void simulated_annealing(TPointFile* pf){
 	double phi = 0.999995;
 	int step = 2;
 	double T_initial = 50.0;
-	int stop_criterion = 1000000;
+	int stop_criterion = 10;
 
 	int f_x_min = avl_tree_num_entries(pf->solution);
 	double T = T_initial;

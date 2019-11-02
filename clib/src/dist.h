@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2005-2008, Adrien BLASSIAU and Corentin JUVIGNY
+Copyright (c) 2019-2020, Adrien BLASSIAU and Corentin JUVIGNY
 
 Permission to use, copy, modify, and/or distribute this software
 for any purpose with or without fee is hereby granted, provided
@@ -18,9 +18,24 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
+/** @file dist.h
+ *
+ * @brief function to compute the distance between two points
+ *
+ */
+
 #ifndef __DIST__
 #define __DIST__
 
+/**
+ * Functions that computes the distance between two points.
+ *
+ * @param  a1   The first points.
+ * @param  a2   The second Points.
+ * @param  dims The dimension.
+ *
+ * @return      The distance between the two points.
+ */
 extern double dist_sq( double *a1, double *a2, int dims );
 
 #endif
