@@ -30,10 +30,10 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 int main(int argc, char* argv[])
 {
-  double communication_radius = 1.00001;
-  double capture_radius = 1.00001;
-  int size = 10;
-  int debug = 1;
+  double communication_radius = 8.00001;
+  double capture_radius = 2.00001;
+  int size = 5;
+  int debug = 0;
 
   int i;
   char* filename = argc < 2 ? "../Instances/captANOR1500_21_500.dat" : argv[1];
@@ -44,7 +44,11 @@ int main(int argc, char* argv[])
   if (pf == NULL) return 1;
 
   greedy_construction(pf);
-  simulated_annealing(pf);
+  BestSolution* result = simulated_annealing(pf);
+
+  print_queue(result->best_solution,print_string);
+  printf("SIZE : %d\n",result->size);
+
   printf("FIN\n");
   if (debug){
     printf("AUX\n");
@@ -74,6 +78,7 @@ int main(int argc, char* argv[])
   kd_free(pf->kdTree);
   avl_tree_free(pf->solution);
   xfree(pf);
-
+  queue_free(result->best_solution);
+  free(result);
   return 0;
 }

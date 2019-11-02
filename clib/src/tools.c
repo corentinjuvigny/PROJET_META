@@ -36,3 +36,9 @@ extern void* xcalloc(size_t nmemb,size_t size)
     fprintf(stderr, "Error not enough memory\n");
   return ptr;
 }
+
+extern void print_string(void* str_to_print)
+{
+	char* str = (char*)str_to_print;
+	printf("%s\n",str);
+}

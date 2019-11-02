@@ -21,6 +21,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <time.h>
 #include <stdlib.h>
 #include "rwfile.h"
+#include "tools.h"
 #include "point.h"
 #include "dist.h"
 #include "avl.h"
@@ -118,7 +119,42 @@ void revert_choice(TPointFile* pf, TPoint** neighboor_node, int* choice){
 	}
 }
 
-void simulated_annealing(TPointFile* pf){
+void free_best_queue(Queue* best_queue){
+	if(best_queue != NULL){
+		queue_free(best_queue);
+	}
+}
+
+BestSolution* new_best_solution(){
+	BestSolution * bs = xmalloc(sizeof(*bs));
+	bs->best_solution = NULL;
+	bs->size = 0;
+	return bs;
+}
+
+BestSolution* compress_bs(TPointFile* pf, BestSolution* bs){
+
+	free_best_queue(bs->best_solution);
+
+	Queue* current_best_queue = queue_new();
+
+	int i;
+	AVLTree* current_best = pf->solution;
+	AVLTreeValue* current_best_list = avl_tree_to_array(current_best);
+	int current_best_list_length = avl_tree_num_entries(current_best);
+
+	for(i = 0; i < current_best_list_length; i++){
+		TPoint* current_sensor = (TPoint*)(current_best_list[i]);
+		queue_push_head(current_best_queue, current_sensor->name);
+	}
+	free(current_best_list);
+	bs->best_solution = current_best_queue;
+	bs->size = current_best_list_length;
+
+	return bs;
+}
+
+BestSolution* simulated_annealing(TPointFile* pf){
 
 	srand(time(NULL));
 	TPoint* neighboor_node;
@@ -127,7 +163,9 @@ void simulated_annealing(TPointFile* pf){
 	double phi = 0.999995;
 	int step = 2;
 	double T_initial = 50.0;
-	int stop_criterion = 10;
+	int stop_criterion = 300;
+
+	BestSolution *bs = new_best_solution();
 
 	int f_x_min = avl_tree_num_entries(pf->solution);
 	double T = T_initial;
@@ -145,6 +183,8 @@ void simulated_annealing(TPointFile* pf){
 			if(delta_E <= 0){
 				f_x = f_x_p;
 				if(f_x < f_x_min){
+					compress_bs(pf, bs);
+
 					printf("NOUVEAU MINIMUM : %d\n",f_x);
 					f_x_min = f_x;
 					print_avl_tree(pf->solution,print_node);
@@ -165,6 +205,7 @@ void simulated_annealing(TPointFile* pf){
 		stop_criterion--;
 	}
 
+	return bs;
 	// AVLTree* tree_test = add_node_list(pf);
 	// printf("Adresse %d\n",&neighboor_node);
 	// AVLTreeValue* current_solution_list = avl_tree_to_array(tree_test);

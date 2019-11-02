@@ -27,13 +27,31 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef __ANNEALING__
 #define __ANNEALING__
 
+
+typedef struct _BestSolution BestSolution;
+
+/**
+ * \struct _BestSolution
+ * \brief The best solution given by the simulated annealing algorithm .
+ *
+ * Use to store the best solution and his size.
+ * - best_solution is a list of the name of the sensor on the best solution.
+ * - size is the size of the list.
+ */
+struct _BestSolution {
+  Queue*	best_solution;
+  int 		size;
+};
+
 /**
  * This function applies a simulated annealing algorithm on the solution given
  * by the greedy algorithm.
  *
  * @param pf The modify solution.
+ *
+ * @return The best solution we found
  */
-void simulated_annealing(TPointFile* pf);
+BestSolution* simulated_annealing(TPointFile* pf);
 
 
 #endif
