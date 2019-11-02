@@ -53,5 +53,11 @@ struct _BestSolution {
  */
 BestSolution* simulated_annealing(TPointFile* pf);
 
+/**
+ * This function reconstructs the solution.
+ * @param pf All the data of the problem.
+ * @param bs The beast solution.
+ */
+void reconstruct_solution(TPointFile* pf, BestSolution* bs);
 
 #endif

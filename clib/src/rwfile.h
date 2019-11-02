@@ -66,6 +66,18 @@ struct _PointFile {
 #define pf_capture_radius() pf->capture_radius
 
 /**
+ * Thi function prints a pf.
+ * @param pf The pf we want to print.
+ */
+void print_pf(TPointFile* pf);
+
+/**
+ * This functions cleans a pf.
+ * @param pf The pf we want to clean.
+ */
+void clean_pf(TPointFile* pf);
+
+/**
  * This function is used to read a file containing the data for our problem.
  *
  * @param filename           				The filename.

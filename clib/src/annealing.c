@@ -125,6 +125,21 @@ void free_best_queue(Queue* best_queue){
 	}
 }
 
+void reconstruct_solution(TPointFile* pf, BestSolution* bs){
+	Queue *best_solution_queue = bs->best_solution;
+	QueueEntry *queue_iterator = best_solution_queue->head;
+
+	while (queue_iterator != NULL) {
+		char* point_name = (char *)(queue_iterator->data);
+		long int node_name_int = strtol(point_name,NULL,0);
+
+		if(node_name_int != 0){
+			add_node(pf,pf->points[node_name_int]);
+		}
+		queue_iterator = queue_iterator->next;
+	}
+}
+
 BestSolution* new_best_solution(){
 	BestSolution * bs = xmalloc(sizeof(*bs));
 	bs->best_solution = NULL;

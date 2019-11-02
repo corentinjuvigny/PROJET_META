@@ -35,6 +35,36 @@ static int* pos_bn(int* pos,const char* file,unsigned long size) {
     return pos_bn_tab;
 }
 
+void clean_pf(TPointFile* pf){
+  int i;
+
+  for (i = 0; i < pf->nbpoints; i++) {
+    xfree(pf_name(i));
+    free_node(pf->points[i]);
+    pnt_delete(pf->points[i]);
+  }
+  xfree(pf->points);
+  kd_free(pf->kdTree);
+  avl_tree_free(pf->solution);
+  xfree(pf);
+}
+
+void print_pf(TPointFile* pf){
+  int i;
+  printf("AUX\n");
+  for (i = 0; i < pf->nbpoints; ++i) {
+    printf("########## NODE ########\n");
+    print_node(pf->points[i]);
+    printf("### AUX ###\n");
+    print_avl_tree(pf->points[i]->aux,print_node);
+    printf("####################\n");
+  }
+  printf("AUX\n");
+
+  printf("RESULT : %d\n",avl_tree_num_entries(pf->solution));
+  printf("###### FIN GREED ########\n");
+}
+
 static TPoint* point_of_line(char* buf,unsigned long n,PKind kind)
 {
   double x, y;

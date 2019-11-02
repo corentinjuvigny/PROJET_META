@@ -83,17 +83,23 @@ AVLTree* remove_node_list(TPointFile* pf){
 
 	AVLTree* target_avl = avl_tree_new((AVLTreeCompareFunc) point_compare);
 
+	// We iterate on all the sensors.
 	for(i = 0; i < current_solution_list_length; i++){
 		TPoint* current_sensor = (TPoint*)(current_solution_list[i]);
 		int current_sensor_is_ok = 0;
+		int current_sensor_is_covered = 0;
 		double point_x = current_sensor->x;
 		double point_y = current_sensor->y;
 		PKind target_in_radius_kind = current_sensor->kind;
 
+		// We verify if we have a sensor
 		if(target_in_radius_kind == K_Sensor){
 
+			// We take the capture queue of the sensor
 			Queue *target_in_radius_queue = current_sensor->capture_queue;
 			QueueEntry *queue_iterator = target_in_radius_queue->head;
+
+			// We iterate on the capture queue of the sensor
 			while (queue_iterator != NULL && current_sensor_is_ok==0) {
 
 			    TPoint* target_in_radius = (TPoint*)(queue_iterator->data);
@@ -101,6 +107,7 @@ AVLTree* remove_node_list(TPointFile* pf){
 			    double target_in_radius_y = target_in_radius->y;
 			    PKind target_in_radius_kind = target_in_radius->kind;
 
+			    // We look if the sensor cover some target alone. If it's the case, we cannot remove it.
 				if( (point_x != target_in_radius_x || point_y != target_in_radius_y) && (target_in_radius_kind == K_Target)){
 
 					int target_in_radius_aux_size = avl_tree_num_entries(target_in_radius->aux);
@@ -108,15 +115,20 @@ AVLTree* remove_node_list(TPointFile* pf){
 						current_sensor_is_ok = 1;
 					}
 				}
+				// The sensor itself has to be covered by an other sensor !
+				if((point_x != target_in_radius_x || point_y != target_in_radius_y) && (target_in_radius_kind == K_Sensor)){
+					current_sensor_is_covered = 1;
+				}
+
 				queue_iterator = queue_iterator->next;
 			}
-			if(current_sensor_is_ok==0){
+			if(current_sensor_is_ok==0 && current_sensor_is_covered==1){
 				int dfs_result = run_dfs(pf,current_sensor);
 				if(dfs_result!=current_solution_list_length-1){
 					current_sensor_is_ok=1;
 				}
 			}
-			if(current_sensor_is_ok==0){
+			if(current_sensor_is_ok==0 && current_sensor_is_covered==1){
 				avl_tree_insert(target_avl,&(current_sensor->name), current_sensor);
 			}
 		}

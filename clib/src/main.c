@@ -30,10 +30,8 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 int main(int argc, char* argv[])
 {
-  double communication_radius = 1.00001;
-  double capture_radius = 1.00001;
-  int i;
-
+  double communication_radius = 8.00001;
+  double capture_radius = 2.00001;
 
   char* filename = argc < 2 ? "../Instances/captANOR1500_21_500.dat" : argv[1];
 
@@ -41,7 +39,7 @@ int main(int argc, char* argv[])
 
   // TPointFile* pf = read_point_file(filename,communication_radius,capture_radius);
 
-  int size = 10;
+  int size = 5;
   TPointFile* pf = create_point_file(size,communication_radius,capture_radius);
 
   if (pf == NULL) return 1;
@@ -49,36 +47,19 @@ int main(int argc, char* argv[])
   greedy_construction(pf);
   BestSolution* result = simulated_annealing(pf);
 
-  print_queue(result->best_solution, print_string);
-  printf("SIZE : %d\n",result->size);
-
-  printf("FIN\n");
+  TPointFile* new_pf = create_point_file(size,communication_radius,capture_radius);
+  reconstruct_solution(new_pf,result);
 
 #if DEBUG
-  printf("AUX\n");
-  for (i = 0; i < pf->nbpoints; ++i) {
-    printf("########## NODE ########\n");
-    print_node(pf->points[i]);
-    printf("### AUX ###\n");
-    print_avl_tree(pf->points[i]->aux,print_node);
-    printf("####################\n");
-  }
-  printf("AUX\n");
-
-  printf("RESULT : %d\n",avl_tree_num_entries(pf->solution));
-  printf("###### FIN GREED ########\n");
+  print_pf(new_pf);
 #endif
 
-  for (i = 0; i < pf->nbpoints; i++) {
-    xfree(pf_name(i));
-    free_node(pf->points[i]);
-    pnt_delete(pf->points[i]);
-  }
-  xfree(pf->points);
-  kd_free(pf->kdTree);
-  avl_tree_free(pf->solution);
-  xfree(pf);
+  draw_data(new_pf,1000,size);
+
+  clean_pf(pf);
+  clean_pf(new_pf);
   queue_free(result->best_solution);
   free(result);
+
   return 0;
 }
