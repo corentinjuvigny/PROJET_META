@@ -39,17 +39,17 @@ int main(int argc, char* argv[])
 
   nameProcessus = argv[0];
 
-  TPointFile* pf = read_point_file(filename,communication_radius,capture_radius);
+  // TPointFile* pf = read_point_file(filename,communication_radius,capture_radius);
 
-  //int size = 10;
-  //TPointFile* pf = create_point_file(size,communication_radius,capture_radius);
+  int size = 10;
+  TPointFile* pf = create_point_file(size,communication_radius,capture_radius);
 
   if (pf == NULL) return 1;
 
   greedy_construction(pf);
   BestSolution* result = simulated_annealing(pf);
 
-  print_queue(result->best_solution,print_string);
+  print_queue(result->best_solution, print_string);
   printf("SIZE : %d\n",result->size);
 
   printf("FIN\n");

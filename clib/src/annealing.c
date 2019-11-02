@@ -166,9 +166,11 @@ BestSolution* simulated_annealing(TPointFile* pf){
 	int stop_criterion = 300;
 
 	BestSolution *bs = new_best_solution();
-
 	int f_x_min = avl_tree_num_entries(pf->solution);
+	compress_bs(pf, bs);
+
 	double T = T_initial;
+
 	while(stop_criterion > 0){
 		printf("\n########## NOUVEAU PALIER %d(CURRENT BEST : %d )##########\n",stop_criterion,f_x_min);
 		for (i = 0; i < step; ++i){
@@ -204,7 +206,7 @@ BestSolution* simulated_annealing(TPointFile* pf){
 		printf("T courante : %f\n",T);
 		stop_criterion--;
 	}
-
+	printf("FINI\n");
 	return bs;
 	// AVLTree* tree_test = add_node_list(pf);
 	// printf("Adresse %d\n",&neighboor_node);
