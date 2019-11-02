@@ -7,9 +7,9 @@ from recuit import *
 from scipy import spatial
 
 # Variables globales :
-rayon_communication = 2
+rayon_communication = 1
 rayon_detection = 2
-taille_grille = 5
+taille_grille = 10
 
 #print_grille(taille_grille)
 

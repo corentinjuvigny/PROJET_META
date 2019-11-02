@@ -1,19 +1,39 @@
+/*
+
+Copyright (c) 2005-2008, Adrien BLASSIAU and Corentin JUVIGNY
+
+Permission to use, copy, modify, and/or distribute this software
+for any purpose with or without fee is hereby granted, provided
+that the above copyright notice and this permission notice appear
+in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+*/
+
 #include "include.h"
+#include "kdtree.h"
 #include "rwfile.h"
 #include "point.h"
 #include "dist.h"
 #include "greedy.h"
 #include "avl.h"
-#include "queue.h"
 #include "draw.h"
 #include "annealing.h"
 
 int main(int argc, char* argv[])
 {
   double communication_radius = 1.00001;
-  double capture_radius = 2.00001;
+  double capture_radius = 1.00001;
   int size = 10;
-  int debug = 0;
+  int debug = 1;
 
   int i;
   char* filename = argc < 2 ? "../Instances/captANOR1500_21_500.dat" : argv[1];
@@ -24,7 +44,7 @@ int main(int argc, char* argv[])
   if (pf == NULL) return 1;
 
   greedy_construction(pf);
-  simulated_annealing(pf);
+  // simulated_annealing(pf);
   printf("FIN\n");
   if (debug){
     printf("AUX\n");
