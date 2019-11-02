@@ -18,21 +18,50 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
-#ifndef __INCLUDE__
-#define __INCLUDE__
+/** @file test_unit.h
+ *
+ * @brief Unit tests of the projects
+ *
+ */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <pthread.h>
-#include <math.h>
+#ifndef _TEST_UNIT_
+#define _TEST_UNIT_
 
-#define NO_ALLOCA 0
+#include "CUnit/CUnit.h"
+#include "CUnit/Basic.h"
 
-#define DEBUG 1
 
-const char* nameProcessus;
+
+/**
+ * @brief	This function inits all tests
+ * @return  an integer
+ */
+int init_test(void);
+
+
+/**
+ * @brief	This function tests if pf is well formed.
+ */
+void well_formed_pf(void);
+
+/**
+ * @brief	This function tests if pf kd_tree is well formed.
+ */
+void well_formed_pf_kd_tree(void);
+
+/**
+ * @brief	This function tests if pf points are well formed.
+ */
+void well_formed_pf_points(void);
+
+/**
+ * @brief	This function tests the add node list generation.
+ */
+void test_add_node_list(void);
+
+/**
+ * @brief	This function tests the remove node list generation.
+ */
+void test_remove_node_list(void);
 
 #endif

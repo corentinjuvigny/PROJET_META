@@ -18,21 +18,21 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
-#ifndef __INCLUDE__
-#define __INCLUDE__
+#include "../src/include.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <pthread.h>
-#include <math.h>
+#include "CUnit/CUnit.h"
+#include "CUnit/Basic.h"
+#include "test_unit.h"
 
-#define NO_ALLOCA 0
 
-#define DEBUG 1
+int main()
+{
+  printf("\n---------------------------\n");
+  printf("\n--------Tests CUnit--------\n");
+  printf("\n---------------------------\n");
 
-const char* nameProcessus;
+  init_test();
 
-#endif
+  return EXIT_SUCCESS;
+  return 0;
+}

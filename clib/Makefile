@@ -4,9 +4,11 @@ all : main
 
 run :
 	make && ./bin/main
+run_test :
+	make test && ./bin/test
 
-test : main.o point.o tools.o rwfile.o
-	$(CC) $^ -o main -g
+test : main_test.o test_unit.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o test_unit.o
+	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/python3.6m -lpython3.6m -lcunit
 
 main : main.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o
 	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/python3.6m -lpython3.6m
@@ -53,6 +55,12 @@ kdtree.o : src/kdtree.c src/kdtree.h src/include.h
 dfs.o : src/dfs.c src/dfs.h src/include.h
 	$(CC) -c $< -o obj/$@
 
+main_test.o : test/main_test.c
+	$(CC) -c $< -o obj/$@
+
+test_unit.o : test/test_unit.c src/include.h
+	$(CC) -c $< -o obj/$@
+
 doxygen : doc/Doxyfile
 	cd doc && doxygen ../$<
 
@@ -61,3 +69,4 @@ clean :
 	rm -f obj/*
 	rm -rf doc/html/*
 	rm -rf doc/latex/*
+	rm -rf bin/*

@@ -186,7 +186,7 @@ BestSolution* simulated_annealing(TPointFile* pf){
 	double phi = 0.999995;
 	int step = 2;
 	double T_initial = 50.0;
-	int stop_criterion = 10000;
+	int stop_criterion = 10;
 
 	BestSolution *bs = new_best_solution();
 	int f_x_min = avl_tree_num_entries(pf->solution);
