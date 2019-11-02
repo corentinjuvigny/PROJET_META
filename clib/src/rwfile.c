@@ -51,7 +51,6 @@ void clean_pf(TPointFile* pf){
 
 void print_pf(TPointFile* pf){
   int i;
-  printf("AUX\n");
   for (i = 0; i < pf->nbpoints; ++i) {
     printf("########## NODE ########\n");
     print_node(pf->points[i]);
@@ -59,8 +58,6 @@ void print_pf(TPointFile* pf){
     print_avl_tree(pf->points[i]->aux,print_node);
     printf("####################\n");
   }
-  printf("AUX\n");
-
   printf("RESULT : %d\n",avl_tree_num_entries(pf->solution));
   printf("###### FIN GREED ########\n");
 }

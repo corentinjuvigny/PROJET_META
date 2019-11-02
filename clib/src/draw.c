@@ -92,7 +92,7 @@ void draw_data(TPointFile* pf, float pause, int size)
 				double sensor_y = sensor->y;
 
 				char *sensor_line = (char*)malloc(100 * sizeof(char));
-				sprintf(sensor_line, "plt.plot([%f,%f],[%f,%f], color='red',linewidth=5)",pts_x,sensor_x,pts_y,sensor_y);
+				sprintf(sensor_line, "plt.plot([%f,%f],[%f,%f], color='red',linewidth=3)",pts_x,sensor_x,pts_y,sensor_y);
 
 				PyRun_SimpleString(sensor_line);
 			}
