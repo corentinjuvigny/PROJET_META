@@ -21,6 +21,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <time.h>
 #include <stdlib.h>
 #include "rwfile.h"
+#include "tools.h"
 #include "point.h"
 #include "dist.h"
 #include "avl.h"
@@ -93,13 +94,17 @@ void modify_solution_with_neighbourhood(TPointFile* pf,  TPoint** neighboor_node
 	// printf("END LIST\n");
 	// draw_data(pf,0.001,10);
 	if(*choice == 0){
+#if DEBUG
 		printf("ADD\n");
 		print_node(*neighboor_node);
+#endif
 		add_node(pf,*neighboor_node);
 	}
 	else if(*choice == 1){
+#if DEBUG
 		printf("REMOVE\n");
 		print_node(*neighboor_node);
+#endif
 		remove_node(pf,*neighboor_node);
 	}
 }
@@ -107,18 +112,72 @@ void modify_solution_with_neighbourhood(TPointFile* pf,  TPoint** neighboor_node
 void revert_choice(TPointFile* pf, TPoint** neighboor_node, int* choice){
 
 	if(*choice == 0){
+#if DEBUG
 		printf("REMOVE\n");
 		print_node(*neighboor_node);
+#endif
 		remove_node(pf,*neighboor_node);
 	}
 	else if(*choice == 1){
+#if DEBUG
 		printf("ADD\n");
 		print_node(*neighboor_node);
+#endif
 		add_node(pf,*neighboor_node);
 	}
 }
 
-void simulated_annealing(TPointFile* pf){
+void free_best_queue(Queue* best_queue){
+	if(best_queue != NULL){
+		queue_free(best_queue);
+	}
+}
+
+void reconstruct_solution(TPointFile* pf, BestSolution* bs){
+	Queue *best_solution_queue = bs->best_solution;
+	QueueEntry *queue_iterator = best_solution_queue->head;
+
+	while (queue_iterator != NULL) {
+		char* point_name = (char *)(queue_iterator->data);
+		long int node_name_int = strtol(point_name,NULL,0);
+
+		if(node_name_int != 0){
+			add_node(pf,pf->points[node_name_int]);
+		}
+		queue_iterator = queue_iterator->next;
+	}
+}
+
+BestSolution* new_best_solution(){
+	BestSolution * bs = xmalloc(sizeof(*bs));
+	bs->best_solution = NULL;
+	bs->size = 0;
+	return bs;
+}
+
+BestSolution* compress_bs(TPointFile* pf, BestSolution* bs){
+
+	free_best_queue(bs->best_solution);
+
+	Queue* current_best_queue = queue_new();
+
+	int i;
+	AVLTree* current_best = pf->solution;
+	AVLTreeValue* current_best_list = avl_tree_to_array(current_best);
+	int current_best_list_length = avl_tree_num_entries(current_best);
+
+	for(i = 0; i < current_best_list_length; i++){
+		TPoint* current_sensor = (TPoint*)(current_best_list[i]);
+		queue_push_head(current_best_queue, current_sensor->name);
+	}
+	free(current_best_list);
+	bs->best_solution = current_best_queue;
+	bs->size = current_best_list_length;
+
+	return bs;
+}
+
+BestSolution* simulated_annealing(TPointFile* pf){
 
 	srand(time(NULL));
 	TPoint* neighboor_node;
@@ -127,44 +186,80 @@ void simulated_annealing(TPointFile* pf){
 	double phi = 0.999995;
 	int step = 2;
 	double T_initial = 50.0;
-	int stop_criterion = 10;
+	int stop_criterion = 10000;
 
+	BestSolution *bs = new_best_solution();
 	int f_x_min = avl_tree_num_entries(pf->solution);
+	compress_bs(pf, bs);
+
 	double T = T_initial;
+
 	while(stop_criterion > 0){
+
+#if DEBUG
 		printf("\n########## NOUVEAU PALIER %d(CURRENT BEST : %d )##########\n",stop_criterion,f_x_min);
+#endif
+
 		for (i = 0; i < step; ++i){
+
+#if DEBUG
 			printf("########## ITERATION n°%d ##########\n",i);
+#endif
+
 			int f_x = avl_tree_num_entries(pf->solution);
 			modify_solution_with_neighbourhood(pf, &neighboor_node, &choice);
 			int f_x_p = avl_tree_num_entries(pf->solution);
 
+#if DEBUG
 			printf("f_x = %d et f_x_p %d\n",f_x,f_x_p);
+#endif
+
 			int delta_E = 10*(f_x_p - f_x);
 
 			if(delta_E <= 0){
 				f_x = f_x_p;
 				if(f_x < f_x_min){
-					printf("NOUVEAU MINIMUM : %d\n",f_x);
+					compress_bs(pf, bs);
 					f_x_min = f_x;
+
+#if DEBUG
+					printf("NOUVEAU MINIMUM : %d\n",f_x);
 					print_avl_tree(pf->solution,print_node);
+#endif
+
 				}
 			}
 			else{
 				double random_d = random_double();
 				double energy_p = energie_proba_distrib(delta_E,T);
+#if DEBUG
 				printf("ENERGY : %f et K : %f\n",energy_p,random_d);
+#endif
+
 				if(random_d > energy_p){
+
+#if DEBUG
 					printf("ON REVERT\n");
+#endif
+
 					revert_choice(pf,&neighboor_node,&choice);
 				}
 			}
 		}
 		T = T * phi;
+
+#if DEBUG
 		printf("T courante : %f\n",T);
+#endif
+
 		stop_criterion--;
 	}
 
+#if DEBUG
+	printf("FINI\n");
+#endif
+
+	return bs;
 	// AVLTree* tree_test = add_node_list(pf);
 	// printf("Adresse %d\n",&neighboor_node);
 	// AVLTreeValue* current_solution_list = avl_tree_to_array(tree_test);
