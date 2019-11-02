@@ -20,11 +20,6 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #ifndef __INCLUDE__
 #define __INCLUDE__
-#if __STDC_VERSION__ >= 199901L
-#define _XOPEN_SOURCE 600
-#else
-#define _XOPEN_SOURCE 500
-#endif /* __STDC_VERSION__ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +30,9 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <math.h>
 
 #define NO_ALLOCA 0
+
+#define DEBUG 0
+
 const char* nameProcessus;
 
 #endif
