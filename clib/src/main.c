@@ -37,12 +37,12 @@ int main(int argc, char* argv[])
 
   nameProcessus = argv[0];
 
-  TPointFile* pf = read_point_file(filename,communication_radius,capture_radius);
-  TPointFile* new_pf = read_point_file(filename,communication_radius,capture_radius);
+  // TPointFile* pf = read_point_file(filename,communication_radius,capture_radius);
+  // TPointFile* new_pf = read_point_file(filename,communication_radius,capture_radius);
 
-  // int size = 5;
-  // TPointFile* pf = create_point_file(size,communication_radius,capture_radius);
-  // TPointFile* new_pf = create_point_file(size,communication_radius,capture_radius);
+  int size = 10;
+  TPointFile* pf = create_point_file(size,communication_radius,capture_radius);
+  TPointFile* new_pf = create_point_file(size,communication_radius,capture_radius);
 
   if (pf == NULL) return 1;
 
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
   print_pf(new_pf);
 #endif
 
-  draw_data(new_pf,1000,21);
+  draw_data(new_pf,1000,size);
 
   clean_pf(pf);
   clean_pf(new_pf);
