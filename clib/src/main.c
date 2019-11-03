@@ -50,6 +50,9 @@ int main(int argc, char* argv[])
   int progress = 0;
   nameProcessus = argv[0];
 
+  float temps;
+  clock_t t1, t2;
+
   check_and_set(&filename,&communication_radius,&capture_radius,&size,&phi,&step,&T_initial,&nb_iterations,&g_time,&file_mode,&graphic,&progress,argv,argc);
 
   printf("\n############### PARAMETERS ###############\n");
@@ -91,6 +94,7 @@ int main(int argc, char* argv[])
   /************************************************************************/
   /************************************************************************/
 
+  t1 = clock();
   printf("\n############### RESULT GREEDY CONSTRUCTION ###############\n");
   greedy_construction(pf);
   printf("NUMBER OF TARGETS : %d\n",avl_tree_num_entries(pf->solution)-1);
@@ -104,6 +108,10 @@ int main(int argc, char* argv[])
   BestSolution* result = simulated_annealing(pf, phi, step, T_initial, nb_iterations, progress);
   reconstruct_solution(new_pf,result);
   printf("\rNUMBER OF TARGETS : %d\n",avl_tree_num_entries(new_pf->solution));
+  t2 = clock();
+
+  temps = (float)(t2-t1)/CLOCKS_PER_SEC;
+  printf("\nTEMPS TOTAL : %f secondes\n", temps);
 
   if(graphic){
     draw_data(new_pf,g_time,size);
