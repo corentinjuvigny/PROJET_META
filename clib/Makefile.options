@@ -74,7 +74,7 @@ SIZE := 5
 # You can specify the phi coefficient with this variable.
 PHI = 0.999995
 
-# You can specify the step size with this variable.
+# You can specify the temperature step size with this variable.
 STEP = 2
 
 # You can specify the initial temperature with this variable.
