@@ -1,17 +1,48 @@
-CC=gcc -Wall -Wextra -ansi -std=c99 -O2 -pthread -lm -I/usr/include/python3.7m -lpython3.7m
+#----------------------------------------------------------------------
+# Copyright (c) 2019-2020, Adrien BLASSIAU and Corentin JUVIGNY
+
+# Permission to use, copy, modify, and/or distribute this software
+# for any purpose with or without fee is hereby granted, provided
+# that the above copyright notice and this permission notice appear
+# in all copies.
+
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+# WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+# AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
+# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+# LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+# NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#----------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------
+#           GLOBAL MAKEFILE, NOT TO BE MODIFIED
+#----------------------------------------------------------------------
+
+include Makefile.options
+
+PARAMETERS=${FILE_NAME} ${COMMUNICATION_RADIUS} ${CAPTURE_RADIUS} ${SIZE} ${PHI} ${STEP} ${T_INIT} ${NB_ITERATIONS} ${G_TIME}
+
+CC=gcc -Wall -Wextra -ansi -std=c99 -O2 -pthread -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -DDEBUG=${DEBUG} -DGRAPHIC=${GRAPHIC} -DFILE_MODE=${FILE_MODE}
 
 all : main
 
 run :
-	make && ./bin/main
+	make && ./bin/main ${PARAMETERS}
+
 run_test :
 	make test && ./bin/test
 
-test : main_test.o test_unit.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o test_unit.o
-	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/python3.6m -lpython3.6m -lcunit
+run_free :
+	make main && valgrind --track-origins=yes ./bin/main ${PARAMETERS}
 
-main : main.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o
-	cd obj/ && $(CC) $^ -o ../bin/$@
+test : main_test.o test_unit.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o test_unit.o
+	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -lcunit
+
+main : main.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o check.o
+	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -lcunit
 
 main.o : src/main.c
 	$(CC) -c $< -o obj/$@
@@ -53,6 +84,9 @@ kdtree.o : src/kdtree.c src/kdtree.h src/include.h
 	$(CC) -c $< -o obj/$@
 
 dfs.o : src/dfs.c src/dfs.h src/include.h
+	$(CC) -c $< -o obj/$@
+
+check.o : src/check.c src/check.h src/include.h
 	$(CC) -c $< -o obj/$@
 
 main_test.o : test/main_test.c

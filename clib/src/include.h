@@ -31,8 +31,6 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #define NO_ALLOCA 0
 
-#define DEBUG 1
-
 const char* nameProcessus;
 
 #endif

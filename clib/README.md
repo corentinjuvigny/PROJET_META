@@ -25,7 +25,10 @@ IMPORTANT: LIRE CE FICHIER AVANT DE LANCER LE PROGRAMME
 
 Ceci est le README du projet de méta-heuristique **Couverture connexe minimum dans les réseaux de capteurs**. Vous trouverez dans ce document toutes les informations nécessaires pour faire fonctionner le code.
 
-NOTE: Nous vous invitons à lire notre rapport qui vous renseignera sur la démarche et les choix engagés dans ce projet, ainsi que la répartition des tâches.
+NOTE1: Nous vous invitons à lire notre rapport qui vous renseignera sur la démarche et les choix engagés dans ce projet, ainsi que la répartition des tâches.
+
+NOTE2: Le fichier Makefile.options est important. Il permet de modifier 
+certains paramètres du projet.
 
 
 2. Instructions d'installation des différents outils
@@ -67,6 +70,17 @@ Valgrind est un outil qui permet de repérer les fuites mémoires (et autres err
 
 *********************************************************************************************
 
+Python
+--------
+
+Python est utilisé pour l'affichage graphique à l'intérieur même du code C. Pour cela, il vous faut faire :
+
+**Entrez dans votre console** : 
+> sudo apt-get install python3-dev
+
+Attention : dans le Makefile,
+
+*********************************************************************************************
 
 
 3. Conseils d'utilisation
@@ -81,11 +95,10 @@ Lancer le programme via une console
 Pour lancer l'algorithme glouton suivit du recuit simulé :
 
 **Entrez dans votre console** : 
-> make && ./bin/main
-
-**ou sinon :** : 
 > make run
 
+Vous pouvez modifier tout un ensemble de paramètres via le fichier 
+Makefile.options
 
 *********************************************************************************************
 
@@ -118,12 +131,12 @@ Vous pouvez aussi régénérer la documentation puis l' ouvrir :
 Valgrind
 --------
 
-Pour contrôler la présence de fuites mémoires : 
+Pour contrôler la présence de fuites mémoires (attention, cela ralenti 
+considérablement l'execution du programme) : 
 
-**Sur le jeu console (attention, cela ralenti considérablement le jeu)** : 
+> make run_free
 
-> make && valgrind ./bin/main 
-
+Ne SURTOUT pas tester cette commande avec le mode graphique activé (GRAPHIC à 1 dans Makefile.options). L'exécution de python créée énormément de fuites mémoires ...
 
 *Comment lire les résultats de valgrind*
 
@@ -141,14 +154,7 @@ Une fois lancé, rendez vous à la section HEAP SUMMARY :
 
 
 Vous obtenez la mémoire allouée (allocs) et la mémoire libérée (frees) ainsi que certaines autres erreurs liées à une mauvaise gestion de la mémoire (ERROR SUMMARY).
-
-Vous pouvez obtenir plus de détails sur les différentes fuites et erreurs via cette commande : 
-
-**Entrez dans votre console** : 
-
-> make && valgrind --track-origins=yes ./bin/main  
-
-
+ 
 *********************************************************************************************
 Tests unitaires CUnit
 ---------------------
@@ -156,9 +162,6 @@ Tests unitaires CUnit
 Pour obtenir l'ensemble des résultats de nos tests unitaires : 
 
 **Entrez dans votre console** : 
-> make test && ./bin/test
-
-**ou sinon :** : 
 > make run_test
 
 

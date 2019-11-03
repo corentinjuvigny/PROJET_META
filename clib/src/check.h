@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2019-2020, Adrien BLASSIAU and Corentin JUVIGNY
+Copyright (c) 2019-20208, Adrien BLASSIAU and Corentin JUVIGNY
 
 Permission to use, copy, modify, and/or distribute this software
 for any purpose with or without fee is hereby granted, provided
@@ -18,52 +18,32 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
-/** @file annealing.h
+/** @file check.h
  *
- * @brief Simulated annealing algorithm to construct a better solution.
- *
+ * @brief function to check and initialize the main constants of our program.
  */
 
-#ifndef __ANNEALING__
-#define __ANNEALING__
-
-
-typedef struct _BestSolution BestSolution;
+#ifndef __CHECK__
+#define __CHECK__
 
 /**
- * \struct _BestSolution
- * \brief The best solution given by the simulated annealing algorithm .
- *
- * Use to store the best solution and his size.
- * - best_solution is a list of the name of the sensor on the best solution.
- * - size is the size of the list.
- */
-struct _BestSolution {
-  Queue*	best_solution;
-  int 		size;
-};
-
-/**
- * This function applies a simulated annealing algorithm on the solution given
- * by the greedy algorithm.
- *
- * @param pf 				   The modify solution.
+ * This function is used to check and set all the parameters
+ * @param filename             The name of the file.
+ * @param communication_radius The communication radius.
+ * @param capture_radius       The capture radius.
+ * @param size                 The size of the grid.
  * @param phi                  The phi parameter of the simulated annealing.
  * @param step                 The step of the simulated annealing.
  * @param T_initial            The initial temperature of the simulated
  *                             annealing.
  * @param nb_iterations        The number of iterations of the simulated
  *                             annealing.
+ * @param g_time 		       The duration of graphic render.
+ * @param argv        		   The parameters of the program.
+ * @param argc        		   The number of parameters of the program.
  *
- * @return The best solution we found
+ * @return 					   An integer.
  */
-BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T_initial, int nb_iterations);
-
-/**
- * This function reconstructs the solution.
- * @param pf All the data of the problem.
- * @param bs The beast solution.
- */
-void reconstruct_solution(TPointFile* pf, BestSolution* bs);
+int check_and_set(char** filename, double* communication_radius, double* capture_radius, int* size, double* phi, int* step, double* T_initial, int* nb_iterations, double* g_time, char* argv[],int argc);
 
 #endif

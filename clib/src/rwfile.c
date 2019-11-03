@@ -58,8 +58,6 @@ void print_pf(TPointFile* pf){
     print_avl_tree(pf->points[i]->aux,print_node);
     printf("####################\n");
   }
-  printf("RESULT : %d\n",avl_tree_num_entries(pf->solution));
-  printf("###### FIN GREED ########\n");
 }
 
 static TPoint* point_of_line(char* buf,unsigned long n,PKind kind)

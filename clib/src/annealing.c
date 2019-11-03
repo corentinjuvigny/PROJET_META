@@ -177,16 +177,12 @@ BestSolution* compress_bs(TPointFile* pf, BestSolution* bs){
 	return bs;
 }
 
-BestSolution* simulated_annealing(TPointFile* pf){
+BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T_initial, int nb_iterations){
 
 	srand(time(NULL));
 	TPoint* neighboor_node;
 	int choice = 0;
 	int i;
-	double phi = 0.999995;
-	int step = 2;
-	double T_initial = 50.0;
-	int stop_criterion = 10;
 
 	BestSolution *bs = new_best_solution();
 	int f_x_min = avl_tree_num_entries(pf->solution);
@@ -194,10 +190,10 @@ BestSolution* simulated_annealing(TPointFile* pf){
 
 	double T = T_initial;
 
-	while(stop_criterion > 0){
+	while(nb_iterations > 0){
 
 #if DEBUG
-		printf("\n########## NOUVEAU PALIER %d(CURRENT BEST : %d )##########\n",stop_criterion,f_x_min);
+		printf("\n########## NOUVEAU PALIER %d(CURRENT BEST : %d )##########\n",nb_iterations,f_x_min);
 #endif
 
 		for (i = 0; i < step; ++i){
@@ -252,7 +248,7 @@ BestSolution* simulated_annealing(TPointFile* pf){
 		printf("T courante : %f\n",T);
 #endif
 
-		stop_criterion--;
+		nb_iterations--;
 	}
 
 #if DEBUG
