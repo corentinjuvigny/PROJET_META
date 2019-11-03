@@ -39,11 +39,13 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * @param nb_iterations        The number of iterations of the simulated
  *                             annealing.
  * @param g_time 		       The duration of graphic render.
+ * @param file_mode 		   If we use a file or not.
+ * @param graphic 		   	   If we use the graphical mode or not.
  * @param argv        		   The parameters of the program.
  * @param argc        		   The number of parameters of the program.
  *
  * @return 					   An integer.
  */
-int check_and_set(char** filename, double* communication_radius, double* capture_radius, int* size, double* phi, int* step, double* T_initial, int* nb_iterations, double* g_time, char* argv[],int argc);
+int check_and_set(char** filename, double* communication_radius, double* capture_radius, int* size, double* phi, int* step, double* T_initial, int* nb_iterations, double* g_time, int* file_mode, int* graphic, char* argv[],int argc);
 
 #endif

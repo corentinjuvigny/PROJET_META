@@ -23,25 +23,34 @@
 
 include Makefile.options
 
-PARAMETERS=${FILE_NAME} ${COMMUNICATION_RADIUS} ${CAPTURE_RADIUS} ${SIZE} ${PHI} ${STEP} ${T_INIT} ${NB_ITERATIONS} ${G_TIME}
+PARAMETERS=${FILE_NAME} ${COMMUNICATION_RADIUS} ${CAPTURE_RADIUS} ${SIZE} ${PHI} ${STEP} ${T_INIT} ${NB_ITERATIONS} ${G_TIME} ${FILE_MODE} ${GRAPHIC}
 
-CC=gcc -Wall -Wextra -ansi -std=c99 -O2 -pthread -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -DDEBUG=${DEBUG} -DGRAPHIC=${GRAPHIC} -DFILE_MODE=${FILE_MODE}
+CC=gcc -Wall -Wextra -ansi -std=c99 -O2 -pthread -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -DDEBUG=${DEBUG}
 
-all : main
+all : meta
 
-run :
-	make && ./bin/main ${PARAMETERS}
+run_meta :
+	make meta && ./bin/meta ${PARAMETERS}
 
 run_test :
 	make test && ./bin/test
 
 run_free :
-	make main && valgrind --track-origins=yes ./bin/main ${PARAMETERS}
+	make meta && valgrind --track-origins=yes ./bin/meta ${PARAMETERS}
+
+exec_meta :
+	./bin/meta ${PARAMETERS}
+
+exec_test :
+	./bin/test
+
+exec_free :
+	valgrind --track-origins=yes ./bin/meta ${PARAMETERS}
 
 test : main_test.o test_unit.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o test_unit.o
 	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -lcunit
 
-main : main.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o check.o
+meta : main.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o check.o
 	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -lcunit
 
 main.o : src/main.c

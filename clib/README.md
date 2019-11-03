@@ -94,13 +94,21 @@ Voici différentes commandes qui vont permettrons d'observer des résultats et i
 Lancer le programme via une console
 ------------------------
 
-Pour lancer l'algorithme glouton suivit du recuit simulé :
-
-**Entrez dans votre console** : 
-> make run
-
+Pour lancer l'algorithme glouton suivit du recuit simulé, vous pouvez lancer l’exécutable déjà fournit (commande 2). Il est aussi possible de tout recompiler (commande 1).
 Vous pouvez modifier tout un ensemble de paramètres via le fichier
-Makefile.options
+Makefile.options. Si vous changez PYTHON_VERSION ou DEBUG, vous devez recompiler pour que le changement opère (commande 1). Sinon, le changement des autres paramètres ne nécessite pas de recompiler.
+Vous pouvez compiler et lancer simultanément avec la commande 3.
+
+**1. Entrez dans votre console (compiler)** : 
+> make meta
+
+**2. Entrez dans votre console (lancer)** : 
+> make exec_meta
+
+**3. Entrez dans votre console (compiler et lancer)** : 
+> make run_meta
+
+
 
 *********************************************************************************************
 
@@ -136,7 +144,7 @@ Valgrind
 Pour contrôler la présence de fuites mémoires (attention, cela ralenti 
 considérablement l’exécution du programme) : 
 
-> make run_free
+> make exec_free
 
 **Attention** : ne SURTOUT pas tester cette commande avec le mode graphique activé (GRAPHIC à 1 dans Makefile.options). L'exécution de python créée énormément de fuites mémoires ...
 
@@ -163,7 +171,13 @@ Tests unitaires CUnit
 
 Pour obtenir l'ensemble des résultats de nos tests unitaires : 
 
-**Entrez dans votre console** : 
+**1. Entrez dans votre console (compiler)** : 
+> make test
+
+**2. Entrez dans votre console (lancer)** : 
+> make exec_test
+
+**3. Entrez dans votre console (compiler et lancer)** : 
 > make run_test
 
 

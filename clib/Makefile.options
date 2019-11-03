@@ -20,27 +20,27 @@
 #           COMMON SETTINGS OF THE THE MAKEFILE
 #----------------------------------------------------------------------
 
+#### You have to recompile to change this parameters
+
 
 # Go on /usr/include/ and choose one python version you see on the folder.
 # Don't forget to install the python package required (see README.md).
 PYTHON_VERSION := "python3.6m"
 
+# 1 if you want to print precise information about what is running.
+# 0 by default (false).
+DEBUG := 0
 
 #----------------------------------------------------------------------
 #           COMMON SETTINGS OF THE THE PROJECT
 #----------------------------------------------------------------------
-
-
-# 1 if you want to print precise information about what is running.
-# 0 by default (false).
-DEBUG := 0
 
 # 1 if you want to print the result on a graphic interface.
 # 0 by default (false).
 GRAPHIC := 1
 
 # You can specify the duration of the graphic render.
-G_TIME := 10
+G_TIME := 1
 
 # 1 if you want to run the project with a file. You can specify the filename
 # whith this variable. If you don't want to run a file, you can enter
@@ -76,4 +76,4 @@ STEP = 2
 T_INIT = 50.0
 
 # You can the number of iterations with this variable.
-NB_ITERATIONS = 2000
+NB_ITERATIONS = 20

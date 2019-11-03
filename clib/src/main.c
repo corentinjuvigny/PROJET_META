@@ -31,6 +31,8 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 int main(int argc, char* argv[])
 {
+  TPointFile* pf;
+  TPointFile* new_pf;
 
   char* filename = "inst/truncated/captANOR900_15_20.dat";
   double communication_radius = 1.00001;
@@ -43,9 +45,11 @@ int main(int argc, char* argv[])
   int nb_iterations = 10;
 
   double g_time = 10.0;
+  int file_mode = 0;
+  int graphic = 0;
   nameProcessus = argv[0];
 
-  check_and_set(&filename,&communication_radius,&capture_radius,&size,&phi,&step,&T_initial,&nb_iterations,&g_time,argv,argc);
+  check_and_set(&filename,&communication_radius,&capture_radius,&size,&phi,&step,&T_initial,&nb_iterations,&g_time,&file_mode,&graphic,argv,argc);
 
   printf("\n############### PARAMETERS ###############\n");
   printf("filename : %s\n",filename);
@@ -57,6 +61,8 @@ int main(int argc, char* argv[])
   printf("T_initial : %f\n",T_initial);
   printf("nb_iterations : %d\n",nb_iterations);
   printf("time : %f\n",g_time);
+  printf("file_mode : %d\n",file_mode);
+  printf("graphic : %d\n",graphic);
 
   /************************************************************************/
   /************************************************************************/
@@ -64,13 +70,15 @@ int main(int argc, char* argv[])
   /************************************************************************/
   /************************************************************************/
 
-#if FILE_MODE
-  TPointFile* pf = read_point_file(filename,communication_radius,capture_radius);
-  TPointFile* new_pf = read_point_file(filename,communication_radius,capture_radius);
-#else
-  TPointFile* pf = create_point_file(size,communication_radius,capture_radius);
-  TPointFile* new_pf = create_point_file(size,communication_radius,capture_radius);
-#endif
+  if(file_mode){
+    pf = read_point_file(filename,communication_radius,capture_radius);
+    new_pf = read_point_file(filename,communication_radius,capture_radius);
+
+  }
+  else{
+    pf = create_point_file(size,communication_radius,capture_radius);
+    new_pf = create_point_file(size,communication_radius,capture_radius);
+  }
 
   if (pf == NULL) return 1;
   if (new_pf == NULL) return 1;
@@ -85,18 +93,19 @@ int main(int argc, char* argv[])
   printf("\n############### RESULT GREEDY CONSTRUCTION ###############\n");
   printf("NUMBER OF TARGETS : %d\n",avl_tree_num_entries(pf->solution)-1);
 
-#if GRAPHIC
-  draw_data(pf,g_time,size);
-#endif
+  if(graphic){
+    draw_data(pf,g_time,size);
+  }
+
 
   BestSolution* result = simulated_annealing(pf, phi, step, T_initial, nb_iterations);
   reconstruct_solution(new_pf,result);
   printf("\n############### RESULT SIMULATED ANNEALING ###############\n");
   printf("NUMBER OF TARGETS : %d\n",avl_tree_num_entries(new_pf->solution));
 
-#if GRAPHIC
-  draw_data(new_pf,g_time,size);
-#endif
+  if(graphic){
+    draw_data(new_pf,g_time,size);
+  }
 
   /************************************************************************/
   /************************************************************************/
