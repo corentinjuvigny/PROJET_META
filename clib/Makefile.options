@@ -53,7 +53,7 @@ G_TIME := 1
 FILE_MODE := 1
 
 # You can specify the name of the file you want to run with this variable. The files are on the inst folder.
-# (ex of path : ../inst/[type of instance]/[name of the file])
+# (ex of path : inst/[type of instance]/[name of the file])
 FILE_NAME := inst/
 
 # You can specify the communication radius with this variable.
