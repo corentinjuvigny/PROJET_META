@@ -53,7 +53,7 @@ Doxygen est un outil qui permet de gérer la documentation de son code. Il perme
 CUnit
 --------
 
-CUnit est une bibliothèque de tests unitaires pour C. Il permet de programmer des tests, de les exécuter, et d’afficher un résumé des tests réussis ou échoués. Un test unitaire ne teste qu’une partie atomique des spécifications sous des conditions précises qui, bien généralement, ne couvrent pas tous les cas.
+CUnit est une bibliothèque de tests unitaires pour C. Elle permet de programmer des tests, de les exécuter, et d’afficher un résumé des tests réussis ou échoués. Un test unitaire ne teste qu’une partie atomique des spécifications sous des conditions précises qui, bien généralement, ne couvrent pas tous les cas.
 
 **Entrez dans votre console** : 
 > sudo apt-get install libcunit1 libcunit1-doc libcunit1-dev
@@ -63,7 +63,7 @@ CUnit est une bibliothèque de tests unitaires pour C. Il permet de programmer d
 Valgrind
 --------
 
-Valgrind est un outil qui permet de repérer les fuites mémoires (et autres erreurs)
+Valgrind est un outil qui permet de repérer les fuites mémoires (et autres erreurs).
 
 **Entrez dans votre console** : 
 > sudo apt-get install valgrind
@@ -73,12 +73,14 @@ Valgrind est un outil qui permet de repérer les fuites mémoires (et autres err
 Python
 --------
 
-Python est utilisé pour l'affichage graphique à l'intérieur même du code C. Pour cela, il vous faut faire :
+Python est utilisé pour l'affichage graphique à l'intérieur même du code C. Pour cela, il vous faut tout d'abord installer python, ici python 3 par
+exemple :
 
 **Entrez dans votre console** : 
 > sudo apt-get install python3-dev
 
-Attention : dans le Makefile,
+**Attention** : dans Makefile.options, pensez à spécifier la version de python
+que vous possédez sur votre machine (trouvable au niveau de /usr/include/).
 
 *********************************************************************************************
 
@@ -97,7 +99,7 @@ Pour lancer l'algorithme glouton suivit du recuit simulé :
 **Entrez dans votre console** : 
 > make run
 
-Vous pouvez modifier tout un ensemble de paramètres via le fichier 
+Vous pouvez modifier tout un ensemble de paramètres via le fichier
 Makefile.options
 
 *********************************************************************************************
@@ -132,13 +134,13 @@ Valgrind
 --------
 
 Pour contrôler la présence de fuites mémoires (attention, cela ralenti 
-considérablement l'execution du programme) : 
+considérablement l’exécution du programme) : 
 
 > make run_free
 
-Ne SURTOUT pas tester cette commande avec le mode graphique activé (GRAPHIC à 1 dans Makefile.options). L'exécution de python créée énormément de fuites mémoires ...
+**Attention** : ne SURTOUT pas tester cette commande avec le mode graphique activé (GRAPHIC à 1 dans Makefile.options). L'exécution de python créée énormément de fuites mémoires ...
 
-*Comment lire les résultats de valgrind*
+*Comment lire les résultats de valgrind ?*
 
 Une fois lancé, rendez vous à la section HEAP SUMMARY : 
     
