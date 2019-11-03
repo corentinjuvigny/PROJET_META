@@ -21,9 +21,9 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <stdlib.h>
 #include <stdio.h>
 
-int check_and_set(char** filename, double* communication_radius, double* capture_radius, int* size, double* phi, int* step, double* T_initial, int* nb_iterations, double* g_time, int* file_mode, int* graphic, char* argv[],int argc){
+int check_and_set(char** filename, double* communication_radius, double* capture_radius, int* size, double* phi, int* step, double* T_initial, int* nb_iterations, double* g_time, int* file_mode, int* graphic, int* progress, char* argv[],int argc){
 
-	if(argc != 12){
+	if(argc != 13){
 		return 0;
 	}
 	else{
@@ -38,6 +38,7 @@ int check_and_set(char** filename, double* communication_radius, double* capture
 		*g_time				  = strtod(argv[9], NULL);
 		*file_mode			  = strtol(argv[10], NULL,0);
 		*graphic			  = strtol(argv[11], NULL,0);
+		*progress			  = strtol(argv[12], NULL,0);
 
 		return 1;
 	}

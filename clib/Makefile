@@ -23,7 +23,7 @@
 
 include Makefile.options
 
-PARAMETERS=${FILE_NAME} ${COMMUNICATION_RADIUS} ${CAPTURE_RADIUS} ${SIZE} ${PHI} ${STEP} ${T_INIT} ${NB_ITERATIONS} ${G_TIME} ${FILE_MODE} ${GRAPHIC}
+PARAMETERS=${FILE_NAME} ${COMMUNICATION_RADIUS} ${CAPTURE_RADIUS} ${SIZE} ${PHI} ${STEP} ${T_INIT} ${NB_ITERATIONS} ${G_TIME} ${FILE_MODE} ${GRAPHIC} ${PROGRESS_BAR}
 
 CC=gcc -Wall -Wextra -ansi -std=c99 -O2 -pthread -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -DDEBUG=${DEBUG}
 
@@ -50,7 +50,7 @@ exec_free :
 test : main_test.o test_unit.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o test_unit.o
 	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -lcunit
 
-meta : main.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o check.o
+meta : main.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o check.o progress.o
 	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -lcunit
 
 main.o : src/main.c
@@ -96,6 +96,9 @@ dfs.o : src/dfs.c src/dfs.h src/include.h
 	$(CC) -c $< -o obj/$@
 
 check.o : src/check.c src/check.h src/include.h
+	$(CC) -c $< -o obj/$@
+
+progress.o : src/progress.c src/progress.h src/include.h
 	$(CC) -c $< -o obj/$@
 
 main_test.o : test/main_test.c

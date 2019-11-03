@@ -47,15 +47,17 @@ void dfs(TPointFile* pf, AVLTree* visited_avl, TPoint* node){
 
 int run_dfs(TPointFile* pf, TPoint* removed_target){
 
+	int remove_one = 0;
 	AVLTree* visited_avl = avl_tree_new((AVLTreeCompareFunc) point_compare);
 	if(removed_target != NULL){
 		avl_tree_insert(visited_avl,&(removed_target->name), removed_target);
+		remove_one = 1;
 	}
 
 	TPoint* first_node = pf->points[0];
 
 	dfs(pf,visited_avl,first_node);
-	int visited_avl_size = avl_tree_num_entries(visited_avl)-1;
+	int visited_avl_size = avl_tree_num_entries(visited_avl)-remove_one;
 	avl_tree_free(visited_avl);
 	return visited_avl_size;
 }

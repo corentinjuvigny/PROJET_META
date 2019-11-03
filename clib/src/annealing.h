@@ -54,10 +54,10 @@ struct _BestSolution {
  *                             annealing.
  * @param nb_iterations        The number of iterations of the simulated
  *                             annealing.
- *
+ * @param progress		       If we want a progress bar.
  * @return The best solution we found
  */
-BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T_initial, int nb_iterations);
+BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T_initial, int nb_iterations, int progress);
 
 /**
  * This function reconstructs the solution.

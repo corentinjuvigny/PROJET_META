@@ -30,6 +30,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "neighbourhood.h"
 #include "dfs.h"
 #include "annealing.h"
+#include "progress.h"
 
 double random_double()
 {
@@ -177,12 +178,14 @@ BestSolution* compress_bs(TPointFile* pf, BestSolution* bs){
 	return bs;
 }
 
-BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T_initial, int nb_iterations){
+BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T_initial, int nb_iterations, int progress){
 
 	srand(time(NULL));
 	TPoint* neighboor_node;
 	int choice = 0;
 	int i;
+	double percentage;
+	int k=0;
 
 	BestSolution *bs = new_best_solution();
 	int f_x_min = avl_tree_num_entries(pf->solution);
@@ -190,10 +193,10 @@ BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T
 
 	double T = T_initial;
 
-	while(nb_iterations > 0){
+	while(k < nb_iterations){
 
 #if DEBUG
-		printf("\n########## NOUVEAU PALIER %d(CURRENT BEST : %d )##########\n",nb_iterations,f_x_min);
+		printf("\n########## NOUVEAU PALIER %d(CURRENT BEST : %d )##########\n",k,f_x_min);
 #endif
 
 		for (i = 0; i < step; ++i){
@@ -248,12 +251,20 @@ BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T
 		printf("T courante : %f\n",T);
 #endif
 
-		nb_iterations--;
+		k++;
+		if(progress){
+			percentage = ((float)k/(float)nb_iterations);
+			printProgress(percentage);
+		}
 	}
 
 #if DEBUG
 	printf("FINI\n");
 #endif
+
+	if(progress){
+		printf("%c[2K", 27);
+	}
 
 	return bs;
 	// AVLTree* tree_test = add_node_list(pf);

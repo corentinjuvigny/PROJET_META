@@ -47,12 +47,17 @@ int main(int argc, char* argv[])
   double g_time = 10.0;
   int file_mode = 0;
   int graphic = 0;
+  int progress = 0;
   nameProcessus = argv[0];
 
-  check_and_set(&filename,&communication_radius,&capture_radius,&size,&phi,&step,&T_initial,&nb_iterations,&g_time,&file_mode,&graphic,argv,argc);
+  check_and_set(&filename,&communication_radius,&capture_radius,&size,&phi,&step,&T_initial,&nb_iterations,&g_time,&file_mode,&graphic,&progress,argv,argc);
 
   printf("\n############### PARAMETERS ###############\n");
   printf("filename : %s\n",filename);
+  printf("file_mode : %d\n",file_mode);
+  printf("time : %f\n",g_time);
+  printf("graphic : %d\n",graphic);
+  printf("progress_bar : %d\n",progress);
   printf("communication_radius : %f\n",communication_radius);
   printf("capture_radius : %f\n",capture_radius);
   printf("size : %d\n",size);
@@ -60,9 +65,6 @@ int main(int argc, char* argv[])
   printf("step : %d\n",step);
   printf("T_initial : %f\n",T_initial);
   printf("nb_iterations : %d\n",nb_iterations);
-  printf("time : %f\n",g_time);
-  printf("file_mode : %d\n",file_mode);
-  printf("graphic : %d\n",graphic);
 
   /************************************************************************/
   /************************************************************************/
@@ -89,8 +91,8 @@ int main(int argc, char* argv[])
   /************************************************************************/
   /************************************************************************/
 
-  greedy_construction(pf);
   printf("\n############### RESULT GREEDY CONSTRUCTION ###############\n");
+  greedy_construction(pf);
   printf("NUMBER OF TARGETS : %d\n",avl_tree_num_entries(pf->solution)-1);
 
   if(graphic){
@@ -98,10 +100,10 @@ int main(int argc, char* argv[])
   }
 
 
-  BestSolution* result = simulated_annealing(pf, phi, step, T_initial, nb_iterations);
-  reconstruct_solution(new_pf,result);
   printf("\n############### RESULT SIMULATED ANNEALING ###############\n");
-  printf("NUMBER OF TARGETS : %d\n",avl_tree_num_entries(new_pf->solution));
+  BestSolution* result = simulated_annealing(pf, phi, step, T_initial, nb_iterations, progress);
+  reconstruct_solution(new_pf,result);
+  printf("\rNUMBER OF TARGETS : %d\n",avl_tree_num_entries(new_pf->solution));
 
   if(graphic){
     draw_data(new_pf,g_time,size);
