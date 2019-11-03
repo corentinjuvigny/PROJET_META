@@ -25,19 +25,19 @@
 
 # Go on /usr/include/ and choose one python version you see on the folder.
 # Don't forget to install the python package required (see README.md).
-PYTHON_VERSION := "python3.6m"
+PYTHON_VERSION := "python3.7m"
 
 # 1 if you want to print precise information about what is running.
 # 0 by default (false).
 DEBUG := 0
 
 #----------------------------------------------------------------------
-#           COMMON SETTINGS OF THE THE PROJECT
+#           COMMON SETTINGS OF THE PROJECT
 #----------------------------------------------------------------------
 
 # 1 if you want to print the result on a graphic interface.
 # 0 by default (false).
-GRAPHIC := 1
+GRAPHIC := 0
 
 # You can specify the duration of the graphic render.
 G_TIME := 1
@@ -46,7 +46,7 @@ G_TIME := 1
 # whith this variable. If you don't want to run a file, you can enter
 # manually the size that you want with the SIZE variable.
 # 0 by default.
-FILE_MODE := 0
+FILE_MODE := 1
 
 # You can specify the name of the file you want to run with this variable. The files are on the inst folder.
 # (ex of path : ../inst/[type of instance]/[name of the file])
