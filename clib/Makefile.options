@@ -29,7 +29,7 @@ PYTHON_VERSION := "python3.6m"
 
 # 1 if you want to print precise information about what is running.
 # 0 by default (false).
-DEBUG := 1
+DEBUG := 0
 
 #----------------------------------------------------------------------
 #           COMMON SETTINGS OF THE THE PROJECT
@@ -37,11 +37,11 @@ DEBUG := 1
 
 # 1 if you want to print the result on a graphic interface.
 # 0 by default (false).
-GRAPHIC := 1
+GRAPHIC := 0
 
 # 1 if you want a progress bar.
 # 0 by default (false).
-PROGRESS_BAR := 0
+PROGRESS_BAR := 1
 
 # You can specify the duration of the graphic render.
 G_TIME := 1
@@ -62,7 +62,8 @@ COMMUNICATION_RADIUS := 8
 # You can specify the capture radius with this variable.
 CAPTURE_RADIUS := 2
 
-# You can specify the size (SIZE*SIZE) if the grid with this variable.
+# You can specify the size (SIZE*SIZE) of the grid with this variable.
+# Useless if FILE_MODE = 1.
 SIZE := 5
 
 
@@ -80,4 +81,4 @@ STEP = 2
 T_INIT = 40.0
 
 # You can the number of iterations with this variable.
-NB_ITERATIONS = 10
+NB_ITERATIONS = 10000
