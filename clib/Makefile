@@ -47,7 +47,7 @@ exec_test :
 exec_free :
 	valgrind --track-origins=yes ./bin/meta ${PARAMETERS}
 
-test : main_test.o test_unit.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o test_unit.o
+test : main_test.o test_unit.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o progress.o test_unit.o
 	cd obj/ && $(CC) $^ -o ../bin/$@ -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -lcunit
 
 meta : main.o point.o tools.o rwfile.o dist.o greedy.o avl.o queue.o draw.o annealing.o neighbourhood.o kdtree.o dfs.o check.o progress.o
