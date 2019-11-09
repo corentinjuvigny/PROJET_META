@@ -25,7 +25,7 @@
 
 # Go on /usr/include/ and choose one python version you see on the folder.
 # Don't forget to install the python package required (see README.md).
-PYTHON_VERSION := "python3.7m"
+PYTHON_VERSION := "python3.6m"
 
 # 1 if you want to print precise information about what is running.
 # 0 by default (false).
@@ -50,7 +50,7 @@ G_TIME := 10
 # whith this variable. If you don't want to run a file, you can enter
 # manually the size that you want with the SIZE variable.
 # 0 by default.
-FILE_MODE := 1
+FILE_MODE := 0
 
 # You can specify the name of the file you want to run with this variable. The files are on the inst folder.
 # (ex of path : inst/[type of instance]/[name of the file])
@@ -81,4 +81,4 @@ STEP = 2
 T_INIT = 40.0
 
 # You can the number of iterations with this variable.
-NB_ITERATIONS = 50000
+NB_ITERATIONS = 100000

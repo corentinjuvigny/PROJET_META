@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
   t2 = clock();
 
   temps = (float)(t2-t1)/CLOCKS_PER_SEC;
-  printf("\nTEMPS TOTAL : %f secondes\n", temps);
+  printf("\nTOTAL TIME : %f s\n", temps);
 
   if(graphic)
     draw_data(new_pf,g_time,size);

@@ -23,9 +23,9 @@ IMPORTANT: LIRE CE FICHIER AVANT DE LANCER LE PROGRAMME
 1. Introduction                 
 ==================================================================================
 
-Ceci est le README du projet de méta-heuristique **Couverture connexe minimum dans les réseaux de capteurs**. Vous trouverez dans ce document toutes les informations nécessaires pour faire fonctionner le code.
+Ceci est le README du projet de métaheuristique **Couverture connexe minimum dans les réseaux de capteurs**. Vous trouverez dans ce document toutes les informations nécessaires pour faire fonctionner le code.
 
-NOTE1: Nous vous invitons à lire notre rapport qui vous renseignera sur la démarche et les choix engagés dans ce projet, ainsi que la répartition des tâches.
+NOTE1: Nous vous invitons à lire notre rapport qui vous renseignera sur la démarche et les choix engagés dans ce projet.
 
 NOTE2: Le fichier Makefile.options est important. Il permet de modifier 
 certains paramètres du projet.
@@ -107,7 +107,6 @@ Vous pouvez compiler et lancer simultanément avec la commande 3.
 
 **3. Entrez dans votre console (compiler et lancer)** : 
 > make run_meta
-
 
 
 *********************************************************************************************
