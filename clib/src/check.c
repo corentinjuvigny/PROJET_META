@@ -21,12 +21,13 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <stdlib.h>
 #include <stdio.h>
 
-int check_and_set(char** filename, double* communication_radius, double* capture_radius, int* size, double* phi, int* step, double* T_initial, int* nb_iterations, double* g_time, int* file_mode, int* graphic, int* progress, char* argv[],int argc){
-
-	if(argc != 13){
+int check_and_set(char** filename, double* communication_radius, double* capture_radius, int* size, 
+                  double* phi, int* step, double* T_initial, int* nb_iterations, double* g_time, 
+                  int* file_mode, int* graphic, int* progress, char* argv[],int argc)
+{
+	if(argc != 13)
 		return 0;
-	}
-	else{
+	else {
 		*filename 			  = argv[1];
 		*communication_radius = strtod(argv[2], NULL)+0.00001;
 		*capture_radius 	  = strtod(argv[3], NULL)+0.00001;

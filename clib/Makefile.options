@@ -37,14 +37,14 @@ DEBUG := 0
 
 # 1 if you want to print the result on a graphic interface.
 # 0 by default (false).
-GRAPHIC := 0
+GRAPHIC := 1
 
 # 1 if you want a progress bar.
 # 0 by default (false).
 PROGRESS_BAR := 1
 
 # You can specify the duration of the graphic render.
-G_TIME := 1
+G_TIME := 10
 
 # 1 if you want to run the project with a file. You can specify the filename
 # whith this variable. If you don't want to run a file, you can enter
@@ -54,17 +54,17 @@ FILE_MODE := 1
 
 # You can specify the name of the file you want to run with this variable. The files are on the inst folder.
 # (ex of path : inst/[type of instance]/[name of the file])
-FILE_NAME := inst/
+FILE_NAME := inst/truncated/captTRUNC351_20_20.dat
 
 # You can specify the communication radius with this variable.
-COMMUNICATION_RADIUS := 8
+COMMUNICATION_RADIUS := 2
 
 # You can specify the capture radius with this variable.
-CAPTURE_RADIUS := 2
+CAPTURE_RADIUS := 1
 
 # You can specify the size (SIZE*SIZE) of the grid with this variable.
 # Useless if FILE_MODE = 1.
-SIZE := 5
+SIZE := 20
 
 
 #----------------------------------------------------------------------
@@ -72,7 +72,7 @@ SIZE := 5
 #----------------------------------------------------------------------
 
 # You can specify the phi coefficient with this variable.
-PHI = 0.999995
+PHI = 0.99995
 
 # You can specify the temperature step size with this variable.
 STEP = 2
@@ -81,4 +81,4 @@ STEP = 2
 T_INIT = 40.0
 
 # You can the number of iterations with this variable.
-NB_ITERATIONS = 10000
+NB_ITERATIONS = 50000

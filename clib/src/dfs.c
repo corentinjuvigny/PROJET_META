@@ -29,15 +29,16 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "neighbourhood.h"
 
 
-void dfs(TPointFile* pf, AVLTree* visited_avl, TPoint* node){
+void dfs(TPointFile* pf, AVLTree* visited_avl, TPoint* node)
+{
 	TPoint* node_in_avl = avl_tree_lookup(visited_avl,&(node->name));
-	if(node_in_avl == NULL){
+	if(node_in_avl == NULL) {
 		avl_tree_insert(visited_avl,&(node->name), node);
 		int i;
 		AVLTreeValue* node_aux_list = avl_tree_to_array(node->aux);
 		int node_aux_avl_length = avl_tree_num_entries(node->aux);
 
-		for(i = 0; i < node_aux_avl_length; i++){
+		for(i = 0; i < node_aux_avl_length; i++) {
 			TPoint* neighbour = (TPoint*)(node_aux_list[i]);
 			dfs(pf,visited_avl,neighbour);
 		}
@@ -45,8 +46,8 @@ void dfs(TPointFile* pf, AVLTree* visited_avl, TPoint* node){
 	}
 }
 
-int run_dfs(TPointFile* pf, TPoint* removed_target){
-
+int run_dfs(TPointFile* pf, TPoint* removed_target)
+{
 	int remove_one = 0;
 	AVLTree* visited_avl = avl_tree_new((AVLTreeCompareFunc) point_compare);
 	if(removed_target != NULL){
@@ -59,7 +60,6 @@ int run_dfs(TPointFile* pf, TPoint* removed_target){
 	dfs(pf,visited_avl,first_node);
 	int visited_avl_size = avl_tree_num_entries(visited_avl)-remove_one;
 	avl_tree_free(visited_avl);
-	return visited_avl_size;
+
+  return visited_avl_size;
 }
-
-

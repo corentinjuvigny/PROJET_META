@@ -54,8 +54,7 @@ void draw_data(TPointFile* pf, float pause, int size)
 	PyRun_SimpleString("plt.gca().invert_yaxis()");
 	PyRun_SimpleString("plt.grid(True,linewidth=0.25)");
 
-	for (i = 0; i < nbpoints; ++i)
-	{
+	for (i = 0; i < nbpoints; ++i) {
 		TPoint* pts = points[i];
 		PKind kind = pts->kind;
 		AVLTree* aux = pts->aux;
@@ -66,7 +65,7 @@ void draw_data(TPointFile* pf, float pause, int size)
 		AVLTreeValue* aux_list = avl_tree_to_array(aux);
 		int aux_length = avl_tree_num_entries(aux);
 
-		if(kind == K_Well){
+		if(kind == K_Well) {
 			char *well_scatter = (char*)malloc(100 * sizeof(char));
 			sprintf(well_scatter, "plt.scatter(%f, %f,marker='D',color='black')",pts_x,pts_y);
 
@@ -76,7 +75,7 @@ void draw_data(TPointFile* pf, float pause, int size)
 			PyRun_SimpleString(well_scatter);
 			PyRun_SimpleString(well_text);
 		}
-		else if(kind == K_Sensor){
+		else if(kind == K_Sensor) {
 			char *sensor_scatter = (char*)malloc(100 * sizeof(char));
 			sprintf(sensor_scatter, "plt.scatter(%f, %f,marker='o',color='black')",pts_x,pts_y);
 
@@ -86,7 +85,7 @@ void draw_data(TPointFile* pf, float pause, int size)
 			PyRun_SimpleString(sensor_scatter);
 			PyRun_SimpleString(sensor_text);
 
-			for(j = 0; j < aux_length; j++){
+			for(j = 0; j < aux_length; j++) {
 				TPoint* sensor = (TPoint*)(aux_list[j]);
 				double sensor_x = sensor->x;
 				double sensor_y = sensor->y;
@@ -97,7 +96,7 @@ void draw_data(TPointFile* pf, float pause, int size)
 				PyRun_SimpleString(sensor_line);
 			}
 		}
-		else{
+		else {
 			char *target_scatter = (char*)malloc(100 * sizeof(char));
 			sprintf(target_scatter, "plt.scatter(%f, %f,marker='o',color='grey')",pts_x,pts_y);
 
@@ -107,7 +106,7 @@ void draw_data(TPointFile* pf, float pause, int size)
 			PyRun_SimpleString(target_scatter);
 			PyRun_SimpleString(target_text);
 
-			for(k = 0; k < aux_length; k++){
+			for(k = 0; k < aux_length; k++) {
 				TPoint* target = (TPoint*)(aux_list[k]);
 				double target_x = target->x;
 				double target_y = target->y;

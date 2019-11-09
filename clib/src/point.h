@@ -62,7 +62,7 @@ struct _TPoint {
   double  x;
   double  y;
   PKind   kind;
-  Queue* capture_queue;
+  Queue*  capture_queue;
   Queue* 	communication_queue;
   AVLTree*   aux;
 };
@@ -87,7 +87,8 @@ extern void print_node(void* node);
  *
  * @return                     A new point.
  */
-extern TPoint* pnt_new(char* name,double x,double y,PKind kd,Queue* capture_queue,Queue* communication_queue,AVLTree* aux);
+extern TPoint* pnt_new(char* name,double x,double y,PKind kd,
+                       Queue* capture_queue,Queue* communication_queue,AVLTree* aux);
 
 /**
  * This function is used to compare two points by using their names.

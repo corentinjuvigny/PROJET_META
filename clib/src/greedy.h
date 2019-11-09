@@ -49,6 +49,7 @@ void greedy_construction(TPointFile* pf);
  *                                 			radius of the new sensor.
  * @param new_covered_target_max 			The number of new targets covered.
  */
-void maj_pf(TPointFile* pf,TPoint* selected_target, Queue* sensor_queue, Queue* visited_target_queue, int new_covered_target_max);
+void maj_pf(TPointFile* pf,TPoint* selected_target, Queue* sensor_queue, 
+            Queue* visited_target_queue, int new_covered_target_max);
 
 #endif
