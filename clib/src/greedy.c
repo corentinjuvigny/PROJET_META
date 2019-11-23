@@ -280,7 +280,7 @@ void greedy_construction(TPointFile* pf){
 	avl_tree_insert(pf->solution,&(selected_target->name),selected_target);
 
 	Queue *empty_queue = queue_new();
-
+	// draw_data(pf,5,5);
 	queue_push_head(empty_queue,well_point);
 
 	maj_pf(pf,selected_target,empty_queue,visited_target_queue,new_covered_target_max);
@@ -293,9 +293,8 @@ void greedy_construction(TPointFile* pf){
 	print_avl_tree(pf->solution,print_node);
 	printf("########################\n\n");
 #endif
-
 	while(pf->cover > 0){
-
+		// draw_data(pf,5,5);
 		visited_target_avl = avl_tree_new((AVLTreeCompareFunc) point_compare);
 		new_covered_target_max = 0;
 #if DEBUG
