@@ -25,7 +25,7 @@ include Makefile.options
 
 PARAMETERS=${FILE_NAME} ${COMMUNICATION_RADIUS} ${CAPTURE_RADIUS} ${SIZE} ${PHI} ${STEP} ${T_INIT} ${NB_ITERATIONS} ${G_TIME} ${FILE_MODE} ${GRAPHIC} ${PROGRESS_BAR}
 
-CC=gcc -Wall -Wextra -ansi -std=c99 -O2 -pthread -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -DDEBUG=${DEBUG}
+CC=gcc -Wall -Wextra -std=c18 -O2 -pthread -lm -I/usr/include/${PYTHON_VERSION} -l${PYTHON_VERSION} -DDEBUG=${DEBUG}
 
 all : meta
 

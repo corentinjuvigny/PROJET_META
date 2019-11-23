@@ -48,12 +48,13 @@ int rand_int(int limit) {
 	return retval;
 }
 
-double energie_proba_distrib(double delta_E,double T){
+double energie_proba_distrib(double delta_E,double T)
+{
 	return exp(-delta_E/T);
 }
 
-TPoint* random_choice_on_avl(AVLTree* avl_tree){
-
+TPoint* random_choice_on_avl(AVLTree* avl_tree)
+{
 	AVLTreeValue* data_list = avl_tree_to_array(avl_tree);
 	int data_list_length = avl_tree_num_entries(avl_tree);
 	int random_index = rand_int(data_list_length-1);
@@ -62,27 +63,28 @@ TPoint* random_choice_on_avl(AVLTree* avl_tree){
 	return data;
 }
 
-TPoint* random_data_in_neighbourhood(AVLTree* neighbourhood_add, AVLTree* neighbourhood_remove, int* choice){
+TPoint* random_data_in_neighbourhood(AVLTree* neighbourhood_add, AVLTree* neighbourhood_remove, int* choice)
+{
 	int rand_int_between_0_and_1 = rand_int(1);
 	int size_add = avl_tree_num_entries(neighbourhood_add);
 	int size_remove = avl_tree_num_entries(neighbourhood_remove);
 
-	if((rand_int_between_0_and_1 || size_remove==0) && size_add>0){
+	if((rand_int_between_0_and_1 || size_remove==0) && size_add>0) {
 		*choice = 0;
 		return random_choice_on_avl(neighbourhood_add);
 	}
-	else if (size_remove > 0){
+	else if (size_remove > 0) {
 		*choice = 1;
 		return random_choice_on_avl(neighbourhood_remove);
 	}
-	else{
+	else {
 		*choice = -1;
 		return NULL;
 	}
 }
 
-void modify_solution_with_neighbourhood(TPointFile* pf,  TPoint** neighboor_node, int* choice){
-
+void modify_solution_with_neighbourhood(TPointFile* pf,  TPoint** neighboor_node, int* choice)
+{
 	AVLTree* neighbourhood_add = add_node_list(pf);
 	AVLTree* neighbourhood_remove = remove_node_list(pf);
 	*neighboor_node = random_data_in_neighbourhood(neighbourhood_add,neighbourhood_remove,choice);
@@ -110,16 +112,16 @@ void modify_solution_with_neighbourhood(TPointFile* pf,  TPoint** neighboor_node
 	}
 }
 
-void revert_choice(TPointFile* pf, TPoint** neighboor_node, int* choice){
-
-	if(*choice == 0){
+void revert_choice(TPointFile* pf, TPoint** neighboor_node, int* choice)
+{
+	if(*choice == 0) {
 #if DEBUG
 		printf("REMOVE\n");
 		print_node(*neighboor_node);
 #endif
 		remove_node(pf,*neighboor_node);
 	}
-	else if(*choice == 1){
+	else if(*choice == 1) {
 #if DEBUG
 		printf("ADD\n");
 		print_node(*neighboor_node);
@@ -128,13 +130,15 @@ void revert_choice(TPointFile* pf, TPoint** neighboor_node, int* choice){
 	}
 }
 
-void free_best_queue(Queue* best_queue){
-	if(best_queue != NULL){
+void free_best_queue(Queue* best_queue)
+{
+	if(best_queue != NULL) {
 		queue_free(best_queue);
 	}
 }
 
-void reconstruct_solution(TPointFile* pf, BestSolution* bs){
+void reconstruct_solution(TPointFile* pf, BestSolution* bs)
+{
 	Queue *best_solution_queue = bs->best_solution;
 	QueueEntry *queue_iterator = best_solution_queue->head;
 
@@ -142,22 +146,23 @@ void reconstruct_solution(TPointFile* pf, BestSolution* bs){
 		char* point_name = (char *)(queue_iterator->data);
 		long int node_name_int = strtol(point_name,NULL,0);
 
-		if(node_name_int != 0){
+		if(node_name_int != 0) {
 			add_node(pf,pf->points[node_name_int]);
 		}
 		queue_iterator = queue_iterator->next;
 	}
 }
 
-BestSolution* new_best_solution(){
+BestSolution* new_best_solution()
+{
 	BestSolution * bs = xmalloc(sizeof(*bs));
 	bs->best_solution = NULL;
 	bs->size = 0;
 	return bs;
 }
 
-BestSolution* compress_bs(TPointFile* pf, BestSolution* bs){
-
+BestSolution* compress_bs(TPointFile* pf, BestSolution* bs)
+{
 	free_best_queue(bs->best_solution);
 
 	Queue* current_best_queue = queue_new();
@@ -167,7 +172,7 @@ BestSolution* compress_bs(TPointFile* pf, BestSolution* bs){
 	AVLTreeValue* current_best_list = avl_tree_to_array(current_best);
 	int current_best_list_length = avl_tree_num_entries(current_best);
 
-	for(i = 0; i < current_best_list_length; i++){
+	for(i = 0; i < current_best_list_length; i++) {
 		TPoint* current_sensor = (TPoint*)(current_best_list[i]);
 		queue_push_head(current_best_queue, current_sensor->name);
 	}
@@ -178,8 +183,8 @@ BestSolution* compress_bs(TPointFile* pf, BestSolution* bs){
 	return bs;
 }
 
-BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T_initial, int nb_iterations, int progress){
-
+BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T_initial, int nb_iterations, int progress)
+{
 	srand(time(NULL));
 	TPoint* neighboor_node;
 	int choice = 0;
@@ -193,13 +198,13 @@ BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T
 
 	double T = T_initial;
 
-	while(k < nb_iterations){
+	while(k < nb_iterations) {
 
 #if DEBUG
 		printf("\n########## NOUVEAU PALIER %d(CURRENT BEST : %d )##########\n",k,f_x_min);
 #endif
 
-		for (i = 0; i < step; ++i){
+		for (i = 0; i < step; i++) {
 
 #if DEBUG
 			printf("########## ITERATION n°%d ##########\n",i);
@@ -215,9 +220,9 @@ BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T
 
 			int delta_E = 10*(f_x_p - f_x);
 
-			if(delta_E <= 0){
+			if(delta_E <= 0) {
 				f_x = f_x_p;
-				if(f_x < f_x_min){
+				if(f_x < f_x_min) {
 					compress_bs(pf, bs);
 					f_x_min = f_x;
 
@@ -228,14 +233,14 @@ BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T
 
 				}
 			}
-			else{
+			else {
 				double random_d = random_double();
 				double energy_p = energie_proba_distrib(delta_E,T);
 #if DEBUG
 				printf("ENERGY : %f et K : %f\n",energy_p,random_d);
 #endif
 
-				if(random_d > energy_p){
+				if(random_d > energy_p) {
 
 #if DEBUG
 					printf("ON REVERT\n");
@@ -252,7 +257,7 @@ BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T
 #endif
 
 		k++;
-		if(progress){
+		if(progress) {
 			percentage = ((float)k/(float)nb_iterations);
 			printProgress(percentage);
 		}
@@ -262,9 +267,8 @@ BestSolution* simulated_annealing(TPointFile* pf, double phi, int step, double T
 	printf("FINI\n");
 #endif
 
-	if(progress){
+	if(progress)
 		printf("%c[2K", 27);
-	}
 
 	return bs;
 	// AVLTree* tree_test = add_node_list(pf);

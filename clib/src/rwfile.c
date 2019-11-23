@@ -17,6 +17,11 @@ NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
+#if __STDC_VERSION__ >= 199901L
+#define _XOPEN_SOURCE 600
+#else
+#define _XOPEN_SOURCE 500
+#endif /* __STDC_VERSION__ */
 
 #include "rwfile.h"
 #include "avl.h"
@@ -25,13 +30,14 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "kdtree.h"
 
 
-static int* pos_bn(int* pos,const char* file,unsigned long size) {
+static int* pos_bn(int* pos,const char* file,unsigned long size)
+{
     unsigned long i;
     int* pos_bn_tab = xmalloc(size*sizeof(int));
     for (i = 0; i < size; i++) pos_bn_tab[i] = 0;
     for (i = 0, *pos = 0; i < size; i++)
-        if (file[i] == '\n')
-            pos_bn_tab[(*pos)++] = i;
+      if (file[i] == '\n')
+        pos_bn_tab[(*pos)++] = i;
     return pos_bn_tab;
 }
 
@@ -79,8 +85,8 @@ static TPoint* point_of_line_2(double x, double y, int name_int, PKind kind)
   return pnt_new(name,x,y,kind,NULL,NULL,NULL);
 }
 
-static Queue* set_capture_and_communication_queue(TPointFile* pf, TPoint* point, double radius){
-
+static Queue* set_capture_and_communication_queue(TPointFile* pf, TPoint* point, double radius)
+{
   struct kdres *covered_node_in_radius_list;
   double pos[2];
   pos[0] = point->x;
@@ -103,7 +109,8 @@ static Queue* set_capture_and_communication_queue(TPointFile* pf, TPoint* point,
   return queue;
 }
 
-static void finish_pf(TPointFile* pf){
+static void finish_pf(TPointFile* pf)
+{
   int k;
   double communication_radius = pf->communication_radius;
   double capture_radius = pf->capture_radius;

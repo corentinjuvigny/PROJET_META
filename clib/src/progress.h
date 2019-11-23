@@ -23,6 +23,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * @brief A simple progress bar
  */
 
+#include "include.h"
 
 /**
  * This function print a progress bar.

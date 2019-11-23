@@ -48,6 +48,8 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * @return 					   An integer.
  */
-int check_and_set(char** filename, double* communication_radius, double* capture_radius, int* size, double* phi, int* step, double* T_initial, int* nb_iterations, double* g_time, int* file_mode, int* graphic, int* progress, char* argv[],int argc);
+int check_and_set(char** filename, double* communication_radius, double* capture_radius, 
+                  int* size, double* phi, int* step, double* T_initial, int* nb_iterations, 
+                  double* g_time, int* file_mode, int* graphic, int* progress, char* argv[],int argc);
 
 #endif

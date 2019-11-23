@@ -37,7 +37,7 @@ DEBUG := 0
 
 # 1 if you want to print the result on a graphic interface.
 # 0 by default (false).
-GRAPHIC := 0
+GRAPHIC := 1
 
 # 1 if you want a progress bar.
 # 0 by default (false).
@@ -55,7 +55,7 @@ FILE_MODE := 1
 # You can specify the name of the file you want to run with this variable.
 # The files are on the inst folder.
 # (ex of path : inst/[type of instance]/[name of the file])
-FILE_NAME := inst/random/captANOR900_15_20.dat
+FILE_NAME := inst/truncated/captTRUNC351_20_20.dat
 
 # You can specify the communication radius with this variable.
 COMMUNICATION_RADIUS := 2
@@ -65,7 +65,7 @@ CAPTURE_RADIUS := 1
 
 # You can specify the size (SIZE*SIZE) of the grid with this variable.
 # Useless if FILE_MODE = 1.
-SIZE := 40
+SIZE := 20
 
 
 #----------------------------------------------------------------------

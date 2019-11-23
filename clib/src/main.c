@@ -75,12 +75,12 @@ int main(int argc, char* argv[])
   /************************************************************************/
   /************************************************************************/
 
-  if(file_mode){
+  if(file_mode) {
     pf = read_point_file(filename,communication_radius,capture_radius);
     new_pf = read_point_file(filename,communication_radius,capture_radius);
 
   }
-  else{
+  else {
     pf = create_point_file(size,communication_radius,capture_radius);
     new_pf = create_point_file(size,communication_radius,capture_radius);
   }
@@ -99,9 +99,8 @@ int main(int argc, char* argv[])
   greedy_construction(pf);
   printf("NUMBER OF TARGETS : %d\n",avl_tree_num_entries(pf->solution)-1);
 
-  if(graphic){
+  if(graphic)
     draw_data(pf,g_time,size);
-  }
 
 
   printf("\n############### RESULT SIMULATED ANNEALING ###############\n");
@@ -113,9 +112,8 @@ int main(int argc, char* argv[])
   temps = (float)(t2-t1)/CLOCKS_PER_SEC;
   printf("\nTOTAL TIME : %f s\n", temps);
 
-  if(graphic){
+  if(graphic)
     draw_data(new_pf,g_time,size);
-  }
 
   /************************************************************************/
   /************************************************************************/
@@ -137,7 +135,7 @@ int main(int argc, char* argv[])
   clean_pf(pf);
   clean_pf(new_pf);
   queue_free(result->best_solution);
-  free(result);
+  xfree(result);
 
   return 0;
 }
