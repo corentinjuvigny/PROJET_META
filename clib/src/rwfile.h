@@ -31,6 +31,8 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "include.h"
 #include "point.h"
 
+static char *nameProcessus;
+
 typedef struct _PointFile TPointFile;
 typedef const TPointFile CPointFile;
 
