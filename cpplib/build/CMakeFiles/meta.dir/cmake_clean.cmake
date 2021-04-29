@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/meta.dir/src/main.cpp.o.d"
   "CMakeFiles/meta.dir/src/node.cpp.o"
   "CMakeFiles/meta.dir/src/node.cpp.o.d"
+  "CMakeFiles/meta.dir/src/rwfile.cpp.o"
+  "CMakeFiles/meta.dir/src/rwfile.cpp.o.d"
   "meta"
   "meta.pdb"
 )

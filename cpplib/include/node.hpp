@@ -33,13 +33,14 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <map>
 #include <vector>
 #include <memory>
-#include <tuple>
+#include <algorithm>
 
 template <size_t d>
 class Node {
    public:
       typedef std::array<double,d> Coord;
       typedef std::shared_ptr<Node<d>> SNode;
+      typedef std::map<std::string,SNode> AVLNodes;
       enum Kind { K_Well, K_Target, K_Sensor };
       Node<d>(const Kind kind,const std::string &name, const Coord &coord)
          :  _kind(kind), _name(name), _coord(coord) { }
@@ -55,8 +56,7 @@ class Node {
       friend std::ostream& operator<<(std::ostream &os, const Node &n)
       {
          os << n._name << " ( ";
-         for (auto &e : n._coord)
-            os << e << ' ';
+         std::for_each(n._coord.cbegin(),n._coord.cend(),[&os](auto &e) { os << e << ' '; });
          os << ") of type " << n._kind;
          return os;
       }
@@ -74,12 +74,12 @@ class Node {
       }
       
    private:
-      Kind                  _kind;
-      std::string           _name;
-      Coord                 _coord;
-      std::list<SNode>      _capture_queue;
-      std::list<SNode>      _communication_queue;
-      std::map<SNode,SNode> _aux;
+      Kind              _kind;
+      std::string       _name;
+      Coord             _coord;
+      std::list<SNode>  _capture_queue;
+      std::list<SNode>  _communication_queue;
+      AVLNodes          _aux;
 };
 
 template <int d>

@@ -13,8 +13,7 @@ CMakeFiles/meta.dir/src/kdtree.c.o: \
  /usr/include/bits/types/__fpos64_t.h /usr/include/bits/types/__FILE.h \
  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/floatn.h \
- /usr/include/bits/floatn-common.h /usr/include/bits/stdio.h \
- /usr/include/stdlib.h /usr/include/bits/stdlib-bsearch.h \
+ /usr/include/bits/floatn-common.h /usr/include/stdlib.h \
  /usr/include/bits/stdlib-float.h /usr/include/string.h \
  /usr/include/math.h /usr/include/bits/math-vector.h \
  /usr/include/bits/libm-simd-decl-stubs.h \

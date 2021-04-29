@@ -7,7 +7,7 @@ C_DEFINES =
 
 C_INCLUDES = -I/home/kodra/Documents/Cours/meta/PROJET_META/cpplib/include
 
-C_FLAGS = -std=c99 -O2
+C_FLAGS = -std=c99 -g
 
 CXX_DEFINES = 
 

@@ -23,3 +23,12 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * @brief read-write functions file
  *
  */
+
+#include <optional>
+#include "grid.hpp"
+
+extern std::optional<Grid<2>> read_node_file( const char* filename
+                                            , const double communication_radius
+                                            , const double capture_radius );
+
+Node<2>::SNode node_of_line(const std::string &buf, Node<2>::Kind kind);

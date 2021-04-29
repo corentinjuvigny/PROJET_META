@@ -28,6 +28,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef __GRID_HPP__
 #define __GRID_HPP__
 
+#include <iostream>
 #include <map>
 #include <vector>
 #include "kdtree.h"
@@ -37,25 +38,29 @@ template <size_t d>
 class Grid {
    public:
       using SNode = typename Node<d>::SNode;
-      typedef std::map<std::string,SNode> AVLNodes;
+      using AVLNodes = typename Node<d>::AVLNodes;
       Grid<d>( const std::vector<SNode> &nodes
           , struct kdtree *kdTree
-          , const unsigned cover
+          , const unsigned long cover
           , const double communication_radius
           , const double capture_radius );
       Grid<d>( const size_t n
-          , const unsigned cover
+          , const unsigned long cover
           , const double communication_radius
           , const double capture_radius );
       Grid<d>(const Grid<d> &) = default;
-      ~Grid();
+      Grid<d>(Grid<d> &&);
+      ~Grid() = default;
+      void kdend() { kd_free(_kdTree); }
       const std::vector<SNode> &nodes() const { return _nodes; }
+
       size_t nbNodes() const { return _nodes.size(); }
       struct kdtree *kdTree() const { return _kdTree; }
       const AVLNodes &solution() const { return _solution; }
-      const unsigned &cover() const { return _cover; }
+      const unsigned long &cover() const { return _cover; }
       const double &communication_radius() const { return _communication_radius; }
       const double &capture_radius() const { return _capture_radius; }
+      void insertNode(SNode &&n);
       friend std::ostream& operator<<(std::ostream &os, const Grid<d> &g)
       {
          if ( g.nbNodes() == 0 )
@@ -64,8 +69,8 @@ class Grid {
             os << "============= Grid =============\n";
          for (auto &n : g._nodes) {
             os << "######## NODES ########\n"
-               << n
-               << "#######################\n";
+               << *n
+               << "\n#######################\n";
          }
          return os;
       }
@@ -73,7 +78,7 @@ class Grid {
       std::vector<SNode> _nodes;
       struct kdtree *    _kdTree;
       AVLNodes           _solution;
-      unsigned           _cover;
+      unsigned long      _cover;
       double             _communication_radius;
       double             _capture_radius;
 };
@@ -81,7 +86,7 @@ class Grid {
 template <size_t d>
 Grid<d>::Grid( const std::vector<typename Node<d>::SNode> &nodes
              , struct kdtree *kdTree
-             , const unsigned cover
+             , const unsigned long cover
              , const double communication_radius
              , const double capture_radius )
    : _nodes(nodes), _kdTree(NULL), _solution(), _cover(cover)
@@ -93,7 +98,7 @@ Grid<d>::Grid( const std::vector<typename Node<d>::SNode> &nodes
 
 template <size_t d>
 Grid<d>::Grid( const size_t n
-             , const unsigned cover
+             , const unsigned long cover
              , const double communication_radius
              , const double capture_radius )
    : _nodes(), _kdTree(NULL), _solution(), _cover(cover)
@@ -102,12 +107,23 @@ Grid<d>::Grid( const size_t n
 {
    _nodes.reserve(n);
    _kdTree = kd_create(static_cast<int>(d));
+   kd_data_destructor(_kdTree,NULL);
 }
+template <size_t d>
+Grid<d>::Grid(Grid<d> &&g)
+   : _nodes(std::move(g._nodes))
+   , _kdTree(std::move(g._kdTree))
+   , _solution(std::move(g._solution))
+   , _cover(std::move(g._cover))
+   , _communication_radius(std::move(g._communication_radius))
+   , _capture_radius(std::move(g._capture_radius))
+{ }
 
 template <size_t d>
-Grid<d>::~Grid() 
+void Grid<d>::insertNode(typename Node<d>::SNode &&n)
 {
-   kd_free(_kdTree);
+   _nodes.push_back(n); 
+   kd_insert(_kdTree,n->coord().data(),n.get());
 }
 
 #endif // __GRID_HPP__

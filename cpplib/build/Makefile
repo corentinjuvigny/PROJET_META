@@ -225,6 +225,30 @@ src/node.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meta.dir/build.make CMakeFiles/meta.dir/src/node.cpp.s
 .PHONY : src/node.cpp.s
 
+src/rwfile.o: src/rwfile.cpp.o
+.PHONY : src/rwfile.o
+
+# target to build an object file
+src/rwfile.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meta.dir/build.make CMakeFiles/meta.dir/src/rwfile.cpp.o
+.PHONY : src/rwfile.cpp.o
+
+src/rwfile.i: src/rwfile.cpp.i
+.PHONY : src/rwfile.i
+
+# target to preprocess a source file
+src/rwfile.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meta.dir/build.make CMakeFiles/meta.dir/src/rwfile.cpp.i
+.PHONY : src/rwfile.cpp.i
+
+src/rwfile.s: src/rwfile.cpp.s
+.PHONY : src/rwfile.s
+
+# target to generate assembly for a file
+src/rwfile.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meta.dir/build.make CMakeFiles/meta.dir/src/rwfile.cpp.s
+.PHONY : src/rwfile.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -246,6 +270,9 @@ help:
 	@echo "... src/node.o"
 	@echo "... src/node.i"
 	@echo "... src/node.s"
+	@echo "... src/rwfile.o"
+	@echo "... src/rwfile.i"
+	@echo "... src/rwfile.s"
 .PHONY : help
 
 
