@@ -51,7 +51,7 @@ enum _PKind {
  * - capture queue are all the points in the capture radius of the point.
  * - communication_queue are all the points in the comunication queue of the
  *   point.
- * - aux : if the point is a target, it cointains all the sensor in is capture
+ * - aux : if the point is a target, it contains all the sensors in its capture
  *   radius. Whereas, it contains all the sensors and the well in the
  *   communication radius of the point.
  */
