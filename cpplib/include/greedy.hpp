@@ -26,8 +26,8 @@ connection with the use or performance of this software.
 
 #define DEBUG 1
 
-#ifndef __GREEDY_H__
-#define __GREEDY_H__
+#ifndef __GREEDY_HPP__
+#define __GREEDY_HPP__
 
 #include "grid.hpp"
 #include <algorithm>
@@ -36,11 +36,11 @@ template <size_t d>
 using AVLVisitedNode = std::map<std::string,typename Node<d>::Queue>;
 
 template <size_t d>
-void find_best_target( const typename Node<d>::SNode &node
-                     , typename Node<d>::SNode *selected_target
+void find_best_target( Node<d> *node
+                     , Node<d> **selected_target
                      , typename Node<d>::Queue *visited_target_queue
                      , size_t *new_covered_target_max
-                     , AVLVisitedNode<d> *visited_target_avl )
+                     , AVLVisitedNode<d> *visited_target_avl = NULL )
 {
 #if DEBUG
    std::cerr << "### ON TRAITE ###\n"
@@ -48,7 +48,7 @@ void find_best_target( const typename Node<d>::SNode &node
              << std::endl;
 #endif
    size_t visit_node = 0, new_covered_target;
-   const typename Node<d>::Queue &target_in_radius_queue = node->communication_queue();
+   const typename Node<d>::Queue target_in_radius_queue = node->communication_queue();
 #if DEBUG
    std::cerr << "target_in_radius_queue.size() = "
              << target_in_radius_queue.size()
@@ -57,6 +57,7 @@ void find_best_target( const typename Node<d>::SNode &node
 
    /* We iterate over all of targets */
    for (auto &target_in_radius : target_in_radius_queue) {
+      std::cerr << "Je suis queblo dans le target_in_radius_queue"<< std::endl;
       if ( (!equal_coord(node->coord(),target_in_radius->coord()))
            && target_in_radius->kind() == Node<d>::K_Target )
          visit_node = 0;
@@ -67,7 +68,9 @@ void find_best_target( const typename Node<d>::SNode &node
          /* We look if we have already visited the current target*/
          auto point_queue = visited_target_avl->find(target_in_radius->name());
          /* We never have visited the current target */
+         std::cerr << "Point_queue == .end() " << (bool)(point_queue == visited_target_avl->end()) << std::endl;
          if ( point_queue == visited_target_avl->end() ) {
+            std::cerr << "Je suis ajoute dans l'avl" << std::endl;
             /* We add the target in the avl (its name is the key), the content is 
              * a steck in which we put  the point */
             typename Node<d>::Queue node_queue;
@@ -88,6 +91,7 @@ void find_best_target( const typename Node<d>::SNode &node
 #endif
          const typename Node<d>::Queue &covered_targets_in_radius_queue = target_in_radius->capture_queue();
          for (const auto &covered_target_in_radius : covered_targets_in_radius_queue) {
+            std::cerr << "Je suis bloque dans le covered_targets_in_radius_queue ?" << std::endl;
             if ( (!equal_coord(target_in_radius->coord(),covered_target_in_radius->coord()))
                  && (covered_target_in_radius->kind() == Node<d>::K_Target) ) {
                if ( covered_target_in_radius->aux().empty() )
@@ -107,27 +111,32 @@ void find_best_target( const typename Node<d>::SNode &node
             *selected_target = target_in_radius;
             *visited_target_queue = covered_targets_in_radius_queue;
             *new_covered_target_max = new_covered_target;
+            std::cerr << "Target hors radius" << std::endl;
          }
       }
 
    }
-                        
+   std::cerr << "Target chosen : " << **selected_target << std::endl;           
 }
 
 template <size_t d>
 inline void greedy_construction(Grid<d> &g)
 {
-   typename Node<d>::SNode well_node = g.nodes().front();
+   Node<d>* well_node = g.nodes().front().get();
 
-   typename Node<d>::SNode selected_target;
+   Node<d>* selected_target;
    typename Node<d>::Queue visited_target_queue;
    size_t new_covered_target_max = 0;
-   AVLVisitedNode<d> visited_target_avl;
+   AVLVisitedNode<d> *visited_target_avl;
 
    find_best_target<d>(well_node,&selected_target,&visited_target_queue,&new_covered_target_max,NULL);
+   std::cerr << "on sort du premier find_best" << std::endl;
 
    g.insertNodeInSolution(well_node);
    g.insertNodeInSolution(selected_target);
+#if DEBUG
+      std::cerr << "Well Inserted " << std::endl;
+#endif
 
    typename Node<d>::Queue empty_queue;
    empty_queue.push_back(well_node);
@@ -135,16 +144,24 @@ inline void greedy_construction(Grid<d> &g)
    g.maj(selected_target,empty_queue,visited_target_queue,new_covered_target_max);
 
    while (g.cover() > 0) {
+#if DEBUG
+      std::cerr << "Need to be covered : " << g.cover() << std::endl;
+#endif 
+      visited_target_avl = new AVLVisitedNode<d>();
+      new_covered_target_max = 0;
       std::for_each( g.solution().cbegin()
                    , g.solution().cend()
                    , [&](auto &current_sensor_map)
-                     { find_best_target<d>(current_sensor_map.second,&selected_target,&visited_target_queue,&new_covered_target_max,&visited_target_avl); });
+                     { find_best_target<d>( current_sensor_map.second
+                                          , &selected_target
+                                          , &visited_target_queue
+                                          , &new_covered_target_max
+                                          , visited_target_avl); } );
       g.insertNodeInSolution(selected_target);
-      auto sensor_queue = visited_target_avl.find((selected_target)->name())->second;
-      g.maj(selected_target,sensor_queue,visited_target_queue,new_covered_target_max);
+      auto sensor_queue = visited_target_avl->find((selected_target)->name())->second;
+      g.maj(selected_target,sensor_queue,visited_target_queue,new_covered_target_max); 
+      delete visited_target_avl;
    }
-
-   
 }
 
-#endif // __GREEDY_H__
+#endif // __GREEDY_HPP__

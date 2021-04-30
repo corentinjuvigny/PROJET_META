@@ -46,6 +46,7 @@ int main(int argc, char* argv[])
    std::optional opt = read_node_file(argv[1],2.0,5.0); 
    std::cout << *opt << std::endl;
    greedy_construction(*opt);
+   std::cout << "Greedy Algo succeeded" << std::endl;
    opt->end();
 #endif
    return 0;

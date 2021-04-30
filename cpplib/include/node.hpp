@@ -41,8 +41,8 @@ class Node {
    public:
       typedef std::array<double,d> Coord;
       typedef std::shared_ptr<Node<d>> SNode;
-      typedef std::list<SNode> Queue;
-      typedef std::map<std::string,SNode> AVLNodes;
+      typedef std::list<Node<d>*> Queue;
+      typedef std::map<std::string,Node<d>*> AVLNodes;
       enum Kind { K_Well, K_Target, K_Sensor };
       Node<d>(const Kind kind,const std::string &name, const Coord &coord)
          :  _kind(kind), _name(name), _coord(coord) { }
@@ -52,12 +52,16 @@ class Node {
       const Kind &kind() const { return _kind; }
       const std::string &name() const { return _name; }
       const Coord &coord() const { return _coord; }
-      const std::list<SNode> &capture_queue() const { return _capture_queue; }
-      const std::list<SNode> &communication_queue() const { return _communication_queue; }
+      const Queue &capture_queue() const { return _capture_queue; }
+      const Queue &communication_queue() const { return _communication_queue; }
       const AVLNodes &aux() const { return _aux; }
-      void set_new_sensor(std::list<SNode> &sensor_queue);
-      void set_sensor_new_communication(std::list<SNode> &sensor_queue);
-      void set_target_new_capture_sensor(std::list<SNode> &visited_target_queue);
+      void set_capture_queue(Queue &q) { _capture_queue = q; }
+      void set_capture_queue(Queue &&q) { _capture_queue = q; }
+      void set_communication_queue(Queue &q) { _communication_queue = q; }
+      void set_communication_queue(Queue &&q) { _communication_queue = q; }
+      void set_new_sensor(Queue &sensor_queue);
+      void set_sensor_new_communication(Queue &sensor_queue);
+      void set_target_new_capture_sensor(Queue &visited_target_queue);
       friend std::ostream& operator<<(std::ostream &os, const Node &n)
       {
          os << n._name << " ( ";
@@ -125,7 +129,7 @@ constexpr bool equal_coord(const typename Node<2>::Coord &ca, const typename Nod
 }
 
 template <size_t d>
-void Node<d>::set_new_sensor(std::list<SNode> &sensor_queue)
+void Node<d>::set_new_sensor(Queue &sensor_queue)
 {
    if ( this->_kind == K_Sensor || this->_kind == K_Well )
       return;
@@ -143,7 +147,7 @@ void Node<d>::set_new_sensor(std::list<SNode> &sensor_queue)
 }
 
 template <size_t d>
-void Node<d>::set_sensor_new_communication(std::list<SNode> &sensor_queue)
+void Node<d>::set_sensor_new_communication(Queue &sensor_queue)
 {
    std::for_each( sensor_queue.cbegin()
                 , sensor_queue.cend()
@@ -156,7 +160,7 @@ void Node<d>::set_sensor_new_communication(std::list<SNode> &sensor_queue)
 }
 
 template <size_t d>
-void Node<d>::set_target_new_capture_sensor(std::list<SNode> &visited_target_queue)
+void Node<d>::set_target_new_capture_sensor(Queue &visited_target_queue)
 {
 
    std::for_each( visited_target_queue.cbegin()
