@@ -24,13 +24,13 @@ connection with the use or performance of this software.
  *
  */
 
+#define DEBUG 1
+
 #ifndef __GREEDY_H__
 #define __GREEDY_H__
 
 #include "grid.hpp"
 #include <algorithm>
-
-void greedy_construction_2D(Grid<2> &g);
 
 template <size_t d>
 using AVLVisitedNode = std::map<std::string,typename Node<d>::Queue>;
@@ -49,6 +49,11 @@ void find_best_target( const typename Node<d>::SNode &node
 #endif
    size_t visit_node = 0, new_covered_target;
    const typename Node<d>::Queue &target_in_radius_queue = node->communication_queue();
+#if DEBUG
+   std::cerr << "target_in_radius_queue.size() = "
+             << target_in_radius_queue.size()
+             << std::endl;
+#endif
 
    /* We iterate over all of targets */
    for (auto &target_in_radius : target_in_radius_queue) {
@@ -69,12 +74,18 @@ void find_best_target( const typename Node<d>::SNode &node
             node_queue.push_front(node);
             visited_target_avl->insert(std::make_pair(node->name(),node_queue));
          } else {
+#if DEBUG
+         std::cerr << "On ne poursuit pas " << new_covered_target << std::endl;
+#endif
             point_queue->second.push_front(node);
             visit_node = 1;
          }
 
       }
       if ( visit_node == 0 ) {
+#if DEBUG
+         std::cerr << "On poursuit " << new_covered_target << std::endl;
+#endif
          const typename Node<d>::Queue &covered_targets_in_radius_queue = target_in_radius->capture_queue();
          for (const auto &covered_target_in_radius : covered_targets_in_radius_queue) {
             if ( (!equal_coord(target_in_radius->coord(),covered_target_in_radius->coord()))
@@ -84,9 +95,15 @@ void find_best_target( const typename Node<d>::SNode &node
             }
 
          }
+#if DEBUG
+         std::cerr << "new_cover_target : " << new_covered_target << std::endl;
+#endif
          if ( target_in_radius->aux().empty() )
             new_covered_target++;
          if ( new_covered_target >= *new_covered_target_max ) {
+#if DEBUG
+            std::cerr << "Target in radius : " << *target_in_radius << std::endl;
+#endif
             *selected_target = target_in_radius;
             *visited_target_queue = covered_targets_in_radius_queue;
             *new_covered_target_max = new_covered_target;
@@ -100,7 +117,6 @@ void find_best_target( const typename Node<d>::SNode &node
 template <size_t d>
 inline void greedy_construction(Grid<d> &g)
 {
-   std::cerr << "Error greedy_construction<" << d << "> not yet implemented" << std::endl;
    typename Node<d>::SNode well_node = g.nodes().front();
 
    typename Node<d>::SNode selected_target;
@@ -124,7 +140,7 @@ inline void greedy_construction(Grid<d> &g)
                    , [&](auto &current_sensor_map)
                      { find_best_target<d>(current_sensor_map.second,&selected_target,&visited_target_queue,&new_covered_target_max,&visited_target_avl); });
       g.insertNodeInSolution(selected_target);
-      auto sensor_queue = visited_target_avl.find(selected_target->name())->second;
+      auto sensor_queue = visited_target_avl.find((selected_target)->name())->second;
       g.maj(selected_target,sensor_queue,visited_target_queue,new_covered_target_max);
    }
 

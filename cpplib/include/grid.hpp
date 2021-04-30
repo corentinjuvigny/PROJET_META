@@ -28,8 +28,10 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef __GRID_HPP__
 #define __GRID_HPP__
 
+#include <algorithm>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <utility>
 #include <vector>
 #include "kdtree.h"
@@ -63,6 +65,7 @@ class Grid {
       void insertNode(SNode &&n);
       void insertNodeInSolution(SNode &n);
       void set_cover(const size_t new_covered_target_max) { _cover -= new_covered_target_max; }
+      void finish();
       void maj( SNode &selected_target
               , std::list<SNode> &sensor_queue
               , std::list<SNode> &visited_target_queue
@@ -130,13 +133,48 @@ template <size_t d>
 void Grid<d>::insertNode(typename Grid<d>::SNode &&n)
 {
    _nodes.push_back(n); 
-   kd_insert(_kdTree,n->coord().data(),n.get());
+   kd_insert(_kdTree,n->coord().data(),&n);
 }
 
 template <size_t d>
 void Grid<d>::insertNodeInSolution(typename Grid<d>::SNode &n)
 {
    _solution.insert(std::make_pair(n->name(),n));
+}
+
+enum class RadiusType { CAPTURE, COMMUNICATION };
+
+template <size_t d, RadiusType t>
+typename Node<d>::Queue set_capture_and_communication_queue(const Grid<d> *g, const typename Node<d>::SNode &n)
+{
+   double radius = t == RadiusType::CAPTURE ? g->capture_radius() : g->communication_radius();
+   struct kdres *covered_node_in_radius_list;
+   double pos[d];
+   typename Node<d>::SNode node_in_radius;
+   typename Node<d>::Queue queue;
+   std::transform( n->coord().cbegin()
+                 , n->coord().cend()
+                 , pos
+                 , [](double coord) { return coord; } );
+   covered_node_in_radius_list = kd_nearest_range(g->kdTree(),pos,radius);
+   while (!kd_res_end(covered_node_in_radius_list)) {
+      node_in_radius = *((typename Node<d>::SNode*)kd_res_item(covered_node_in_radius_list,pos));
+      queue.push_front(node_in_radius);
+      kd_res_next(covered_node_in_radius_list);
+   }
+   kd_res_free(covered_node_in_radius_list);
+   return queue;
+}
+
+template <size_t d>
+void Grid<d>::finish()
+{
+   std::for_each( _nodes.begin()
+                , _nodes.end()
+                , [this](SNode &node) {
+                     node->set_capture_queue(set_capture_and_communication_queue<d,RadiusType::CAPTURE>(this,node));
+                     node->set_communication_queue(set_capture_and_communication_queue<d,RadiusType::COMMUNICATION>(this,node));
+                  });
 }
 
 template <size_t d>

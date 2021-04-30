@@ -85,5 +85,7 @@ std::optional<Grid<2>> read_node_file( const char* filename
 
    file.close();
 
+   res.finish();
+
    return std::make_optional(res);
 }
