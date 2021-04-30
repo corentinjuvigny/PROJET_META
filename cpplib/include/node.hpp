@@ -31,6 +31,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <string>
 #include <list>
 #include <map>
+#include <utility>
 #include <vector>
 #include <memory>
 #include <algorithm>
@@ -40,6 +41,7 @@ class Node {
    public:
       typedef std::array<double,d> Coord;
       typedef std::shared_ptr<Node<d>> SNode;
+      typedef std::list<SNode> Queue;
       typedef std::map<std::string,SNode> AVLNodes;
       enum Kind { K_Well, K_Target, K_Sensor };
       Node<d>(const Kind kind,const std::string &name, const Coord &coord)
@@ -52,7 +54,10 @@ class Node {
       const Coord &coord() const { return _coord; }
       const std::list<SNode> &capture_queue() const { return _capture_queue; }
       const std::list<SNode> &communication_queue() const { return _communication_queue; }
-      const std::map<SNode,SNode> &aux() const { return _aux; }
+      const AVLNodes &aux() const { return _aux; }
+      void set_new_sensor(std::list<SNode> &sensor_queue);
+      void set_sensor_new_communication(std::list<SNode> &sensor_queue);
+      void set_target_new_capture_sensor(std::list<SNode> &visited_target_queue);
       friend std::ostream& operator<<(std::ostream &os, const Node &n)
       {
          os << n._name << " ( ";
@@ -74,33 +79,95 @@ class Node {
       }
       
    private:
-      Kind              _kind;
-      std::string       _name;
-      Coord             _coord;
-      std::list<SNode>  _capture_queue;
-      std::list<SNode>  _communication_queue;
-      AVLNodes          _aux;
+      Kind           _kind;
+      std::string    _name;
+      Coord          _coord;
+      Queue          _capture_queue;
+      Queue          _communication_queue;
+      AVLNodes       _aux;
 };
 
-template <int d>
+template <size_t d>
 class WellNode : public Node<d> {
    public:
       WellNode(const std::string &name, const typename Node<d>::Coord &coord)
          : Node<d>(Node<d>::K_Well,name,coord) { }
 };
 
-template <int d>
+template <size_t d>
 class TargetNode : public Node<d> {
    public:
       TargetNode(const std::string &name, const typename Node<d>::Coord &coord)
          : Node<d>(Node<d>::K_Target,name,coord) { }
 };
 
-template <int d>
+template <size_t d>
 class SensorNode : public Node<d> {
    public:
       SensorNode(const std::string &name, const typename Node<d>::Coord &coord)
          : Node<d>(Node<d>::K_Sensor,name,coord) { }
 };
+
+template <size_t d>
+inline bool equal_coord(const typename Node<d>::Coord &ca, const typename Node<d>::Coord &cb)
+{
+   for (auto ita = ca.cbegin(), itb = cb.begin(); ita != ca.cend(), itb != cb.cend(); ita++, itb++)
+      if ( *ita != *itb )
+         return false;
+   return true;
+}
+
+constexpr bool equal_coord(const typename Node<2>::Coord &ca, const typename Node<2>::Coord &cb)
+{
+   auto [xa,ya] = ca;
+   auto [xb,yb] = cb;
+   return xa == xb && ya == yb;
+}
+
+template <size_t d>
+void Node<d>::set_new_sensor(std::list<SNode> &sensor_queue)
+{
+   if ( this->_kind == K_Sensor || this->_kind == K_Well )
+      return;
+   AVLNodes avl;
+   std::for_each( sensor_queue.cbegin()
+                , sensor_queue.cend()
+                , [&,this](auto &sensor) 
+                  {
+                     if ( (!equal_coord(this->coord(),sensor->coord()))
+                           && (sensor->kind() == K_Well || sensor->kind() == K_Sensor) )
+                        avl.insert(std::make_pair(sensor->name(),sensor));
+                  } );
+   this->_kind = K_Sensor;
+   this->_aux = avl;
+}
+
+template <size_t d>
+void Node<d>::set_sensor_new_communication(std::list<SNode> &sensor_queue)
+{
+   std::for_each( sensor_queue.cbegin()
+                , sensor_queue.cend()
+                , [&,this](auto &sensor)
+                  {
+                     if ( (!equal_coord(this->coord(),sensor->coord()))
+                           && (sensor->kind() == K_Well || sensor->kind() == K_Sensor) )
+                     this->_aux.insert(std::make_pair(sensor->name(),sensor));
+                  } );
+}
+
+template <size_t d>
+void Node<d>::set_target_new_capture_sensor(std::list<SNode> &visited_target_queue)
+{
+
+   std::for_each( visited_target_queue.cbegin()
+                , visited_target_queue.cend()
+                , [&,this](auto &sensor)
+                  {
+                     if ( (!equal_coord(this->coord(),sensor->coord()))
+                           && (sensor->kind() == K_Target) ) {
+                        this->_aux.insert(std::make_pair(sensor->name(),sensor));
+                     }
+                  } );
+}
 
 #endif //__NODE_HPP__

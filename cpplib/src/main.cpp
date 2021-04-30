@@ -21,9 +21,11 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <iostream>
 #include <optional>
+#include <memory>
 #include "include.h"
 #include "node.hpp"
 #include "grid.hpp"
+#include "greedy.hpp"
 #include "rwfile.h"
 
 int main(int argc, char* argv[])
@@ -32,16 +34,19 @@ int main(int argc, char* argv[])
       std::cout << "Use a filename as arg" << std::endl;
       return 0;
    }
-#if 0
-   const WellNode<2> node { "node1", {23.5,62.92} };
+#if 1
+   Node<2> node { Node<2>::K_Well, "node1", {23.5,62.92} };
    std::cout << node << std::endl;
    Grid<2> mygrid { 20,4,2.5,4.2 };
    std::string s { " 2 5.123 7.2" };
    mygrid.insertNode(node_of_line(s,Node<2>::K_Well));
    std::cout << mygrid << std::endl;
-#endif
+
+   greedy_construction(mygrid);
+#else
    std::optional opt = read_node_file(argv[1],2.0,5.0); 
-   std::cout << opt.value() << std::endl;
-   opt->kdend();
+   std::cout << *opt << std::endl;
+   opt->end();
+#endif
    return 0;
 }

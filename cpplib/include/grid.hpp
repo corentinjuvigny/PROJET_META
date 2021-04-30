@@ -30,6 +30,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <iostream>
 #include <map>
+#include <utility>
 #include <vector>
 #include "kdtree.h"
 #include "node.hpp"
@@ -40,20 +41,19 @@ class Grid {
       using SNode = typename Node<d>::SNode;
       using AVLNodes = typename Node<d>::AVLNodes;
       Grid<d>( const std::vector<SNode> &nodes
-          , struct kdtree *kdTree
-          , const unsigned long cover
-          , const double communication_radius
-          , const double capture_radius );
+             , struct kdtree *kdTree
+             , const unsigned long cover
+             , const double communication_radius
+             , const double capture_radius );
       Grid<d>( const size_t n
-          , const unsigned long cover
-          , const double communication_radius
-          , const double capture_radius );
+             , const unsigned long cover
+             , const double communication_radius
+             , const double capture_radius );
       Grid<d>(const Grid<d> &) = default;
       Grid<d>(Grid<d> &&);
       ~Grid() = default;
-      void kdend() { kd_free(_kdTree); }
+      void end() { kd_free(_kdTree); }
       const std::vector<SNode> &nodes() const { return _nodes; }
-
       size_t nbNodes() const { return _nodes.size(); }
       struct kdtree *kdTree() const { return _kdTree; }
       const AVLNodes &solution() const { return _solution; }
@@ -61,6 +61,12 @@ class Grid {
       const double &communication_radius() const { return _communication_radius; }
       const double &capture_radius() const { return _capture_radius; }
       void insertNode(SNode &&n);
+      void insertNodeInSolution(SNode &n);
+      void set_cover(const size_t new_covered_target_max) { _cover -= new_covered_target_max; }
+      void maj( SNode &selected_target
+              , std::list<SNode> &sensor_queue
+              , std::list<SNode> &visited_target_queue
+              , const int new_covered_target_max );
       friend std::ostream& operator<<(std::ostream &os, const Grid<d> &g)
       {
          if ( g.nbNodes() == 0 )
@@ -74,6 +80,7 @@ class Grid {
          }
          return os;
       }
+
    private:
       std::vector<SNode> _nodes;
       struct kdtree *    _kdTree;
@@ -120,10 +127,28 @@ Grid<d>::Grid(Grid<d> &&g)
 { }
 
 template <size_t d>
-void Grid<d>::insertNode(typename Node<d>::SNode &&n)
+void Grid<d>::insertNode(typename Grid<d>::SNode &&n)
 {
    _nodes.push_back(n); 
    kd_insert(_kdTree,n->coord().data(),n.get());
+}
+
+template <size_t d>
+void Grid<d>::insertNodeInSolution(typename Grid<d>::SNode &n)
+{
+   _solution.insert(std::make_pair(n->name(),n));
+}
+
+template <size_t d>
+void Grid<d>::maj( SNode &selected_target
+                 , std::list<SNode> &sensor_queue
+                 , std::list<SNode> &visited_target_queue
+                 , const int new_covered_target_max )
+{
+   selected_target->set_new_sensor(sensor_queue);
+   this->set_cover(new_covered_target_max);
+   selected_target->set_sensor_new_communication(sensor_queue);
+   selected_target->set_target_new_capture_sensor(visited_target_queue); 
 }
 
 #endif // __GRID_HPP__
