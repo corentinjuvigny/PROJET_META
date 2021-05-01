@@ -129,6 +129,30 @@ meta/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/meta.dir/build.make CMakeFiles/meta.dir/build
 .PHONY : meta/fast
 
+src/draw.o: src/draw.cpp.o
+.PHONY : src/draw.o
+
+# target to build an object file
+src/draw.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meta.dir/build.make CMakeFiles/meta.dir/src/draw.cpp.o
+.PHONY : src/draw.cpp.o
+
+src/draw.i: src/draw.cpp.i
+.PHONY : src/draw.i
+
+# target to preprocess a source file
+src/draw.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meta.dir/build.make CMakeFiles/meta.dir/src/draw.cpp.i
+.PHONY : src/draw.cpp.i
+
+src/draw.s: src/draw.cpp.s
+.PHONY : src/draw.s
+
+# target to generate assembly for a file
+src/draw.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/meta.dir/build.make CMakeFiles/meta.dir/src/draw.cpp.s
+.PHONY : src/draw.cpp.s
+
 src/grid.o: src/grid.cpp.o
 .PHONY : src/grid.o
 
@@ -258,6 +282,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... meta"
+	@echo "... src/draw.o"
+	@echo "... src/draw.i"
+	@echo "... src/draw.s"
 	@echo "... src/grid.o"
 	@echo "... src/grid.i"
 	@echo "... src/grid.s"

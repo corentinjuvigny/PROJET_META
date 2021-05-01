@@ -5,13 +5,13 @@
 # compile CXX with c++
 C_DEFINES = 
 
-C_INCLUDES = -I/home/kodra/Documents/Cours/meta/PROJET_META/cpplib/include
+C_INCLUDES = -I/home/kodra/Documents/Cours/meta/PROJET_META/cpplib/include -I/usr/include/python3.9
 
 C_FLAGS = -std=c99 -g
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/kodra/Documents/Cours/meta/PROJET_META/cpplib/include
+CXX_INCLUDES = -I/home/kodra/Documents/Cours/meta/PROJET_META/cpplib/include -I/usr/include/python3.9
 
-CXX_FLAGS = -std=c++20 -std=gnu++2a
+CXX_FLAGS = -std=c++20 -g -std=gnu++2a
 
