@@ -64,7 +64,7 @@ class Grid {
       const long &cover() const { return _cover; }
       const double &communication_radius() const { return _communication_radius; }
       const double &capture_radius() const { return _capture_radius; }
-      void insertNode(SNode &n);
+      void insertNode(SNode &&n);
       void insertNodeInSolution(Node<d>* &n);
       void set_cover(const size_t new_covered_target_max) { _cover -= new_covered_target_max; }
       void finish();
@@ -132,10 +132,11 @@ Grid<d>::Grid(Grid<d> &&g)
 { }
 
 template <size_t d>
-void Grid<d>::insertNode(typename Grid<d>::SNode &n)
+void Grid<d>::insertNode(typename Grid<d>::SNode &&n)
 {
-   _nodes.push_back(n);
-   kd_insert(_kdTree,n->coord().data(),n.get());
+   auto nw = std::move(n);
+   _nodes.push_back(nw);
+   kd_insert(_kdTree,nw->coord().data(),nw.get());
 }
 
 template <size_t d>

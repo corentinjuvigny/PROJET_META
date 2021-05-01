@@ -27,6 +27,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "grid.hpp"
 #include "greedy.hpp"
 #include "rwfile.h"
+#include "draw.h"
 
 int main(int argc, char* argv[])
 {
@@ -43,10 +44,21 @@ int main(int argc, char* argv[])
    std::cout << mygrid << std::endl;
 
 #else
-   std::optional opt = read_node_file(argv[1],2.0,5.0); 
+   int size = 20;
+   double g_time = 10.0;
+   std::optional opt = read_node_file(argv[1],1.00001,1.00001); 
+   if ( opt == std::nullopt ) {
+      std::cout << "Error no grid has been generated" << std::endl;
+      return 1;
+   }
    std::cout << *opt << std::endl;
    greedy_construction(*opt);
-   std::cout << "Greedy Algo succeeded" << std::endl;
+   std::cout << "Greedy Algo succeeded : cover = " << opt->cover()
+             << " with " << opt->solution().size() 
+             << " elems :" << std::endl;
+   for (auto elem : opt->solution())
+      std::cout << elem.first << std::endl;
+   //draw_data(*opt,g_time,size);
    opt->end();
 #endif
    return 0;

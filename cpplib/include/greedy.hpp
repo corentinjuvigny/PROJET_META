@@ -57,7 +57,6 @@ void find_best_target( Node<d> *node
 
    /* We iterate over all of targets */
    for (auto &target_in_radius : target_in_radius_queue) {
-      std::cerr << "Je suis queblo dans le target_in_radius_queue"<< std::endl;
       if ( (!equal_coord(node->coord(),target_in_radius->coord()))
            && target_in_radius->kind() == Node<d>::K_Target )
          visit_node = 0;
@@ -68,9 +67,7 @@ void find_best_target( Node<d> *node
          /* We look if we have already visited the current target*/
          auto point_queue = visited_target_avl->find(target_in_radius->name());
          /* We never have visited the current target */
-         std::cerr << "Point_queue == .end() " << (bool)(point_queue == visited_target_avl->end()) << std::endl;
          if ( point_queue == visited_target_avl->end() ) {
-            std::cerr << "Je suis ajoute dans l'avl" << std::endl;
             /* We add the target in the avl (its name is the key), the content is 
              * a steck in which we put  the point */
             typename Node<d>::Queue node_queue;
@@ -91,7 +88,6 @@ void find_best_target( Node<d> *node
 #endif
          const typename Node<d>::Queue &covered_targets_in_radius_queue = target_in_radius->capture_queue();
          for (const auto &covered_target_in_radius : covered_targets_in_radius_queue) {
-            std::cerr << "Je suis bloque dans le covered_targets_in_radius_queue ?" << std::endl;
             if ( (!equal_coord(target_in_radius->coord(),covered_target_in_radius->coord()))
                  && (covered_target_in_radius->kind() == Node<d>::K_Target) ) {
                if ( covered_target_in_radius->aux().empty() )
@@ -111,12 +107,10 @@ void find_best_target( Node<d> *node
             *selected_target = target_in_radius;
             *visited_target_queue = covered_targets_in_radius_queue;
             *new_covered_target_max = new_covered_target;
-            std::cerr << "Target hors radius" << std::endl;
          }
       }
 
    }
-   std::cerr << "Target chosen : " << **selected_target << std::endl;           
 }
 
 template <size_t d>
@@ -158,8 +152,14 @@ inline void greedy_construction(Grid<d> &g)
                                           , &new_covered_target_max
                                           , visited_target_avl); } );
       g.insertNodeInSolution(selected_target);
-      auto sensor_queue = visited_target_avl->find((selected_target)->name())->second;
-      g.maj(selected_target,sensor_queue,visited_target_queue,new_covered_target_max); 
+      auto sensor_queue_avl = visited_target_avl->find((selected_target)->name());
+      typename Node<d>::Queue sensor_queue = sensor_queue_avl != visited_target_avl->end()
+                                             ? sensor_queue_avl->second
+                                             : typename Node<d>::Queue();
+      g.maj( selected_target
+           , sensor_queue
+           , visited_target_queue
+           , new_covered_target_max ); 
       delete visited_target_avl;
    }
 }
