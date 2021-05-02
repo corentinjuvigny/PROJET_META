@@ -148,8 +148,8 @@ inline void greedy_construction(Grid<d> &g)
       new_covered_target_max = 0;
       std::for_each( g.solution().cbegin()
                    , g.solution().cend()
-                   , [&](const auto &current_sensor_map)
-                     { find_best_target<d>( current_sensor_map.second
+                   , [&](const auto &current_sensor)
+                     { find_best_target<d>( current_sensor
                                           , &selected_target
                                           , &visited_target_queue
                                           , &new_covered_target_max

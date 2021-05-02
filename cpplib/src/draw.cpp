@@ -86,7 +86,7 @@ void draw_data_2D(const Grid<2> &g, const float pause, const int size)
 		      PyRun_SimpleString(sensor_text);
 
             for (const auto &sensor_elem : aux) {
-		         const Node<2>* sensor = sensor_elem.second;
+		         const Node<2>* sensor = sensor_elem;
                const auto [ sensor_x, sensor_y ] = sensor->coord();
 
 		         char *sensor_line = (char*)malloc(100 * sizeof(char));
@@ -109,7 +109,7 @@ void draw_data_2D(const Grid<2> &g, const float pause, const int size)
 		      PyRun_SimpleString(target_text);
 
             for (const auto &target_elem : aux) {
-               const Node<2>* target = target_elem.second;
+               const Node<2>* target = target_elem;
                const auto [ target_x, target_y ] = target->coord();
 		         PyRun_SimpleString("color = \"#%06x\" % np.random.randint(0, 0xFFFFFF)");
 

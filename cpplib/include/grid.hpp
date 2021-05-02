@@ -30,9 +30,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <algorithm>
 #include <iostream>
-#include <map>
 #include <memory>
-#include <pstl/glue_execution_defs.h>
 #include <utility>
 #include <vector>
 #include <execution>
@@ -143,7 +141,7 @@ void Grid<d>::insertNode(typename Grid<d>::SNode &&n)
 template <size_t d>
 void Grid<d>::insertNodeInSolution(Node<d>* &n)
 {
-   _solution.insert(std::make_pair(n->name(),n));
+   _solution.insert(n);
 }
 
 enum class RadiusType { CAPTURE, COMMUNICATION };

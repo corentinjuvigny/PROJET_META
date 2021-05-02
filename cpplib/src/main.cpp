@@ -44,10 +44,10 @@ int main(int argc, char* argv[])
 
 #else
    const int size = 20;
-   const double g_time = 100.0;
+   const double g_time = 10.0;
    const double communication_radius = 2.00001;
    const double capture_radius = 1.00001;
-   const bool draw_result = false;
+   const bool draw_result = true;
 
    std::optional opt = read_node_file_2D(argv[1],communication_radius,capture_radius); 
    if ( opt == std::nullopt ) {

@@ -31,6 +31,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <string>
 #include <list>
 #include <map>
+#include <set>
 #include <utility>
 #include <vector>
 #include <memory>
@@ -40,10 +41,15 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 template <size_t d>
 class Node {
    public:
+      struct NodeCmp {
+         bool operator()(const Node<d>* const &lhs, const Node<d>* const &rhs) const {
+            return compareNode(lhs,rhs);
+         }
+      };
       typedef std::array<double,d> Coord;
       typedef std::shared_ptr<Node<d>> SNode;
       typedef std::list<Node<d>*> Queue;
-      typedef std::map<std::string,Node<d>*> AVLNodes;
+      typedef std::set<Node<d>*,NodeCmp> AVLNodes;
       enum Kind { K_Well, K_Target, K_Sensor };
       Node<d>(const Kind kind,const std::string &name, const Coord &coord)
          :  _kind(kind), _name(name), _coord(coord) { }
@@ -78,9 +84,9 @@ class Node {
        *
        * @return An integer given by string::compare
        */
-      static inline int compare(const Node &na, const Node &nb) 
+      static inline int compareNode(const Node* const &na, const Node* const &nb) 
       {
-         return na._name.compare(nb._name);
+         return na->_name < nb->_name;
       }
       
    private:
@@ -142,7 +148,7 @@ void Node<d>::set_new_sensor(Queue &sensor_queue)
                   {
                      if ( (!equal_coord<d>(this->coord(),sensor->coord()))
                            && (sensor->kind() == K_Well || sensor->kind() == K_Sensor) )
-                        avl.insert(std::make_pair(sensor->name(),sensor));
+                        avl.insert(sensor);
                   } );
    this->_kind = K_Sensor;
    this->_aux = avl;
@@ -158,7 +164,7 @@ void Node<d>::set_sensor_new_communication(Queue &sensor_queue)
                   {
                      if ( (!equal_coord<d>(this->coord(),sensor->coord()))
                            && (sensor->kind() == K_Well || sensor->kind() == K_Sensor) )
-                        sensor->_aux.insert(std::make_pair(this->name(),this));
+                        sensor->_aux.insert(this);
                   } );
 }
 
@@ -172,7 +178,7 @@ void Node<d>::set_target_new_capture_sensor(Queue &visited_target_queue)
                   {
                      if ( (!equal_coord<d>(this->coord(),target->coord()))
                            && (target->kind() == K_Target) ) {
-                        target->_aux.insert(std::make_pair(this->name(),this));
+                        target->_aux.insert(this);
                      }
                   } );
 }
