@@ -34,6 +34,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <utility>
 #include <vector>
 #include <memory>
+#include <execution>
 #include <algorithm>
 
 template <size_t d>
@@ -113,7 +114,7 @@ class SensorNode : public Node<d> {
 };
 
 template <size_t d>
-inline bool equal_coord(const typename Node<d>::Coord &ca, const typename Node<d>::Coord &cb)
+constexpr bool equal_coord(const typename Node<d>::Coord &ca, const typename Node<d>::Coord &cb)
 {
    for (auto ita = ca.cbegin(), itb = cb.begin(); ita != ca.cend(), itb != cb.cend(); ita++, itb++)
       if ( *ita != *itb )
@@ -121,7 +122,8 @@ inline bool equal_coord(const typename Node<d>::Coord &ca, const typename Node<d
    return true;
 }
 
-constexpr bool equal_coord(const typename Node<2>::Coord &ca, const typename Node<2>::Coord &cb)
+template <>
+constexpr bool equal_coord<2>(const typename Node<2>::Coord &ca, const typename Node<2>::Coord &cb)
 {
    auto [xa,ya] = ca;
    auto [xb,yb] = cb;
@@ -138,7 +140,7 @@ void Node<d>::set_new_sensor(Queue &sensor_queue)
                 , sensor_queue.cend()
                 , [&,this](const auto &sensor) 
                   {
-                     if ( (!equal_coord(this->coord(),sensor->coord()))
+                     if ( (!equal_coord<d>(this->coord(),sensor->coord()))
                            && (sensor->kind() == K_Well || sensor->kind() == K_Sensor) )
                         avl.insert(std::make_pair(sensor->name(),sensor));
                   } );
@@ -149,11 +151,12 @@ void Node<d>::set_new_sensor(Queue &sensor_queue)
 template <size_t d>
 void Node<d>::set_sensor_new_communication(Queue &sensor_queue)
 {
-   std::for_each( sensor_queue.begin()
+   std::for_each( std::execution::par_unseq
+                , sensor_queue.begin()
                 , sensor_queue.end()
                 , [&,this](auto &sensor)
                   {
-                     if ( (!equal_coord(this->coord(),sensor->coord()))
+                     if ( (!equal_coord<d>(this->coord(),sensor->coord()))
                            && (sensor->kind() == K_Well || sensor->kind() == K_Sensor) )
                         sensor->_aux.insert(std::make_pair(this->name(),this));
                   } );
@@ -162,11 +165,12 @@ void Node<d>::set_sensor_new_communication(Queue &sensor_queue)
 template <size_t d>
 void Node<d>::set_target_new_capture_sensor(Queue &visited_target_queue)
 {
-   std::for_each( visited_target_queue.begin()
+   std::for_each( std::execution::par_unseq
+                , visited_target_queue.begin()
                 , visited_target_queue.end()
                 , [&,this](auto &target)
                   {
-                     if ( (!equal_coord(this->coord(),target->coord()))
+                     if ( (!equal_coord<d>(this->coord(),target->coord()))
                            && (target->kind() == K_Target) ) {
                         target->_aux.insert(std::make_pair(this->name(),this));
                      }

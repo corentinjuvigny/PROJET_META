@@ -52,7 +52,7 @@ static size_t count_line(std::istream &is)
     return line_cnt;
 }
 
-static inline Node<2>::SNode node_of_line(const std::string &buf, const Node<2>::Kind kind)
+static inline Node<2>::SNode node_of_line_2D(const std::string &buf, const Node<2>::Kind kind)
 {
       double x, y;
       char cpy[100];
@@ -63,7 +63,7 @@ static inline Node<2>::SNode node_of_line(const std::string &buf, const Node<2>:
       return std::make_shared<Node<2>>(Node<2>(kind,name,{x,y}));
 }
 
-std::optional<Grid<2>> read_node_file( const char* filename
+std::optional<Grid<2>> read_node_file_2D( const char* filename
                                      , const double communication_radius
                                      , const double capture_radius )
 {
@@ -78,9 +78,9 @@ std::optional<Grid<2>> read_node_file( const char* filename
 
    std::string buf;
    std::getline(file,buf);
-   res.insertNode(node_of_line(buf,Node<2>::K_Well));
+   res.insertNode(node_of_line_2D(buf,Node<2>::K_Well));
    while (std::getline(file,buf)) {
-      res.insertNode(node_of_line(buf,Node<2>::K_Target));
+      res.insertNode(node_of_line_2D(buf,Node<2>::K_Target));
    }
 
    file.close();

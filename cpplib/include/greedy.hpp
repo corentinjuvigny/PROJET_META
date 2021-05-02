@@ -57,8 +57,8 @@ void find_best_target( Node<d> *node
 #endif
 
    /* We iterate over all of targets */
-   for (auto &target_in_radius : target_in_radius_queue) {
-      if ( (!equal_coord(node->coord(),target_in_radius->coord()))
+   for (const auto &target_in_radius : target_in_radius_queue) {
+      if ( (!equal_coord<d>(node->coord(),target_in_radius->coord()))
            && target_in_radius->kind() == Node<d>::K_Target ) {
          visit_node = false;
          new_covered_target = 0;
@@ -89,7 +89,7 @@ void find_best_target( Node<d> *node
 #endif
             const typename Node<d>::Queue &covered_targets_in_radius_queue = target_in_radius->capture_queue();
             for (const auto &covered_target_in_radius : covered_targets_in_radius_queue) {
-               if ( (!equal_coord(target_in_radius->coord(),covered_target_in_radius->coord()))
+               if ( (!equal_coord<d>(target_in_radius->coord(),covered_target_in_radius->coord()))
                     && (covered_target_in_radius->kind() == Node<d>::K_Target) ) {
                   if ( covered_target_in_radius->aux().empty() ) {
 #if DEBUG
@@ -148,7 +148,7 @@ inline void greedy_construction(Grid<d> &g)
       new_covered_target_max = 0;
       std::for_each( g.solution().cbegin()
                    , g.solution().cend()
-                   , [&](auto &current_sensor_map)
+                   , [&](const auto &current_sensor_map)
                      { find_best_target<d>( current_sensor_map.second
                                           , &selected_target
                                           , &visited_target_queue

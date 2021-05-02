@@ -18,16 +18,15 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
+#include <cstdlib>
 #include "Python.h"
 #include "node.hpp"
 #include "grid.hpp"
-#include <cstdlib>
 
-void draw_data_2D(const Grid<2> &g, float pause, int size)
+void draw_data_2D(const Grid<2> &g, const float pause, const int size)
 {
-	int i,j,k;
-	int taille_grille = size;
-   std::vector<Grid<2>::SNode> nodes = g.nodes();
+	const int taille_grille = size;
+   const std::vector<Grid<2>::SNode> nodes = g.nodes();
 
 	Py_Initialize();
 	PyRun_SimpleString("import numpy as np");
@@ -54,13 +53,14 @@ void draw_data_2D(const Grid<2> &g, float pause, int size)
 	PyRun_SimpleString("plt.gca().invert_yaxis()");
 	PyRun_SimpleString("plt.grid(True,linewidth=0.25)");
 
-   for (auto &node : nodes) {
+   for (const auto &node : nodes) {
 		const Node<2>::Kind &kind = node->kind();
 		const Grid<2>::AVLNodes &aux = node->aux();
-      auto [ node_x, node_y ] = node->coord();
+      const auto [ node_x, node_y ] = node->coord();
 		const char* node_name = node->name().c_str();
 
       switch (kind) {
+         [[unlikely]]
          case Node<2>::K_Well:
          {
 		      char *well_scatter = (char*)malloc(100 * sizeof(char));
@@ -73,6 +73,7 @@ void draw_data_2D(const Grid<2> &g, float pause, int size)
 		      PyRun_SimpleString(well_text);
             break;
 		   }
+         [[likely]]
          case Node<2>::K_Sensor:
          {
 		      char *sensor_scatter = (char*)malloc(100 * sizeof(char));
@@ -84,9 +85,9 @@ void draw_data_2D(const Grid<2> &g, float pause, int size)
 		      PyRun_SimpleString(sensor_scatter);
 		      PyRun_SimpleString(sensor_text);
 
-            for (auto &sensor_elem : aux) {
-		         Node<2>* sensor = sensor_elem.second;
-               auto [ sensor_x, sensor_y ] = sensor->coord();
+            for (const auto &sensor_elem : aux) {
+		         const Node<2>* sensor = sensor_elem.second;
+               const auto [ sensor_x, sensor_y ] = sensor->coord();
 
 		         char *sensor_line = (char*)malloc(100 * sizeof(char));
 		         sprintf(sensor_line, "plt.plot([%f,%f],[%f,%f], color='red',linewidth=3)",node_x,sensor_x,node_y,sensor_y);
@@ -95,6 +96,7 @@ void draw_data_2D(const Grid<2> &g, float pause, int size)
             }
 		      break;
          }
+         [[likely]]
          case Node<2>::K_Target:
          {
 		      char *target_scatter = (char*)malloc(100 * sizeof(char));
@@ -106,9 +108,9 @@ void draw_data_2D(const Grid<2> &g, float pause, int size)
 		      PyRun_SimpleString(target_scatter);
 		      PyRun_SimpleString(target_text);
 
-            for (auto &target_elem : aux) {
-               Node<2>* target = target_elem.second;
-               auto [ target_x, target_y ] = target->coord();
+            for (const auto &target_elem : aux) {
+               const Node<2>* target = target_elem.second;
+               const auto [ target_x, target_y ] = target->coord();
 		         PyRun_SimpleString("color = \"#%06x\" % np.random.randint(0, 0xFFFFFF)");
 
 		         char *target_line = (char*)malloc(100 * sizeof(char));

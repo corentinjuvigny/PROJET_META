@@ -21,7 +21,6 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <iostream>
 #include <optional>
-#include <memory>
 #include "include.h"
 #include "node.hpp"
 #include "grid.hpp"
@@ -50,7 +49,7 @@ int main(int argc, char* argv[])
    const double capture_radius = 1.00001;
    const bool draw_result = false;
 
-   std::optional opt = read_node_file(argv[1],communication_radius,capture_radius); 
+   std::optional opt = read_node_file_2D(argv[1],communication_radius,capture_radius); 
    if ( opt == std::nullopt ) {
       std::cout << "Error no grid has been generated" << std::endl;
       return 1;

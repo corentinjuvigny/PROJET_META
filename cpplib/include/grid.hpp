@@ -153,16 +153,11 @@ typename Node<d>::Queue set_capture_and_communication_queue(const Grid<d> *g, co
 {
    const double radius = t == RadiusType::CAPTURE ? g->capture_radius() : g->communication_radius();
    struct kdres *covered_node_in_radius_list;
-   double pos[d];
    Node<d>* node_in_radius;
    typename Node<d>::Queue queue;
-   std::transform( n->coord().cbegin()
-                 , n->coord().cend()
-                 , pos
-                 , [](double coord) { return coord; } );
-   covered_node_in_radius_list = kd_nearest_range(g->kdTree(),pos,radius);
+   covered_node_in_radius_list = kd_nearest_range(g->kdTree(),n->coord().data(),radius);
    while (!kd_res_end(covered_node_in_radius_list)) {
-      node_in_radius = (Node<d>*)kd_res_item(covered_node_in_radius_list,pos);
+      node_in_radius = (Node<d>*)kd_res_item(covered_node_in_radius_list,NULL);
       queue.push_front(node_in_radius);
       kd_res_next(covered_node_in_radius_list);
    }
@@ -173,8 +168,8 @@ typename Node<d>::Queue set_capture_and_communication_queue(const Grid<d> *g, co
 template <size_t d>
 void Grid<d>::finish()
 {
-   std::for_each( //std::execution::par_unseq
-                /*,*/ _nodes.begin()
+   std::for_each( std::execution::par_unseq
+                , _nodes.begin()
                 , _nodes.end()
                 , [this](SNode &node) {
                      node->set_capture_queue(set_capture_and_communication_queue<d,RadiusType::CAPTURE>(this,node));

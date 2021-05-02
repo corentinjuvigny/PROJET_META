@@ -32,6 +32,8 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef __DRAW_H__
 #define __DRAW_H__
 
+#include "grid.hpp"
+
 /**
  * Draw all the data of our problem is a 2D canvas.
  *
@@ -39,19 +41,16 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * @param pause   The time we want to wait before closing the window.
  * @param size    The height of the plot.
  */
-
-#include "grid.hpp"
-
 void draw_data_2D(const Grid<2> &g, const float pause, const int size);
 
 template <size_t d>
 void draw_data(const Grid<d>&, const float, const int)
 { std::cerr << "Drawing data for dim " << d << " not yet implemented" << std::endl; }
-   
+
 template <>
 inline void draw_data(const Grid<2> &g, const float pause, const int size)
 {
    draw_data_2D(g,pause,size);
 }
 
-#endif
+#endif //__DRAW_H__
