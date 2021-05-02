@@ -66,7 +66,8 @@ class Grid {
       const double &capture_radius() const { return _capture_radius; }
       void insertNode(SNode &&n);
       void insertNodeInSolution(Node<d>* &n);
-      void set_cover(const size_t new_covered_target_max) { _cover -= new_covered_target_max; }
+      void add_coverage(const long new_coverage) { _cover -= new_coverage; }
+      bool all_nodes_are_covered() const { return _cover <= 0; }
       void finish();
       void maj( Node<d>* &selected_target
               , typename Node<d>::Queue &sensor_queue
@@ -188,7 +189,7 @@ void Grid<d>::maj( Node<d>* &selected_target
                  , const size_t new_covered_target_max )
 {
    selected_target->set_new_sensor(sensor_queue);
-   this->set_cover(new_covered_target_max);
+   this->add_coverage(new_covered_target_max);
    selected_target->set_sensor_new_communication(sensor_queue);
    selected_target->set_target_new_capture_sensor(visited_target_queue); 
 }

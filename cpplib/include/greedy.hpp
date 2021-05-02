@@ -24,7 +24,7 @@ connection with the use or performance of this software.
  *
  */
 
-#define DEBUG 1
+#define DEBUG 0
 
 #ifndef __GREEDY_HPP__
 #define __GREEDY_HPP__
@@ -47,8 +47,9 @@ void find_best_target( Node<d> *node
              << *node
              << std::endl;
 #endif
-   size_t visit_node = 0, new_covered_target;
-   const typename Node<d>::Queue target_in_radius_queue = node->communication_queue();
+   bool visit_node = false;
+   size_t new_covered_target;
+   const typename Node<d>::Queue &target_in_radius_queue = node->communication_queue();
 #if DEBUG
    std::cerr << "target_in_radius_queue.size() = "
              << target_in_radius_queue.size()
@@ -58,58 +59,61 @@ void find_best_target( Node<d> *node
    /* We iterate over all of targets */
    for (auto &target_in_radius : target_in_radius_queue) {
       if ( (!equal_coord(node->coord(),target_in_radius->coord()))
-           && target_in_radius->kind() == Node<d>::K_Target )
-         visit_node = 0;
-      new_covered_target = 0;
+           && target_in_radius->kind() == Node<d>::K_Target ) {
+         visit_node = false;
+         new_covered_target = 0;
 
-      /* If we use an AVL */
-      if ( visited_target_avl != NULL ) {
-         /* We look if we have already visited the current target*/
-         auto point_queue = visited_target_avl->find(target_in_radius->name());
-         /* We never have visited the current target */
-         if ( point_queue == visited_target_avl->end() ) {
-            /* We add the target in the avl (its name is the key), the content is 
-             * a steck in which we put  the point */
-            typename Node<d>::Queue node_queue;
-            node_queue.push_front(node);
-            visited_target_avl->insert(std::make_pair(node->name(),node_queue));
-         } else {
+         /* If we use an AVL */
+         if ( visited_target_avl != NULL ) {
+            /* We look if we have already visited the current target*/
+            auto point_queue = visited_target_avl->find(target_in_radius->name());
+            /* We never have visited the current target */
+            if ( point_queue == visited_target_avl->end() ) {
+               /* We add the target in the avl (its name is the key), the content is 
+                * a stack in which we put the point */
+               typename Node<d>::Queue node_queue;
+               node_queue.push_front(node);
+               visited_target_avl->insert(std::make_pair(target_in_radius->name(),node_queue));
+            } else {
 #if DEBUG
-         std::cerr << "On ne poursuit pas " << new_covered_target << std::endl;
+               std::cerr << "On ne poursuit pas " << new_covered_target << std::endl;
 #endif
-            point_queue->second.push_front(node);
-            visit_node = 1;
-         }
-
-      }
-      if ( visit_node == 0 ) {
-#if DEBUG
-         std::cerr << "On poursuit " << new_covered_target << std::endl;
-#endif
-         const typename Node<d>::Queue &covered_targets_in_radius_queue = target_in_radius->capture_queue();
-         for (const auto &covered_target_in_radius : covered_targets_in_radius_queue) {
-            if ( (!equal_coord(target_in_radius->coord(),covered_target_in_radius->coord()))
-                 && (covered_target_in_radius->kind() == Node<d>::K_Target) ) {
-               if ( covered_target_in_radius->aux().empty() )
-                  new_covered_target++;
+               point_queue->second.push_front(node);
+               visit_node = true;
             }
 
          }
+         if ( !visit_node ) {
 #if DEBUG
-         std::cerr << "new_cover_target : " << new_covered_target << std::endl;
+            std::cerr << "On poursuit " << new_covered_target << std::endl;
 #endif
-         if ( target_in_radius->aux().empty() )
-            new_covered_target++;
-         if ( new_covered_target >= *new_covered_target_max ) {
+            const typename Node<d>::Queue &covered_targets_in_radius_queue = target_in_radius->capture_queue();
+            for (const auto &covered_target_in_radius : covered_targets_in_radius_queue) {
+               if ( (!equal_coord(target_in_radius->coord(),covered_target_in_radius->coord()))
+                    && (covered_target_in_radius->kind() == Node<d>::K_Target) ) {
+                  if ( covered_target_in_radius->aux().empty() ) {
 #if DEBUG
-            std::cerr << "Target in radius : " << *target_in_radius << std::endl;
+                     std::cerr << "=> new" << std::endl;
 #endif
-            *selected_target = target_in_radius;
-            *visited_target_queue = covered_targets_in_radius_queue;
-            *new_covered_target_max = new_covered_target;
+                     new_covered_target++;
+                  }
+               }
+            }
+#if DEBUG
+            std::cerr << "new_cover_target : " << new_covered_target << std::endl;
+#endif
+            if ( target_in_radius->aux().empty() )
+               new_covered_target++;
+            if ( new_covered_target >= *new_covered_target_max ) {
+#if DEBUG
+               std::cerr << "Target in radius : " << *target_in_radius << std::endl;
+#endif
+               *selected_target = target_in_radius;
+               *visited_target_queue = covered_targets_in_radius_queue;
+               *new_covered_target_max = new_covered_target;
+            }
          }
       }
-
    }
 }
 
@@ -123,8 +127,7 @@ inline void greedy_construction(Grid<d> &g)
    size_t new_covered_target_max = 0;
    AVLVisitedNode<d> *visited_target_avl;
 
-   find_best_target<d>(well_node,&selected_target,&visited_target_queue,&new_covered_target_max,NULL);
-   std::cerr << "on sort du premier find_best" << std::endl;
+   find_best_target<d>(well_node,&selected_target,&visited_target_queue,&new_covered_target_max);
 
    g.insertNodeInSolution(well_node);
    g.insertNodeInSolution(selected_target);
@@ -137,7 +140,7 @@ inline void greedy_construction(Grid<d> &g)
 
    g.maj(selected_target,empty_queue,visited_target_queue,new_covered_target_max);
 
-   while (g.cover() > 0) {
+   while (!g.all_nodes_are_covered()) {
 #if DEBUG
       std::cerr << "Need to be covered : " << g.cover() << std::endl;
 #endif 

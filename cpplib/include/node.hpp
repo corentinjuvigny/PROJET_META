@@ -136,7 +136,7 @@ void Node<d>::set_new_sensor(Queue &sensor_queue)
    AVLNodes avl;
    std::for_each( sensor_queue.cbegin()
                 , sensor_queue.cend()
-                , [&,this](auto &sensor) 
+                , [&,this](const auto &sensor) 
                   {
                      if ( (!equal_coord(this->coord(),sensor->coord()))
                            && (sensor->kind() == K_Well || sensor->kind() == K_Sensor) )
@@ -149,27 +149,26 @@ void Node<d>::set_new_sensor(Queue &sensor_queue)
 template <size_t d>
 void Node<d>::set_sensor_new_communication(Queue &sensor_queue)
 {
-   std::for_each( sensor_queue.cbegin()
-                , sensor_queue.cend()
+   std::for_each( sensor_queue.begin()
+                , sensor_queue.end()
                 , [&,this](auto &sensor)
                   {
                      if ( (!equal_coord(this->coord(),sensor->coord()))
                            && (sensor->kind() == K_Well || sensor->kind() == K_Sensor) )
-                     this->_aux.insert(std::make_pair(sensor->name(),sensor));
+                        sensor->_aux.insert(std::make_pair(this->name(),this));
                   } );
 }
 
 template <size_t d>
 void Node<d>::set_target_new_capture_sensor(Queue &visited_target_queue)
 {
-
-   std::for_each( visited_target_queue.cbegin()
-                , visited_target_queue.cend()
-                , [&,this](auto &sensor)
+   std::for_each( visited_target_queue.begin()
+                , visited_target_queue.end()
+                , [&,this](auto &target)
                   {
-                     if ( (!equal_coord(this->coord(),sensor->coord()))
-                           && (sensor->kind() == K_Target) ) {
-                        this->_aux.insert(std::make_pair(sensor->name(),sensor));
+                     if ( (!equal_coord(this->coord(),target->coord()))
+                           && (target->kind() == K_Target) ) {
+                        target->_aux.insert(std::make_pair(this->name(),this));
                      }
                   } );
 }

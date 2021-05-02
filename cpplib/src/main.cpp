@@ -44,21 +44,26 @@ int main(int argc, char* argv[])
    std::cout << mygrid << std::endl;
 
 #else
-   int size = 20;
-   double g_time = 10.0;
-   std::optional opt = read_node_file(argv[1],1.00001,1.00001); 
+   const int size = 20;
+   const double g_time = 100.0;
+   const double communication_radius = 2.00001;
+   const double capture_radius = 1.00001;
+   const bool draw_result = false;
+
+   std::optional opt = read_node_file(argv[1],communication_radius,capture_radius); 
    if ( opt == std::nullopt ) {
       std::cout << "Error no grid has been generated" << std::endl;
       return 1;
    }
-   std::cout << *opt << std::endl;
+
+   /* Greedy section */
    greedy_construction(*opt);
-   std::cout << "Greedy Algo succeeded : cover = " << opt->cover()
-             << " with " << opt->solution().size() 
-             << " elems :" << std::endl;
-   for (auto elem : opt->solution())
-      std::cout << elem.first << std::endl;
-   //draw_data(*opt,g_time,size);
+   std::cout << "========== Result Greedy Algorithm ==========" << std::endl;
+   std::cout << "Number of targets : " << opt->solution().size() - 1 << std::endl;
+   //for (auto elem : opt->solution())
+   //   std::cout << elem.first << std::endl;
+   if ( draw_result )
+      draw_data(*opt,g_time,size);
    opt->end();
 #endif
    return 0;

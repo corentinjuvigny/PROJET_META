@@ -105,7 +105,7 @@ void draw_data_2D(const Grid<2> &g, float pause, int size)
 
 		      PyRun_SimpleString(target_scatter);
 		      PyRun_SimpleString(target_text);
-            
+
             for (auto &target_elem : aux) {
                Node<2>* target = target_elem.second;
                auto [ target_x, target_y ] = target->coord();
