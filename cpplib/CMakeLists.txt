@@ -11,6 +11,6 @@ SET(CMAKE_CXX_STANDARD 20)
 
 include_directories(${PROJECT_SOURCE_DIR}/include /usr/include/python3.9)
 
-add_executable(meta src/main.cpp src/node.cpp src/grid.cpp src/rwfile.cpp src/draw.cpp src/kdtree.c)
+add_executable(meta src/main.cpp src/rwfile.cpp src/draw.cpp src/kdtree.c)
 
 target_link_libraries(meta tbb python3.9 m)
