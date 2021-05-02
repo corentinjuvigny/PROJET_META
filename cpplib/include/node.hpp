@@ -41,16 +41,26 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 template <size_t d>
 class Node {
    public:
+      /* 
+       * @struct NodeCmp
+       *
+       * @brief struct needed for the comparaison between the nodes
+       */
       struct NodeCmp {
          bool operator()(const Node<d>* const &lhs, const Node<d>* const &rhs) const {
             return compareNode(lhs,rhs);
          }
       };
+      /*
+       * @enum Kind
+       *
+       * @brief represents the type of the node
+       */
+      enum Kind { K_Well, K_Target, K_Sensor };
+      typedef std::set<Node<d>*,NodeCmp> AVLNodes;
       typedef std::array<double,d> Coord;
       typedef std::shared_ptr<Node<d>> SNode;
       typedef std::list<Node<d>*> Queue;
-      typedef std::set<Node<d>*,NodeCmp> AVLNodes;
-      enum Kind { K_Well, K_Target, K_Sensor };
       Node<d>(const Kind kind,const std::string &name, const Coord &coord)
          :  _kind(kind), _name(name), _coord(coord) { }
       Node(const Node &node) = default;
@@ -72,7 +82,7 @@ class Node {
       friend std::ostream& operator<<(std::ostream &os, const Node &n)
       {
          os << n._name << " ( ";
-         std::for_each(n._coord.cbegin(),n._coord.cend(),[&os](auto &e) { os << e << ' '; });
+         std::for_each(n._coord.cbegin(),n._coord.cend(),[&os](const auto &e) { os << e << ' '; });
          os << ") of type " << n._kind;
          return os;
       }
@@ -82,9 +92,9 @@ class Node {
        * @param na A node
        * @param nb A node
        *
-       * @return An integer given by string::compare
+       * @return A boolean satisfiying the Compare requirements
        */
-      static inline int compareNode(const Node* const &na, const Node* const &nb) 
+      static inline bool compareNode(const Node* const &na, const Node* const &nb) 
       {
          return na->_name < nb->_name;
       }
