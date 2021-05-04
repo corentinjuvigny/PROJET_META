@@ -64,8 +64,8 @@ static inline Node<2>::SNode node_of_line_2D(const std::string &buf, const Node<
 }
 
 std::optional<Grid<2>> read_node_file_2D( const char* filename
-                                     , const double communication_radius
-                                     , const double capture_radius )
+                                        , const double communication_radius
+                                        , const double capture_radius )
 {
    std::ifstream file(filename);
    std::string line;

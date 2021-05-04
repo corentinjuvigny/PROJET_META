@@ -23,7 +23,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "node.hpp"
 #include "grid.hpp"
 
-void draw_data_2D(const Grid<2> &g, const float pause, const int size)
+void draw_data_2D_Python(const Grid<2> &g, const float pause, const int size)
 {
 	const int taille_grille = size;
    const std::vector<Grid<2>::SNode> nodes = g.nodes();

@@ -62,10 +62,16 @@ class Grid {
       const long &cover() const { return _cover; }
       const double &communication_radius() const { return _communication_radius; }
       const double &capture_radius() const { return _capture_radius; }
+      const SNode &well() const { return _nodes.front(); }
       void insertNode(SNode &&n);
       void insertNodeInSolution(Node<d>* &n);
       void add_coverage(const long new_coverage) { _cover -= new_coverage; }
       bool all_nodes_are_covered() const { return _cover <= 0; }
+      void add_sensor_to_solution(const Node<d>* target);
+      void remove_sensor_to_solution(const Node<d>* sensor);
+      const AVLNodes& targets_in_neighbourhood() const;
+      const AVLNodes& sensors_in_neighbourhood() const;
+      int run_dfs(const Node<d>* initial_node()) const;
       void finish();
       void maj( Node<d>* &selected_target
               , typename Node<d>::Queue &sensor_queue

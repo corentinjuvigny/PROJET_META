@@ -61,7 +61,7 @@ class Node {
       typedef std::array<double,d> Coord;
       typedef std::shared_ptr<Node<d>> SNode;
       typedef std::list<Node<d>*> Queue;
-      Node<d>(const Kind kind,const std::string &name, const Coord &coord)
+      Node<d>(const Kind kind, const std::string &name, const Coord &coord)
          :  _kind(kind), _name(name), _coord(coord) { }
       Node(const Node &node) = default;
       Node(Node &&node) = default;
@@ -132,10 +132,7 @@ class SensorNode : public Node<d> {
 template <size_t d>
 constexpr bool equal_coord(const typename Node<d>::Coord &ca, const typename Node<d>::Coord &cb)
 {
-   for (auto ita = ca.cbegin(), itb = cb.begin(); ita != ca.cend(), itb != cb.cend(); ita++, itb++)
-      if ( *ita != *itb )
-         return false;
-   return true;
+   return std::equal(std::execution::par,ca.cbegin(),ca.cend(),cb.cbegin(),cb.cend());
 }
 
 template <>

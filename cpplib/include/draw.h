@@ -35,22 +35,63 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "grid.hpp"
 
 /**
- * Draw all the data of our problem is a 2D canvas.
+ * Draw all the data of our problem is a 2D canvas generated with python
  *
  * @param g       All the data of our problem.
  * @param pause   The time we want to wait before closing the window.
  * @param size    The height of the plot.
  */
-void draw_data_2D(const Grid<2> &g, const float pause, const int size);
+extern void draw_data_2D_Python(const Grid<2> &g, const float pause, const int size);
+
+
+enum class DrawType { Python, OpenGL };
+
+constexpr void draw_data_2D(const Grid<2> &g, const DrawType dt, const float pause, const int size)
+{
+   switch (dt) {
+      case DrawType::Python:
+         draw_data_2D_Python(g,pause,size);
+         break;
+      case DrawType::OpenGL:
+         break;
+      default:
+         break;
+   }
+}
 
 template <size_t d>
-void draw_data(const Grid<d>&, const float, const int)
-{ std::cerr << "Drawing data for dim " << d << " not yet implemented" << std::endl; }
+class GridDrawer {
+   public:
+      GridDrawer( const Grid<d> &g
+              , const DrawType dt
+              , const float pause
+              , const int window_size)
+         : _g(g), _dt(dt), _pause(pause), _window_size(window_size) { }
+      void draw_data() const;
+   private:
+      const Grid<d> &_g;
+      DrawType _dt;
+      float _pause;
+      int _window_size;
+};
+
+template <size_t d>
+void GridDrawer<d>::draw_data() const
+{
+   std::cerr << "Drawing data for dim " << d << " not yet implemented" << std::endl;
+}
 
 template <>
-inline void draw_data(const Grid<2> &g, const float pause, const int size)
+inline void GridDrawer<2>::draw_data() const
 {
-   draw_data_2D(g,pause,size);
+   draw_data_2D(_g,_dt,_pause,_window_size);
+}
+
+template <size_t d>
+void draw_data(const Grid<d> &g, const DrawType dt = DrawType::Python, const float pause = 10.0, const int size = 20)
+{
+   GridDrawer<d> drawer(g,dt,pause,size);
+   drawer.draw_data();
 }
 
 #endif //__DRAW_H__

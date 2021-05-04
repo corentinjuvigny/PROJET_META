@@ -18,7 +18,7 @@ connection with the use or performance of this software.
 
 */
 
-/** @file greedy.h
+/** @file greedy.hpp
  *
  * @brief Greedy algorithm to construct a viable solution of the problem
  *
@@ -118,11 +118,11 @@ void find_best_target( Node<d> *node
 }
 
 template <size_t d>
-inline void greedy_construction(Grid<d> &g)
+void greedy_construction(Grid<d> &g)
 {
    Node<d>* well_node = g.nodes().front().get();
 
-   Node<d>* selected_target;
+   Node<d>* selected_target = NULL;
    typename Node<d>::Queue visited_target_queue;
    size_t new_covered_target_max = 0;
    AVLVisitedNode<d> *visited_target_avl;
@@ -130,15 +130,17 @@ inline void greedy_construction(Grid<d> &g)
    find_best_target<d>(well_node,&selected_target,&visited_target_queue,&new_covered_target_max);
 
    g.insertNodeInSolution(well_node);
-   g.insertNodeInSolution(selected_target);
+   if ( selected_target != NULL ) {
+      g.insertNodeInSolution(selected_target);
 #if DEBUG
       std::cerr << "Well Inserted " << std::endl;
 #endif
-
-   typename Node<d>::Queue empty_queue;
-   empty_queue.push_back(well_node);
-
-   g.maj(selected_target,empty_queue,visited_target_queue,new_covered_target_max);
+      typename Node<d>::Queue empty_queue;
+      empty_queue.push_back(well_node);
+      g.maj(selected_target,empty_queue,visited_target_queue,new_covered_target_max);
+   } else {
+      std::cout << "Invalid grid : the instance has no valid solution" << std::endl;
+   }
 
    while (!g.all_nodes_are_covered()) {
 #if DEBUG
@@ -154,15 +156,19 @@ inline void greedy_construction(Grid<d> &g)
                                           , &visited_target_queue
                                           , &new_covered_target_max
                                           , visited_target_avl); } );
-      g.insertNodeInSolution(selected_target);
-      auto sensor_queue_avl = visited_target_avl->find((selected_target)->name());
-      typename Node<d>::Queue sensor_queue = sensor_queue_avl != visited_target_avl->end()
-                                             ? sensor_queue_avl->second
-                                             : typename Node<d>::Queue();
-      g.maj( selected_target
-           , sensor_queue
-           , visited_target_queue
-           , new_covered_target_max ); 
+      if ( selected_target != NULL ) {
+         g.insertNodeInSolution(selected_target);
+         auto sensor_queue_avl = visited_target_avl->find((selected_target)->name());
+         typename Node<d>::Queue sensor_queue = sensor_queue_avl != visited_target_avl->end()
+                                                ? sensor_queue_avl->second
+                                                : typename Node<d>::Queue();
+         g.maj( selected_target
+              , sensor_queue
+              , visited_target_queue
+              , new_covered_target_max );
+      } else {
+         std::cout << "Invalid grid : the instance has no valid solution" << std::endl;
+      }
       delete visited_target_avl;
    }
 }

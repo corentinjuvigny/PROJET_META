@@ -20,13 +20,15 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
 #include <iostream>
-#include <optional>
+#include <chrono>
 #include "include.h"
 #include "node.hpp"
 #include "grid.hpp"
 #include "greedy.hpp"
+#include "mip.hpp"
 #include "rwfile.h"
 #include "draw.h"
+#include <ilcplex/ilocplex.h>
 
 int main(int argc, char* argv[])
 {
@@ -43,11 +45,11 @@ int main(int argc, char* argv[])
    std::cout << mygrid << std::endl;
 
 #else
-   const int size = 20;
-   const double g_time = 10.0;
+   const int win_size = 20;
+   const double g_time = 30.0;
    const double communication_radius = 2.00001;
    const double capture_radius = 1.00001;
-   const bool draw_result = true;
+   const bool draw_result = false;
 
    std::optional opt = read_node_file_2D(argv[1],communication_radius,capture_radius); 
    if ( opt == std::nullopt ) {
@@ -56,13 +58,19 @@ int main(int argc, char* argv[])
    }
 
    /* Greedy section */
+   auto start = std::chrono::steady_clock::now();
    greedy_construction(*opt);
+   auto end = std::chrono::steady_clock::now();
+   std::chrono::duration<double> duration = end - start;
    std::cout << "========== Result Greedy Algorithm ==========" << std::endl;
    std::cout << "Number of targets : " << opt->solution().size() - 1 << std::endl;
+   std::cout << "Execution time : " << duration.count() << " s" << std::endl;
    //for (auto elem : opt->solution())
    //   std::cout << elem.first << std::endl;
+   std::cout << std::endl;
+   mip_resolution(*opt);
    if ( draw_result )
-      draw_data(*opt,g_time,size);
+      draw_data(*opt,DrawType::Python,g_time,win_size);
    opt->end();
 #endif
    return 0;
