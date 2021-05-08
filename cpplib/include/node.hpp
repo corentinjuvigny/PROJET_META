@@ -47,7 +47,8 @@ class Node {
        * @brief struct needed for the comparaison between the nodes
        */
       struct NodeCmp {
-         bool operator()(const Node<d>* const &lhs, const Node<d>* const &rhs) const {
+         bool operator()(const Node<d>* const &lhs, const Node<d>* const &rhs) const
+         {
             return compareNode(lhs,rhs);
          }
       };

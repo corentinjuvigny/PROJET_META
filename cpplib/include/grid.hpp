@@ -126,6 +126,7 @@ Grid<d>::Grid( const size_t n
    _kdTree = kd_create(static_cast<int>(d));
    kd_data_destructor(_kdTree,NULL);
 }
+
 template <size_t d>
 Grid<d>::Grid(Grid<d> &&g)
    : _nodes(std::move(g._nodes))

@@ -30,80 +30,19 @@ connection with the use or performance of this software.
 #include <ilcplex/ilocplex.h>
 #include <ios>
 #include <sstream>
-#include <unordered_map>
-
-typedef std::map<std::string,IloNumVar> IloNumVarMap;
 
 template <size_t d>
-void mip_resolution(Grid<d> &g)
+void mip_resolution(Grid<d>&)
 {
-   IloEnv env;
-   
-   IloModel model(env);
+   std::cout << "MIP not yet defined for dimension " << d << " problem" << std::endl;
+}
 
-   // Decision var
-   IloNumVarMap X;
-   for (const auto &s : g.nodes()) { 
-      std::stringstream ss;
-      ss << "x_" << s->name();
-      X[s->name()] = IloNumVar(env,0,1,ILOBOOL,ss.str().c_str());
-   }
-   
-   // Objective
-   IloExpr obj(env);
-   for (auto &x_s : X)
-      obj += x_s.second;
-   model.add(IloMinimize(env,obj,"obj"));
-   obj.end();
+void mip_resolution_2D(Grid<2> &g);
 
-   // Constraints
-   for (const auto &s : g.nodes()) {
-      IloExpr e_com(env);
-      IloExpr e_capt(env);
-      for (const auto &v : s->communication_queue())
-         e_com += X[v->name()];
-      for (const auto &v : s->capture_queue())
-         e_capt += X[v->name()];
-      model.add(e_com >= 1);
-      model.add(e_capt >= 1);
-      e_capt.end();
-      e_com.end();
-   }
-   model.add(X[g.well()->name()] == 1);
-
-   IloCplex cplex(model);
-
-   cplex.setParam(IloCplex::Param::Threads,8);
-   cplex.setParam(IloCplex::Param::MIP::Strategy::File,3);
-   cplex.solve();
-
-   IloAlgorithm::Status status = cplex.getStatus();
-   std::stringstream ss; 
-   ss << "Solution status:                   " << cplex.getStatus();
-   std::string separator_line(ss.str().length(),'-');
-   std::cout << separator_line << std::endl;
-   std::cout << ss.str() << std::endl;
-   //IloNumMatrix xr(env,k);
-   switch ( status ) {
-      case IloAlgorithm::Optimal:
-         std::cout << "Nodes processed:                   " << cplex.getNnodes() << std::endl;
-         std::cout << "Active user cuts/lazy constraints: " << cplex.getNcuts(IloCplex::CutUser) << std::endl;
-         std::cout << "Time elapsed:                      " << cplex.getTime() << std::endl;
-         std::cout << "Optimal value:                     " << cplex.getObjValue() << std::endl;
-        // for (IloInt p = 0; p < k; p++) {
-        //    xr[p] = IloNumArray(env,m);
-        //    cplex.getValues(xr[p],x[p]);
-        // }
-         break;
-      default:
-         break;
-   }
-   std::cout << separator_line << std::endl;
-
-
-   model.end();
-   cplex.end();
-   env.end();
+template <>
+inline void mip_resolution(Grid<2> &g)
+{
+   mip_resolution_2D(g);
 }
 
 #endif //__MIP_HPP__
