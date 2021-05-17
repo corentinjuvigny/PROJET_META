@@ -27,7 +27,6 @@ connection with the use or performance of this software.
 #define __MIP_HPP__
 
 #include <grid.hpp>
-#include <ilcplex/ilocplex.h>
 #include <ios>
 #include <sstream>
 
