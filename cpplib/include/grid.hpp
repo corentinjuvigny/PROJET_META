@@ -31,17 +31,19 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 #include <execution>
 #include "kdtree.h"
 #include "node.hpp"
 
-template <size_t d>
+template <size_t d = 2>
 class Grid {
    public:
       using SNode = typename Node<d>::SNode;
       using AVLNodes = typename Node<d>::AVLNodes;
+      Grid<d>() = default;
       Grid<d>( const std::vector<SNode> &nodes
              , struct kdtree *kdTree
              , const long cover
@@ -71,6 +73,8 @@ class Grid {
       void remove_sensor_to_solution(const Node<d>* sensor);
       const AVLNodes& targets_in_neighbourhood() const;
       const AVLNodes& sensors_in_neighbourhood() const;
+      std::optional<size_t> objective_value() const;
+      void clear_solution() { _solution.clear(); }
       int run_dfs(const Node<d>* initial_node()) const;
       void finish();
       void maj( Node<d>* &selected_target
@@ -192,6 +196,14 @@ void Grid<d>::maj( Node<d>* &selected_target
    this->add_coverage(new_covered_target_max);
    selected_target->set_sensor_new_communication(sensor_queue);
    selected_target->set_target_new_capture_sensor(visited_target_queue); 
+}
+
+template <size_t d>
+std::optional<size_t> Grid<d>::objective_value() const
+{
+   if ( _solution.empty() )
+      return std::nullopt;
+   return std::make_optional(_solution.size() - 1);
 }
 
 #endif // __GRID_HPP__

@@ -140,6 +140,8 @@ void greedy_construction(Grid<d> &g)
       g.maj(selected_target,empty_queue,visited_target_queue,new_covered_target_max);
    } else {
       std::cout << "Invalid grid : the instance has no valid solution" << std::endl;
+      g.clear_solution(); 
+      return;
    }
 
    while (!g.all_nodes_are_covered()) {
@@ -168,6 +170,9 @@ void greedy_construction(Grid<d> &g)
               , new_covered_target_max );
       } else {
          std::cout << "Invalid grid : the instance has no valid solution" << std::endl;
+         delete visited_target_avl;
+         g.clear_solution(); 
+         return;
       }
       delete visited_target_avl;
    }

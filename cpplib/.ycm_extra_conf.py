@@ -8,19 +8,30 @@ import re
 BASE_FLAGS = [
         '-Wall',
         '-Wextra',
-        '-Werror',
         '-Wno-long-long',
         '-Wno-variadic-macros',
+        '-Wno-overloaded-virtual',
         '-fexceptions',
         '-DNDEBUG',
         '-std=c++20',
         '-xc++',
+        '-ltbb',
+        '-leo',
+        '-leoutils',
+        '-les',
+        '-DWITH_EIGEN=1',
         '-I','.',
         '-I/usr/lib/',
         '-I/usr/include/',
-        '-I/home/kodra/IBM/concert/include',
-        '-I/home/kodra/IBM/cplex/include',
+        '-I/opt/ibm/ILOG/CPLEX_Studio128/concert/include',
+        '-I/opt/ibm/ILOG/CPLEX_Studio128/cplex/include',
         '-I/home/kodra/Documents/Cours/meta/PROJET_META/cpplib/include',
+        '-I/usr/local/include/paradiseo/eo',
+        '-I/usr/local/include/paradiseo/mo',
+        '-I/usr/local/include/paradiseo/edo',
+        '-I/usr/local/include/paradiseo/moeo',
+        '-I/usr/include/eigen3',
+
         ]
 
 SOURCE_EXTENSIONS = [

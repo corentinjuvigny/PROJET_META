@@ -82,10 +82,26 @@ class Node {
       void set_target_new_capture_sensor(Queue &visited_target_queue);
       friend std::ostream& operator<<(std::ostream &os, const Node &n)
       {
-         os << n._name << " ( ";
+         auto kind_formatter = [](const Kind &k) {
+                                  switch (k) {
+                                     case K_Well:
+                                        return "Well";
+                                     case K_Sensor:
+                                        return "Sensor";
+                                     case K_Target:
+                                        return "Target";
+                                     default:
+                                        return "Invalid";
+                                  } };
+         os << "[ " << n._name << " <" << kind_formatter(n._kind) << "> ( ";
          std::for_each(n._coord.cbegin(),n._coord.cend(),[&os](const auto &e) { os << e << ' '; });
-         os << ") of type " << n._kind;
+         os << ") ]";
          return os;
+      }
+      friend std::istream& operator>>(std::istream &is, Node &n)
+      {
+         is >> n >> n._kind >> n._name >> n._coord;
+         return is;
       }
       /**
        * Compare two nodes using their names
@@ -189,6 +205,21 @@ void Node<d>::set_target_new_capture_sensor(Queue &visited_target_queue)
                         target->_aux.insert(this);
                      }
                   } );
+}
+
+template <size_t d>
+std::ostream& operator<<(std::ostream &os, const Node<d>* n)
+{
+   if ( n != nullptr )
+      os << *n;
+   return os;
+}
+
+template <size_t d>
+std::istream& operator>>(std::istream &is, Node<d>* &n)
+{
+   is >> n;
+   return is;
 }
 
 #endif //__NODE_HPP__
