@@ -67,10 +67,11 @@ class Grid {
       const SNode &well() const { return _nodes.front(); }
       void insertNode(SNode &&n);
       void insertNodeInSolution(Node<d>* &n);
-      void add_coverage(const long new_coverage) { _cover -= new_coverage; }
+      void add_coverage(const long coverage) { _cover -= coverage; }
+      void remove_coverage(const long coverage) { _cover += coverage; }
       bool all_nodes_are_covered() const { return _cover <= 0; }
-      void add_sensor_to_solution(const Node<d>* target);
-      void remove_sensor_to_solution(const Node<d>* sensor);
+      void add_sensor_to_solution(Node<d>* const target);
+      void remove_sensor_to_solution(Node<d>* const sensor);
       const AVLNodes& targets_in_neighbourhood() const;
       const AVLNodes& sensors_in_neighbourhood() const;
       std::optional<size_t> objective_value() const;
@@ -195,7 +196,7 @@ void Grid<d>::maj( Node<d>* &selected_target
    selected_target->set_new_sensor(sensor_queue);
    this->add_coverage(new_covered_target_max);
    selected_target->set_sensor_new_communication(sensor_queue);
-   selected_target->set_target_new_capture_sensor(visited_target_queue); 
+   selected_target->set_targets_new_capture_sensor(visited_target_queue); 
 }
 
 template <size_t d>
@@ -204,6 +205,24 @@ std::optional<size_t> Grid<d>::objective_value() const
    if ( _solution.empty() )
       return std::nullopt;
    return std::make_optional(_solution.size() - 1);
+}
+
+template <size_t d>
+void Grid<d>::add_sensor_to_solution(Node<d>* const sensor)
+{
+   if ( sensor->kind() != Node<d>::K_Target )
+      return;
+   this->add_coverage(sensor->set_as_sensor());
+   _solution.insert(sensor);
+}
+
+template <size_t d>
+void Grid<d>::remove_sensor_to_solution(Node<d>* const sensor)
+{
+   if ( sensor->kind() != Node<d>::K_Sensor )
+      return;
+   this->remove_coverage(sensor->set_as_target());
+   _solution.erase(sensor);
 }
 
 #endif // __GRID_HPP__

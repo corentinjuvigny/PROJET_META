@@ -29,46 +29,105 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef __GRIDNEIGHBOR_H__
 #define __GRIDNEIGHBOR_H__
 
-#include <map>
 #include <mo>
 #include "gridEval.h"
+
+template <size_t d>
+struct GridNeighbor
+{
+   enum Kind { INSERT, REMOVE };
+   Kind kind;
+   Node<d>* node;
+};
+
+template <size_t d>
+struct InsertGridNeighbor : public GridNeighbor<d>
+{
+   InsertGridNeighbor(Node<d>* node = NULL)
+   {
+      this->kind = GridNeighbor<d>::INSERT;
+      this->node = node;
+   }
+};
+
+template <size_t d>
+struct RemoveGridNeighbor : public GridNeighbor<d>
+{
+   RemoveGridNeighbor(Node<d>* node = NULL)
+   {
+      this->kind = GridNeighbor<d>::REMOVE;
+      this->node = node;
+   }
+};
 
 template <size_t d>
 class moGridSolNeighbor : public moBackableNeighbor<eoGridSolution<d>>
 {
    public:
-      typedef std::map<eoGridSolution<d>,eoGridSolution<d>> MapSolution;
-      
-      moGridSolNeighbor() : moBackableNeighbor<eoGridSolution<d>>(), _currentSolution(), _solutions() { }
+      moGridSolNeighbor() : moBackableNeighbor<eoGridSolution<d>>(), _neighbor(), _grid(nullptr) { }
 
       void move(eoGridSolution<d>& solution)
       {
-         _solutions[_currentSolution] = solution;
-         _currentSolution = solution;
+         switch ( _neighbor.kind ) {
+            case GridNeighbor<d>::INSERT:
+               solution.push_back(_neighbor.node);
+               _grid->add_sensor_to_solution(_neighbor.node);
+               break;
+            case GridNeighbor<d>::REMOVE:
+               solution.erase(std::remove(solution.begin(),solution.end(),_neighbor.node));
+               _grid->remove_sensor_to_solution(_neighbor.node);
+               break;
+            default:
+               break;
+         }
          solution.invalidate();
-      };
-      
-      void moveBack(eoGridSolution<d>& solution)
-      {
-         _currentSolution = _solutions[solution];
-         _solutions.erase(solution);
       }
 
-      const eoGridSolution<d> &currentSolution() const { return _currentSolution; }
-      const MapSolution &solutions() const { return solutions; }
+      void moveBack(eoGridSolution<d>& solution)
+      {
+         switch ( _neighbor.kind ) {
+            case GridNeighbor<d>::INSERT:
+               _grid->remove_sensor_to_solution(_neighbor.node);
+               solution.erase(std::remove(solution.begin(),solution.end(),_neighbor.node));
+               break;
+            case GridNeighbor<d>::REMOVE:
+               _grid->add_sensor_to_solution(_neighbor.node);
+               solution.push_back(_neighbor.node);
+               break;
+            default:
+               break;
+         }
+         solution.invalidate();
+      }
+
+      const GridNeighbor<d> &neighbor() const { return _neighbor; }
+
+      void initNeighbor(GridNeighbor<d>&& neighbor, Grid<d>* grid)
+      {
+         _neighbor = neighbor;
+         _grid = grid;
+      }
+      void setNeighbor(GridNeighbor<d> &&neighbor)
+      {
+         _neighbor = neighbor;
+      }
 
       bool equals(moGridSolNeighbor& neighbor)
       {
-         return neighbor.currentSolution() == this->_currentSolution && neighbor.solutions() == _solutions;
+         return neighbor.neighbor() == _neighbor;
       }
 
       std::string className() const
       {
          return "moGridSolNeighbor";
       }
+
    private:
-      eoGridSolution<d> _currentSolution;
-      MapSolution _solutions;
+      Grid<d>* _grid;
+      GridNeighbor<d> _neighbor;
 };
+
+template <size_t d>
+using moGridSolFullEvalByModif = moFullEvalByModif<moGridSolNeighbor<d>>;
 
 #endif // __GRIDNEIGHBOR_H__

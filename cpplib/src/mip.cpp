@@ -24,6 +24,8 @@ connection with the use or performance of this software.
  *
  */
 
+#define TBB_SUPPRESS_DEPRECATED_MESSAGES 1
+
 #include <boost/config.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>

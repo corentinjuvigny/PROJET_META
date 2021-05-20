@@ -27,6 +27,9 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef __NODE_HPP__
 #define __NODE_HPP__
 
+#define TBB_SUPPRESS_DEPRECATED_MESSAGES 1
+
+#include <iostream>
 #include <ostream>
 #include <string>
 #include <list>
@@ -72,14 +75,18 @@ class Node {
       const Coord &coord() const { return _coord; }
       const Queue &capture_queue() const { return _capture_queue; }
       const Queue &communication_queue() const { return _communication_queue; }
-      const AVLNodes &aux() const { return _aux; }
+      AVLNodes &aux() { return _aux; }
       void set_capture_queue(Queue &q) { _capture_queue = q; }
       void set_capture_queue(Queue &&q) { _capture_queue = q; }
-      void set_communication_queue(Queue &q) { _communication_queue = q; }
+      void set_communication_queue(const Queue &q) { _communication_queue = q; }
       void set_communication_queue(Queue &&q) { _communication_queue = q; }
       void set_new_sensor(Queue &sensor_queue);
       void set_sensor_new_communication(Queue &sensor_queue);
-      void set_target_new_capture_sensor(Queue &visited_target_queue);
+      void set_targets_new_capture_sensor(Queue &target_queue);
+      void set_targets_new_capture_sensor(Node<d>* target);
+      inline bool is_covered() const;
+      long set_as_target();
+      long set_as_sensor();
       friend std::ostream& operator<<(std::ostream &os, const Node &n)
       {
          auto kind_formatter = [](const Kind &k) {
@@ -161,7 +168,7 @@ constexpr bool equal_coord<2>(const typename Node<2>::Coord &ca, const typename 
 }
 
 template <size_t d>
-void Node<d>::set_new_sensor(Queue &sensor_queue)
+inline void Node<d>::set_new_sensor(Queue &sensor_queue)
 {
    if ( this->_kind == K_Sensor || this->_kind == K_Well )
       return;
@@ -179,7 +186,7 @@ void Node<d>::set_new_sensor(Queue &sensor_queue)
 }
 
 template <size_t d>
-void Node<d>::set_sensor_new_communication(Queue &sensor_queue)
+inline void Node<d>::set_sensor_new_communication(Queue &sensor_queue)
 {
    std::for_each( std::execution::par_unseq
                 , sensor_queue.begin()
@@ -193,7 +200,7 @@ void Node<d>::set_sensor_new_communication(Queue &sensor_queue)
 }
 
 template <size_t d>
-void Node<d>::set_target_new_capture_sensor(Queue &visited_target_queue)
+inline void Node<d>::set_targets_new_capture_sensor(Queue &visited_target_queue)
 {
    std::for_each( std::execution::par_unseq
                 , visited_target_queue.begin()
@@ -205,6 +212,93 @@ void Node<d>::set_target_new_capture_sensor(Queue &visited_target_queue)
                         target->_aux.insert(this);
                      }
                   } );
+}
+
+template <size_t d>
+inline void Node<d>::set_targets_new_capture_sensor(Node<d>* target)
+{
+   if ( (!equal_coord<d>(this->coord(),target->coord()))
+         && (target->kind() == K_Target) ) {
+      target->_aux.insert(this);
+   }
+}
+
+template <size_t d>
+long Node<d>::set_as_target()
+{
+   long coverage = 0;
+   for (auto node : this->capture_queue()) {
+      if ( node->kind() == Node<d>::K_Target ) {
+         typename Node<d>::Queue target_queue;
+         for (auto node_neighbor : node->capture_queue()) {
+            if ( node_neighbor == this )
+               continue;
+            if ( node_neighbor->kind() == Node<d>::K_Sensor || node_neighbor->kind() == Node<d>::K_Well )
+               //target_queue.push_front(node);
+               node->aux().insert(node_neighbor);
+         }
+         node->aux().erase(this);
+         coverage += node->aux().empty() ? 1 : 0;
+      }
+   }
+   //the sensor is now a target that must be capture
+   for (auto neighbor : this->communication_queue()) {
+      if ( neighbor->kind() == Node<d>::K_Sensor || neighbor->kind() == Node<d>::K_Well )
+         neighbor->aux().erase(this);
+   }
+   this->aux().clear();
+   for (auto node : _capture_queue) {
+      if ( node == this )
+         continue;
+      if ( node->kind() == K_Sensor || node->kind() == K_Well )
+         this->aux().insert(node);
+   }
+   _kind = K_Target;
+   if ( this->aux().empty() )
+      coverage++;
+   return coverage;;
+}
+
+template <size_t d>
+long Node<d>::set_as_sensor()
+{
+   long coverage = this->is_covered() ? 0 : 1;
+   Queue sensor_queue;
+   for (auto node : _communication_queue) {
+      if ( node == this )
+         continue;
+      if ( node->kind() == K_Sensor || node->kind() == K_Well )
+         sensor_queue.push_front(node);
+   }
+   this->aux().clear();
+   this->set_sensor_new_communication(sensor_queue);
+   this->set_new_sensor(sensor_queue);
+   for (auto node : _capture_queue) {
+      if ( node == this )
+         continue;
+      if ( !node->is_covered() )
+         coverage++;
+      this->set_targets_new_capture_sensor(node);
+   }
+   return coverage; 
+}
+
+template <size_t d>
+inline bool Node<d>::is_covered() const
+{
+   bool res;
+   switch ( _kind ) {
+      case K_Target:
+         res = _aux.size() > 0;
+         break;
+      case K_Sensor:
+      case K_Well:
+         res = 1;
+         break;
+      default:
+         res = 0;
+   }
+   return res;
 }
 
 template <size_t d>

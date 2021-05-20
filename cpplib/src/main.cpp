@@ -22,6 +22,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <algorithm>
 #include <iostream>
 #include <chrono>
+#include <iterator>
 #include "include.h"
 #include "node.hpp"
 #include "grid.hpp"
@@ -49,10 +50,10 @@ int main(int argc, char* argv[])
 
 #else
    const int win_size = 20;
-   const double g_time = 10.0;
+   const double g_time = 5.0;
    const double communication_radius = 2.00001;
    const double capture_radius = 1.00001;
-   const bool draw_result = false;
+   const bool draw_result = true;
 
    std::optional opt_grid = read_node_file_2D(argv[1],communication_radius,capture_radius); 
    if ( opt_grid == std::nullopt ) {
@@ -76,7 +77,6 @@ int main(int argc, char* argv[])
       draw_data(*opt_grid,DrawType::Python,g_time,win_size);
       //draw_data(*opt_grid);
    }
-   opt_grid->end();
 
    eoGridSolution<2> eog;
    eoGridSolInit(eog,*opt_grid);
@@ -86,10 +86,84 @@ int main(int argc, char* argv[])
    eog.printOn(std::cout);
    std::cout << std::endl;
 
-   moGridSolNeighbor<2> gridNeighbor;
    moGridSolNeighborhood<2> gridNeighborhood(*opt_grid);
+   moGridSolFullEvalByModif<2> gridFullEval(eval);
 
-   std::cout << gridNeighborhood.className() << std::endl;
+   /* =========================================================
+    *
+    * the cooling schedule of the process
+    *
+    * ========================================================= */
+
+   // initial temp, factor of decrease, number of steps without decrease, final temp.
+   moSimpleCoolingSchedule<eoGridSolution<2>> coolingSchedule(10, 0.995, 100, 0.01);
+
+   moDynSpanCoolingSchedule<eoGridSolution<2>> dynSpanSchedule(40,0.9,200,100,10);
+
+
+   moTimeContinuator<moGridSolNeighbor<2>> timeContinuator(120);
+   moIterContinuator<moGridSolNeighbor<2>> iterContinuator(50000);
+
+   moCombinedContinuator<moGridSolNeighbor<2>> combinedContinuator(timeContinuator);
+   combinedContinuator.add(iterContinuator);
+
+
+   /* =========================================================
+    *
+    * Comparator of neighbors
+    *
+    * ========================================================= */
+
+   moSolNeighborComparator<moGridSolNeighbor<2>> solComparator;
+
+   /* =========================================================
+    *
+    * Example of Checkpointing
+    *
+    * ========================================================= */
+
+#if 0
+   moTrueContinuator<moGridSolNeighbor<2>> continuator;//always continue
+   moCheckpoint<moGridSolNeighbor<2>> checkpoint(continuator);
+   moFitnessStat<eoGridSolution<2>> fitStat;
+   checkpoint.add(fitStat);
+   eoFileMonitor monitor("fitness.out", "");
+   moCounterMonitorSaver countMon(100, monitor);
+   checkpoint.add(countMon);
+   monitor.add(fitStat);
 #endif
+
+   moSA<moGridSolNeighbor<2>> simulatedAnnealing(gridNeighborhood,eval,gridFullEval,coolingSchedule,solComparator,combinedContinuator);
+
+   moRandomBestHC<moGridSolNeighbor<2>> hillClimber(gridNeighborhood,eval,gridFullEval,combinedContinuator);
+
+   std::cout << "Simulated Annealing" << std::endl;
+
+   simulatedAnnealing(eog);
+   //hillClimber(eog);
+
+   std::cout << "Before last eval" << std::endl;
+   eog.printOn(std::cout);
+   std::cout << std::endl;
+   eval(eog);
+   std::cout << "After last eval" << std::endl;
+   eog.printOn(std::cout);
+   std::cout << std::endl;
+   std::cout << connectedComponents<2>(eog) << std::endl;
+   
+#if 0
+   std::cout << std::endl;
+   for (auto node : opt_grid->solution())
+      std::cout << node << std::endl;
+   std::cout << opt_grid->cover() << std::endl;
+#endif
+   if ( draw_result ) {
+      draw_data(*opt_grid,DrawType::Python,g_time,win_size);
+      //draw_data(*opt_grid);
+   }
+
+   opt_grid->end();
+#endif
+
    return 0;
 }
