@@ -19,38 +19,31 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 /**
- * @file gridEval.h
+ * @file gridInit.h
  *
- * @brief eval functions for paradiseo algorithms
+ * @brief init function for paradiseo algorithms
  *
  *
  */
 
-#ifndef __GRIDEVAL_H__
-#define __GRIDEVAL_H__
+#ifndef __GRIDINIT_H__
+#define __GRIDINIT_H__
 
-#include <algorithm>
 #include <eo>
-#include <limits>
-#include <numeric>
-#include <utility>
-#include "gridMoUtils.h"
+#include <algorithm>
+#include "grid.hpp"
+
+template <size_t d>
+using eoGridSolution = eoVector<eoMinimizingFitness,Node<d>*>;
 
 template <size_t d = 2>
-class eoGridSolEval : public eoEvalFunc<eoGridSolution<d>>
+void eoGridSolInit(eoGridSolution<d> &eog, const Grid<d> &g)
 {
-   public:
-      eoGridSolEval(Grid<d> &g) : _grid(g) { }
-      ~eoGridSolEval() = default;
-      void operator()(eoGridSolution<d> &solution)
-      {
-         long nbr_connected_components = connectedComponents<d>(solution);
-         solution.fitness(static_cast<double>(solution.size()-1));
-         if ( !_grid.all_nodes_are_covered() || nbr_connected_components >= 2 )
-            solution.fitness(std::numeric_limits<double>::max());
-      }
-   private:
-      Grid<d> &_grid;
-};
+   std::for_each( g.solution().cbegin()
+                , g.solution().cend()
+                , [&](Node<d>* const &n) {
+                     eog.push_back(n);
+                  } );
+}
 
-#endif // __GRIDEVAL_H__
+#endif // __GRIDINIT_H__

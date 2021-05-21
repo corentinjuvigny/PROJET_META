@@ -29,12 +29,17 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef __GRIDNEIGHBORHOOD_H__
 #define __GRIDNEIGHBORHOOD_H__
 
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <iterator>
 #include <mo>
+#include <pstl/glue_execution_defs.h>
+#include <tbb/blocked_range.h>
+#include <tbb/parallel_for.h>
 #include <utility>
 #include <random>
+#include <mutex>
 #include "gridEval.h"
 #include "gridNeighbor.h"
 #include "greedy.hpp"
@@ -52,7 +57,7 @@ class moGridSolNeighborhood : public moRndNeighborhood<moGridSolNeighbor<d>>
          _generator.seed(seed); 
       }
 
-      virtual bool hasNeighbor(EOT &solution) { return solution.size() > 1; } //There is always an available neighbor
+      virtual bool hasNeighbor(EOT &solution) { return solution.size() > 1; }
 
       virtual void init(EOT &solution, Neighbor &current);
 
@@ -84,12 +89,51 @@ Node<d>* nodeInInsertNeighbor( const Grid<d> &grid
       std::advance(it,dist(gen)%(*sol_it)->capture_queue().size());
       node = *it;
       count++;
-      if ( count > 100000 ) {
+      if ( count > 1000 ) {
          return NULL;
       }
    } while ( node->kind() != Node<d>::K_Target );
 
    return node;
+}
+
+template <size_t d>
+std::vector<Node<d>*> removableSensors(const Grid<d> &grid)
+{
+   std::vector<Node<d>*> rs;
+   std::mutex mutex;
+   std::for_each( std::execution::par
+                , grid.solution().cbegin()
+                , grid.solution().cend()
+                , [&](Node<d> * const sensor) {
+   //for (auto sensor : grid.solution()) {
+      bool is_removable = true;
+      bool is_covered = false;
+      // Can't remove the well
+      if ( sensor->kind() == Node<d>::K_Well )
+         return;
+         //continue;
+      // Checks if all of the target in the capture radius of the sensor
+      // are also covered by another sensor
+      for (auto node : sensor->capture_queue()) {
+         // Checks if node != sensor
+         if ( equal_coord<d>(sensor->coord(),node->coord()) )
+               continue;
+         if ( node->kind() == Node<d>::K_Target && node->aux().size() <= 1)
+            is_removable &= false;
+         // Checks if itself covered
+         else if ( node->kind() == Node<d>::K_Sensor )
+            is_covered = true;
+      }
+      // Checks if the sensors' graph without the sensor is still connected;
+      if ( is_removable && is_covered )
+         is_removable &= connectedComponents(grid,sensor) == 1;
+      if ( is_removable && is_covered ) {
+         std::lock_guard<std::mutex> lock(mutex);
+         rs.push_back(sensor);
+      }
+   } );
+   return rs;
 }
 
 template <size_t d>
@@ -101,12 +145,13 @@ Node<d>* nodeInRemoveNeighbor( const Grid<d> &grid
    Node<d>* node;
    int count = 0;
    do {
-      std::uniform_int_distribution<int> dist(1);
-      auto sol_it = grid.solution().cbegin();
-      std::advance(sol_it,dist(gen)%grid.solution().size());
-      node = *sol_it;
+      std::uniform_int_distribution<int> dist;
+      auto removable_sensors = removableSensors(grid);
+      if ( removable_sensors.empty() )
+         return NULL;
+      node = removable_sensors[dist(gen)%removable_sensors.size()];
       count++;
-      if ( count > 100000 ) {
+      if ( count > 1000 ) {
          return NULL;
       }
    } while ( node->kind() != Node<d>::K_Sensor );
