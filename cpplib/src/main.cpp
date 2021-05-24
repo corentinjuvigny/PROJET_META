@@ -69,24 +69,18 @@ int main(int argc, char* argv[])
    std::cout << "========== Result Greedy Algorithm ==========" << std::endl;
    std::cout << "Number of targets : " << *opt_grid->objective_value() << std::endl;
    std::cout << "Execution time : " << duration.count() << " s" << std::endl;
-   //for (auto elem : opt->solution())
-   //   std::cout << elem.first << std::endl;
    std::cout << std::endl;
+
    //mip_resolution(*opt_grid);
    if ( draw_result ) {
       draw_data(*opt_grid,DrawType::Python,g_time,win_size);
-      //draw_data(*opt_grid);
    }
 
    eoGridSolution<2> eog;
    eoGridSolInit(eog,*opt_grid);
    eoGridSolEval eval(*opt_grid);
 
-   eval(eog);
-   eog.printOn(std::cout);
-   std::cout << std::endl;
-
-   moGridSolNeighborhood<2> gridNeighborhood(*opt_grid);
+   moGridSolRndNeighborhood<2> gridNeighborhood(*opt_grid);
    moGridSolFullEvalByModif<2> gridFullEval(eval);
 
    /* =========================================================
@@ -96,16 +90,20 @@ int main(int argc, char* argv[])
     * ========================================================= */
 
    // initial temp, factor of decrease, number of steps without decrease, final temp.
-   //moSimpleCoolingSchedule<eoGridSolution<2>> coolingSchedule(10, 0.995, 100, 0.01);
-   moSimpleCoolingSchedule<eoGridSolution<2>> coolingSchedule(1, 0.995, 100, 0.01);
+   moSimpleCoolingSchedule<eoGridSolution<2>> coolingSchedule(40, 0.9995, 2, 0.01);
+   //moSimpleCoolingSchedule<eoGridSolution<2>> coolingSchedule(10, 0.9990, 100, 0.01);
+   //moSimpleCoolingSchedule<eoGridSolution<2>> coolingSchedule(10, 0.9, 100, 0.01);
 
-   moDynSpanCoolingSchedule<eoGridSolution<2>> dynSpanSchedule(10,0.995,100,50,50);
+   moDynSpanCoolingSchedule<eoGridSolution<2>> dynSpanSchedule(40,0.9995,100,25,10);
 
 
-   //moTimeContinuator<moGridSolNeighbor<2>> timeContinuator(240);
-   moIterContinuator<moGridSolNeighbor<2>> iterContinuator(500000);
+   moTimeContinuator<moGridSolNeighbor<2>> timeContinuator(120);
+   moIterContinuator<moGridSolNeighbor<2>> iterContinuator(50000);
+   moBestNoImproveContinuator<moGridSolNeighbor<2>> bestNoImproveContinuator(eog,1000);
 
    moCombinedContinuator<moGridSolNeighbor<2>> combinedContinuator(iterContinuator);
+   combinedContinuator.add(timeContinuator);
+   //combinedContinuator.add(bestNoImproveContinuator);
 
 
    /* =========================================================
@@ -126,24 +124,50 @@ int main(int argc, char* argv[])
    moFitnessStat<eoGridSolution<2>> fitStat;
    checkpoint.add(fitStat);
    eoFileMonitor monitor("fitness.out", "");
-   moCounterMonitorSaver countMon(100, monitor);
+   moCounterMonitorSaver countMon(1, monitor);
    checkpoint.add(countMon);
    monitor.add(fitStat);
 
-   moSA<moGridSolNeighbor<2>> simulatedAnnealing(gridNeighborhood,eval,gridFullEval,coolingSchedule,checkpoint);
+   moSA<moGridSolNeighbor<2>> simulatedAnnealing(gridNeighborhood,eval,gridFullEval,dynSpanSchedule,checkpoint);
 
-   //moRandomBestHC<moGridSolNeighbor<2>> hillClimber(gridNeighborhood,eval,gridFullEval,combinedContinuator);
-
-   std::cout << "Simulated Annealing" << std::endl;
-
-   simulatedAnnealing(eog);
-   //hillClimber(eog);
-
-   eog.printOn(std::cout);
-   std::cout << std::endl;
+   start = std::chrono::steady_clock::now();
+   //simulatedAnnealing(eog);
+   end = std::chrono::steady_clock::now();
+   duration = end - start;
+   // std::cout << "========== Result Simulated Annealing ==========" << std::endl;
+   // std::cout << "Number of targets : " << *opt_grid->objective_value() << std::endl;
+   // std::cout << "Execution time : " << duration.count() << " s" << std::endl;
+   // std::cout << "Valid solution : " << ((opt_grid->all_nodes_are_covered() && connectedComponents<2>(eog) == 1) ? "yes" : "no") << std::endl;
+   // std::cout << std::endl;
 
    if ( draw_result ) {
       draw_data(*opt_grid,DrawType::Python,g_time,win_size);
+   }
+
+   /* =======================================================
+    *
+    * Tabu Search
+    *
+    * ======================================================= */
+ 
+   moGridSolOrderNeighborhood<2> gridOrderNeighborhood(*opt_grid);
+   moBestImprAspiration<moGridSolNeighbor<2>> aspiration;
+   moNeighborVectorTabuList<moGridSolNeighbor<2>> tabuList(100,10);
+
+   //moTS<moGridSolNeighbor<2>> tabuSearch(gridOrderNeighborhood,eval,gridFullEval,60,100);
+   moTS<moGridSolNeighbor<2>> tabuSearch(gridOrderNeighborhood,eval,gridFullEval,combinedContinuator,tabuList,aspiration);
+   
+   start = std::chrono::steady_clock::now();
+   tabuSearch(eog);
+   end = std::chrono::steady_clock::now();
+   duration = end - start;
+   std::cout << "========== Result Tabu Search ==========" << std::endl;
+   std::cout << "Number of targets : " << *opt_grid->objective_value() << std::endl;
+   std::cout << "Execution time : " << duration.count() << " s" << std::endl;
+   std::cout << "Valid solution : " << ((opt_grid->all_nodes_are_covered() && connectedComponents<2>(eog) == 1) ? "yes" : "no") << std::endl;
+   
+   if ( draw_result ) {
+      //draw_data(*opt_grid,DrawType::Python,g_time,win_size);
    }
 
    opt_grid->end();

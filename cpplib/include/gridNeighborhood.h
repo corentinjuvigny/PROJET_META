@@ -44,14 +44,15 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "gridNeighbor.h"
 #include "greedy.hpp"
 
+/* ========================== Random neighborhood ========================== */
 template <size_t d>
-class moGridSolNeighborhood : public moRndNeighborhood<moGridSolNeighbor<d>>
+class moGridSolRndNeighborhood : public moRndNeighborhood<moGridSolNeighbor<d>>
 {
    public:
       typedef moGridSolNeighbor<d> Neighbor;
       typedef typename Neighbor::EOT EOT;
 
-      moGridSolNeighborhood(Grid<d> &grid) : _grid(grid), _generator()
+      moGridSolRndNeighborhood(Grid<d> &grid) : _grid(grid), _generator()
       {
          unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
          _generator.seed(seed); 
@@ -67,10 +68,12 @@ class moGridSolNeighborhood : public moRndNeighborhood<moGridSolNeighbor<d>>
 
       virtual std::string className() const
       {
-         return "moGridSolNeighborhood";
+         return "moGridSolRndNeighborhood";
       }
    private:
+      // The data of the problem
       Grid<d> &_grid;
+      // A random generator
       std::default_random_engine _generator;
 };
 
@@ -178,7 +181,7 @@ GridNeighbor<d> foundNextNeighbor(const Grid<d> &grid, std::default_random_engin
 }
 
 template <size_t d>
-void moGridSolNeighborhood<d>::init(EOT &solution, Neighbor &current)
+void moGridSolRndNeighborhood<d>::init(EOT &solution, Neighbor &current)
 {
    if ( _grid.solution().size() < 1 ) {
       greedy_construction(_grid);
@@ -189,9 +192,75 @@ void moGridSolNeighborhood<d>::init(EOT &solution, Neighbor &current)
 }
 
 template <size_t d>
-void moGridSolNeighborhood<d>::next(EOT &, Neighbor &current)
+void moGridSolRndNeighborhood<d>::next(EOT &, Neighbor &current)
 {
    current.setNeighbor(foundNextNeighbor<d>(_grid,_generator));
 }
+
+/* ========================== Order neighborhood ========================== */
+
+template <size_t d>
+std::vector<GridNeighbor<d>> availableNeighbors(const Grid<d> &grid)
+{
+   std::vector<GridNeighbor<d>> neighbors;
+
+   // First we look for all of the insertable neighbors
+   for (auto sensor : grid.solution()) {
+      for (auto target : sensor->capture_queue()) {
+         if ( target->kind() == Node<d>::K_Target )
+            neighbors.push_back(InsertGridNeighbor(target));
+      }
+   }
+   // Then we look for all of the removable neighbors
+   std::vector<Node<d>*> removables = removableSensors(grid);
+   for (auto sensor : removables)
+      neighbors.push_back(RemoveGridNeighbor(sensor));
+
+   return neighbors;
+}
+
+template <size_t d>
+class moGridSolOrderNeighborhood : public moNeighborhood<moGridSolNeighbor<d>>
+{
+   public:
+      typedef moGridSolNeighbor<d> Neighbor;
+      typedef typename Neighbor::EOT EOT;
+
+      moGridSolOrderNeighborhood(Grid<d> &grid) : _grid(grid), _neighborList(), _pos(0) { }
+
+      virtual bool hasNeighbor(EOT &solution) { return solution.size() > 1; }
+
+      virtual void init(EOT &solution, Neighbor &current)
+      {
+         if ( _grid.solution().size() < 1 ) {
+            greedy_construction(_grid);
+            eoGridSolInit(solution,_grid);
+         }
+         _neighborList = availableNeighbors(_grid);
+         _pos = 0;
+         
+         current.initNeighbor(std::move(_neighborList[_pos++]),&_grid);
+      }
+
+      virtual void next(EOT&, Neighbor &current)
+      {
+         current.setNeighbor(std::move(_neighborList[_pos++]));
+      }
+
+      virtual bool cont(EOT&) { return _pos < _neighborList.size(); }
+
+      virtual std::string className() const
+      {
+         return "moGridSolOrderNeighborhood";
+      }
+   private:
+      // The data of the problem
+      Grid<d> &_grid;
+      // A vector containing all of the possible neighbors of a solution
+      std::vector<GridNeighbor<d>> _neighborList;
+      // The current neighbor in _neighborList;
+      size_t _pos;
+};
+
 
 #endif // __GRIDNEIGHBORHOOD_H__

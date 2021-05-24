@@ -38,6 +38,15 @@ struct GridNeighbor
    enum Kind { INSERT, REMOVE };
    Kind kind;
    Node<d>* node;
+
+   friend inline bool operator==(const GridNeighbor &lhs, const GridNeighbor &rhs)
+   {
+      if ( lhs.node == NULL )
+         return rhs.node == NULL ? true : false;
+      if ( rhs.node == NULL )
+         return lhs.node == NULL ? true : false;
+      return (lhs.kind == rhs.kind) && (equal_coord<d>(lhs.node->coord(),rhs.node->coord()));
+   }
 };
 
 template <size_t d>

@@ -23,7 +23,6 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * @brief utils functions for paradiseo algorithms
  *
- *
  */
 
 #ifndef __GRIDMOUTILS_H__
