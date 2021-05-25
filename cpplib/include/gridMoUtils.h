@@ -32,6 +32,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <algorithm>
+#include <boost/graph/detail/adjacency_list.hpp>
 #include <eo>
 #include <limits>
 #include <numeric>
@@ -42,7 +43,7 @@ typedef boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS > g
 typedef boost::graph_traits < graph_t >::vertex_descriptor vertex_descriptor;
 
 template <size_t d>
-long connectedComponents(const Grid<d> &grid, const Node<d>* sensor)
+long connectedComponents(const Grid<d> &grid, const Node<d>* sensor, bool debug = false)
 {
    graph_t graph;
    std::map<Node<d>*,size_t,typename Node<d>::NodeCmp> nodeMap;
@@ -50,19 +51,27 @@ long connectedComponents(const Grid<d> &grid, const Node<d>* sensor)
    std::for_each( grid.solution().cbegin()
                 , grid.solution().cend()
                 , [&nodeMap,&n,&sensor](Node<d>* node) {
-                     if ( (node->kind() == Node<d>::K_Well || node->kind() == Node<d>::K_Sensor)
-                        && !equal_coord<d>(sensor->coord(),node->coord()) )
-                        nodeMap.insert(std::make_pair(node,n++));
+                     if ( (node->kind() == Node<d>::K_Well || node->kind() == Node<d>::K_Sensor) ) {
+                        if (sensor == NULL )
+                           nodeMap.insert(std::make_pair(node,n++));
+                        else if (!equal_coord<d>(sensor->coord(),node->coord()))
+                           nodeMap.insert(std::make_pair(node,n++));
+                     }
                   } );
    for (Node<d>* node : grid.solution()) {
-      if ( equal_coord<d>(node->coord(),sensor->coord()) )
-         continue;
-      for (Node<d>* neighbor : node->aux()) {
-         if ( equal_coord<d>(neighbor->coord(),sensor->coord()) )
+      if ( sensor != NULL )
+         if ( equal_coord<d>(node->coord(),sensor->coord()) )
             continue;
+      boost::add_edge(nodeMap[node],nodeMap[node],graph);
+      for (Node<d>* neighbor : node->aux()) {
+         if ( sensor != NULL )
+            if ( equal_coord<d>(neighbor->coord(),sensor->coord()) )
+               continue;
          boost::add_edge(nodeMap[node],nodeMap[neighbor],graph);
       }
    }
+   if ( debug )
+      std::cout << boost::num_vertices(graph) << " vs " << grid.solution().size() << std::endl;
    std::vector<size_t> component(boost::num_vertices(graph));
 
    return boost::connected_components(graph,&component[0]);
@@ -81,6 +90,7 @@ inline long connectedComponents(eoGridSolution<d> &solution, bool debug = false)
                         nodeMap.insert(std::make_pair(node,n++));
                   } );
    for (Node<d>* sensor : solution) {
+      boost::add_edge(nodeMap[sensor],nodeMap[sensor],graph);
       for (Node<d>* neighbor : sensor->aux()) {
          boost::add_edge(nodeMap[sensor],nodeMap[neighbor],graph);
       }

@@ -79,11 +79,11 @@ class moGridSolNeighbor : public moBackableNeighbor<eoGridSolution<d>>
       {
          switch ( _neighbor.kind ) {
             case GridNeighbor<d>::INSERT:
-               solution.push_back(_neighbor.node);
+               solution.insert(_neighbor.node);
                _grid->add_sensor_to_solution(_neighbor.node);
                break;
             case GridNeighbor<d>::REMOVE:
-               solution.erase(std::remove(solution.begin(),solution.end(),_neighbor.node));
+               solution.erase(_neighbor.node);
                _grid->remove_sensor_to_solution(_neighbor.node);
                break;
             default:
@@ -97,11 +97,11 @@ class moGridSolNeighbor : public moBackableNeighbor<eoGridSolution<d>>
          switch ( _neighbor.kind ) {
             case GridNeighbor<d>::INSERT:
                _grid->remove_sensor_to_solution(_neighbor.node);
-               solution.erase(std::remove(solution.begin(),solution.end(),_neighbor.node));
+               solution.erase(_neighbor.node);
                break;
             case GridNeighbor<d>::REMOVE:
                _grid->add_sensor_to_solution(_neighbor.node);
-               solution.push_back(_neighbor.node);
+               solution.insert(_neighbor.node);
                break;
             default:
                break;

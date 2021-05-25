@@ -33,16 +33,19 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <algorithm>
 #include "grid.hpp"
 
-template <size_t d>
-using eoGridSolution = eoVector<eoMinimizingFitness,Node<d>*>;
+//template <size_t d>
+//using eoGridSolution = eoVector<eoMinimizingFitness,Node<d>*>;
 
-template <size_t d = 2>
+template <size_t d>
+using eoGridSolution = eoExternalEO<eoMinimizingFitness,std::set<Node<d>*,typename Node<d>::NodeCmp>>;
+
+template <size_t d>
 void eoGridSolInit(eoGridSolution<d> &eog, const Grid<d> &g)
 {
    std::for_each( g.solution().cbegin()
                 , g.solution().cend()
                 , [&](Node<d>* const &n) {
-                     eog.push_back(n);
+                     eog.insert(n);
                   } );
 }
 

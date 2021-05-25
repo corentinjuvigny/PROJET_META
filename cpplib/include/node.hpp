@@ -316,4 +316,19 @@ std::istream& operator>>(std::istream &is, Node<d>* &n)
    return is;
 }
 
+template <size_t d>
+std::ostream& operator<<(std::ostream &os, const std::set<Node<d>*,typename Node<d>::NodeCmp> ns)
+{
+   for (auto sensor : ns)
+      os << sensor;
+   return os;
+}
+
+template <size_t d>
+std::istream& operator>>(std::istream &is, std::set<Node<d>*,typename Node<d>::NodeCmp> &ns)
+{
+   is >> ns;
+   return is;
+}
+
 #endif //__NODE_HPP__

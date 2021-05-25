@@ -109,7 +109,6 @@ std::vector<Node<d>*> removableSensors(const Grid<d> &grid)
                 , grid.solution().cbegin()
                 , grid.solution().cend()
                 , [&](Node<d> * const sensor) {
-   //for (auto sensor : grid.solution()) {
       bool is_removable = true;
       bool is_covered = false;
       // Can't remove the well

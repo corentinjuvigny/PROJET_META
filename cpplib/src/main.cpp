@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
    const double g_time = 5.0;
    const double communication_radius = 2.00001;
    const double capture_radius = 1.00001;
-   const bool draw_result = false;
+   const bool draw_result = true;
 
    std::optional opt_grid = read_node_file_2D(argv[1],communication_radius,capture_radius); 
    if ( opt_grid == std::nullopt ) {
@@ -98,11 +98,11 @@ int main(int argc, char* argv[])
 
 
    moTimeContinuator<moGridSolNeighbor<2>> timeContinuator(120);
-   moIterContinuator<moGridSolNeighbor<2>> iterContinuator(50000);
+   moIterContinuator<moGridSolNeighbor<2>> iterContinuator(500000);
    moBestNoImproveContinuator<moGridSolNeighbor<2>> bestNoImproveContinuator(eog,1000);
 
    moCombinedContinuator<moGridSolNeighbor<2>> combinedContinuator(iterContinuator);
-   combinedContinuator.add(timeContinuator);
+   //combinedContinuator.add(timeContinuator);
    //combinedContinuator.add(bestNoImproveContinuator);
 
 
@@ -124,21 +124,27 @@ int main(int argc, char* argv[])
    moFitnessStat<eoGridSolution<2>> fitStat;
    checkpoint.add(fitStat);
    eoFileMonitor monitor("fitness.out", "");
-   moCounterMonitorSaver countMon(1, monitor);
+   moCounterMonitorSaver countMon(100, monitor);
    checkpoint.add(countMon);
    monitor.add(fitStat);
 
    moSA<moGridSolNeighbor<2>> simulatedAnnealing(gridNeighborhood,eval,gridFullEval,dynSpanSchedule,checkpoint);
 
    start = std::chrono::steady_clock::now();
-   //simulatedAnnealing(eog);
+   // simulatedAnnealing(eog);
    end = std::chrono::steady_clock::now();
+   // eval(eog);
    duration = end - start;
    // std::cout << "========== Result Simulated Annealing ==========" << std::endl;
-   // std::cout << "Number of targets : " << *opt_grid->objective_value() << std::endl;
+   // std::cout << "Number of targets : " << eog.fitness() << std::endl;
    // std::cout << "Execution time : " << duration.count() << " s" << std::endl;
    // std::cout << "Valid solution : " << ((opt_grid->all_nodes_are_covered() && connectedComponents<2>(eog) == 1) ? "yes" : "no") << std::endl;
    // std::cout << std::endl;
+   // std::cout << connectedComponents<2>(*opt_grid,NULL,true) << std::endl;
+
+   for (auto sensor : opt_grid->solution())
+      if ( sensor->aux().empty() )
+         std::cout << "node " << sensor << " has no neighbour" << std::endl;
 
    if ( draw_result ) {
       draw_data(*opt_grid,DrawType::Python,g_time,win_size);
@@ -154,8 +160,8 @@ int main(int argc, char* argv[])
    moBestImprAspiration<moGridSolNeighbor<2>> aspiration;
    moNeighborVectorTabuList<moGridSolNeighbor<2>> tabuList(100,10);
 
-   //moTS<moGridSolNeighbor<2>> tabuSearch(gridOrderNeighborhood,eval,gridFullEval,60,100);
-   moTS<moGridSolNeighbor<2>> tabuSearch(gridOrderNeighborhood,eval,gridFullEval,combinedContinuator,tabuList,aspiration);
+   moTS<moGridSolNeighbor<2>> tabuSearch(gridOrderNeighborhood,eval,gridFullEval,60,100);
+   //moTS<moGridSolNeighbor<2>> tabuSearch(gridOrderNeighborhood,eval,gridFullEval,combinedContinuator,tabuList,aspiration);
    
    start = std::chrono::steady_clock::now();
    tabuSearch(eog);
@@ -167,7 +173,7 @@ int main(int argc, char* argv[])
    std::cout << "Valid solution : " << ((opt_grid->all_nodes_are_covered() && connectedComponents<2>(eog) == 1) ? "yes" : "no") << std::endl;
    
    if ( draw_result ) {
-      //draw_data(*opt_grid,DrawType::Python,g_time,win_size);
+      draw_data(*opt_grid,DrawType::Python,g_time,win_size);
    }
 
    opt_grid->end();
