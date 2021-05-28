@@ -44,12 +44,13 @@ class eoGridSolEval : public eoEvalFunc<eoGridSolution<d>>
       ~eoGridSolEval() = default;
       void operator()(eoGridSolution<d> &solution)
       {
-         long nbr_connected_components = connectedComponents<d>(solution);
-         if ( !_grid.all_nodes_are_covered() || nbr_connected_components >= 2 )
-            solution.fitness(std::numeric_limits<double>::max());
-         else
-            solution.fitness(static_cast<double>(solution.size()-1));
-
+         if ( solution.invalid() ) {
+            long nbr_connected_components = connectedComponents<d>(solution);
+            if ( !_grid.all_nodes_are_covered() || nbr_connected_components >= 2 )
+               solution.fitness(std::numeric_limits<double>::max());
+            else
+               solution.fitness(static_cast<double>(solution.size()-1));
+         }
       }
    private:
       Grid<d> &_grid;
